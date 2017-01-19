@@ -1,7 +1,7 @@
 description: |
     A string answer. 
 
-    **UI hints:** texfield, multilinetext.
+    **UI hints:** texfield, multilinetext, bloodpressure (formatted as a string in "systolic/diastolic" representation).
 required:
     - dataType
 allOf:

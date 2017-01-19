@@ -7,14 +7,13 @@ description: |
 
     |Type|Description|
     |---|---|
-    |string|A string value|
+    |string|A string value, including blood pressure|
     |integer|An integer value|
-    |decimal|A floating point value|
+    |decimal|A floating point value, including height and weight|
     |boolean|A boolean value (true or false)|
     |date|A date without a time or time zone component|
     |time|A time without a time zone component|
     |datetime|A specific date and time in a specific time zone|
-    |duration|*Deprecated.* Use an integer value with a unit instead.|
 
 enum:
     - duration
