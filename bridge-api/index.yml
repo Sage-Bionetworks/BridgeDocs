@@ -28,6 +28,12 @@ parameters:
         required: true
         in: path
         type: string
+    taskId:
+        name: taskId
+        description: Task ID
+        required: true
+        in: path
+        type: string
     revision:
         name: revision
         description: Revision number
@@ -139,6 +145,12 @@ parameters:
         required: false
         default: 50
         maximum: 100
+    offsetBy:
+        name: offsetBy
+        description: next page start offset for pagination 
+        in: query
+        type: number
+        required: false
     offsetKey:
         name: offsetKey
         description: next page start key for pagination 
@@ -151,7 +163,32 @@ parameters:
         required: true
         in: path
         type: string
-
+    activityGuid:
+        name: activityGuid
+        description: Activity GUID
+        required: true
+        in: path
+        type: string
+    scheduledOnStart:
+        name: scheduledOnStart
+        in: query
+        description: |
+            Activities returned are at or after the timestamp. If scheduledOnStart is 
+            provided, scheduledOnEnd must be provided, and vice versa. Default range is 
+            4 days in the future to 10 days in the past.
+        type: string
+        format: date-time
+        required: false
+    scheduledOnEnd:
+        name: scheduledOnEnd
+        in: query
+        description: |
+            Activities returned are at or before the timestamp. If scheduledOnEnd is 
+            provided, scheduledOnStart must be provided, and vice versa. Default range is 
+            4 days in the future to 10 days in the past.
+        type: string 
+        format: date-time
+        required: false
 paths:
     $ref: ./paths/index.yml
 definitions:
