@@ -216,6 +216,8 @@
 /v3/cache/{cacheKey}:
     $ref: ./cache/v3_cache_cacheKey.yml
 
-# Exporter Status
+# Exporter
 /v3/recordexportstatuses:
     $ref: ./recordexportstatuses/v3_recordexportstatuses.yml
+/v3/instantExport:
+    $ref: ./exporter/v3_instantExport.yml

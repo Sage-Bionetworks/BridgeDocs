@@ -1,0 +1,18 @@
+post:
+    operationId: requestInstantExport
+    summary: Send AWS SQS message to export current study instantly
+    description: |
+         Send AWS SQS message to the Bridge Exporter in order to instantly export current study from last export time to now.
+    tags:
+        - Exporter
+        - _For Developers
+        - _For Researchers
+    security:
+        - BridgeSecurity: []
+    responses:
+        200:
+            $ref: ../../responses/200_message.yml
+        401:
+            $ref: ../../responses/401.yml
+        403:
+            $ref: ../../responses/403_not_developer_researcher.yml
