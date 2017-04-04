@@ -1481,6 +1481,9 @@
   min-height: 30px;
   text-align: center;
   padding-top: 10px;
+  font-weight: bold;
+  font-size: larger;
+  color: #b22222;
 }
 .swagger-section .swagger-collapse:before {
   content: "-";

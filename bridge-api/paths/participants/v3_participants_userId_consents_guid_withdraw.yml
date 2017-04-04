@@ -1,12 +1,9 @@
 post:
-    operationId: withdrawParticipantFromStudy
-    summary: Withdraw the participant from the study entirely
+    operationId: withdrawParticipantFromSubpopulation
+    summary: Withdraw the participant from the specified subpopulation
     description: |
-        This endpoint will withdraw the user from any and all signed consents in the study, and 
-        set their sharing status to "no_sharing". The user is withdrawn from all subpopulations 
-        in the study whether they currently apply to the user or not. Unless you have more 
-        complicated consent requirements (like an optional consent that can be signed or not), 
-        this is the best approach to withdrawing a user from a study.
+        This endpoint will withdraw the user from consent to participate in one subpopulation of 
+        the study. 
     tags:
         - Participants
         - Consents
@@ -15,6 +12,7 @@ post:
         - BridgeSecurity: []
     parameters:
         - $ref: ../../index.yml#/parameters/userId
+        - $ref: ../../index.yml#/parameters/subpopulationGuid
         - name: withdrawal
           required: true
           in: body

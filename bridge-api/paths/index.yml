@@ -55,6 +55,8 @@
     $ref: ./participants/v3_participants_userId_consents_withdraw.yml
 /v3/participants/{userId}/consents/{subpopulationGuid}/resendConsent:
     $ref: ./participants/v3_participants_userId_consents_guid_resendConsent.yml
+/v3/participants/{userId}/consents/{subpopulationGuid}/withdraw:
+    $ref: ./participants/v3_participants_userId_consents_guid_withdraw.yml
 /v3/participants/{userId}/reports/{identifier}:
     $ref: ./participants/v3_participants_userId_reports_identifier.yml
 /v3/participants/{userId}/reports/{identifier}/{date}:
@@ -219,6 +221,8 @@
     $ref: ./studies/v3_studies_studyId_reports_identifier.yml
 /v3/studies/{studyId}/uploads:
     $ref: ./studies/v3_studies_studyId_uploads.yml
+/v3/studies/{studyId}/users:
+    $ref: ./studies/v3_studies_studyId_users.yml
 
 # Cache Management
 /v3/cache:
