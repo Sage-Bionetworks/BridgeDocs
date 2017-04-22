@@ -1,7 +1,10 @@
 type: string
 description: |
     The unit of measurement being used for a numeric value when it is expressing something like 
-    a duration, weight, or length.
+    a duration, weight, or length. **Important:** the unit given in a survey question must be the 
+    unit of the data as it is sent to Bridge, regardless of how the value is collected. For example, 
+    you can collect height in feet and inches, but if the unit of the question is meters, you must 
+    send the value converted to meters. **The unit is part of the exported data set.**
 
     ## Duration
     |Type|Description|

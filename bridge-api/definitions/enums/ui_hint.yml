@@ -17,6 +17,9 @@ description: |
     |textfield|A single line text field. Note that if there are set values for this textfield, but the user can essentially enter an "other" value as well, then the combobox hint with a set of enumerated values should be used.||
     |timepicker|An input for entering a time with no reference to the date of the time.||
     |toggle|A switch or toggle control to select a boolean state||
+    |bloodpressure|A compound control to ask for systolic/diastolic values on one survey screen. The value is saved as a string in the standard "systolic/diastolic" format.|
+    |height|A decimal measure of height, in either feet or meters. The UI hint itself does not constrain how values are collected from the user (e.g. if a control for infants or adults is more appropriate).|
+    |weight|A decimal measure of weight, in either pounds or kilgrams. The UI hint itself does not constrain how values are collected from the user (e.g. if a control for infants or adults is more appropriate).|
 enum:
     - checkbox
     - combobox
@@ -31,3 +34,6 @@ enum:
     - textfield
     - timepicker
     - toggle
+    - bloodpressure
+    - height
+    - weight
