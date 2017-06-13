@@ -16,16 +16,10 @@ get:
         - BridgeSecurity: []
     parameters:
         - $ref: ../../index.yml#/parameters/userId
-        - name: startTime
-          in: query
-          type: string
-          format: date-time
-          description: Defaults to one day ago (24 hours)
-        - name: endTime
-          in: query
-          type: string
-          format: date-time
-          description: Defaults to time stamp for time of request ("now")
+        - $ref: ../../index.yml#/parameters/startTime
+        - $ref: ../../index.yml#/parameters/endTime
+        - $ref: ../../index.yml#/parameters/pageSize
+        - $ref: ../../index.yml#/parameters/offsetKey
     responses:
         200:
             description: OK
