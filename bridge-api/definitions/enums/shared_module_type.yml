@@ -1,5 +1,0 @@
-type: string
-description: Enum to tag shared module metadata as either a schema or a survey.
-enum:
-    - schema
-    - survey
