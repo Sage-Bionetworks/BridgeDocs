@@ -6,11 +6,6 @@ node_js:
 install:
   - bundle install
 script:
-  - ./install.sh
-  - ./verify.sh
-  - rm -rf java/
-  - rm swagger-codegen-cli.jar
-  - rm -rf node_modules/
   - bundle exec jekyll build
 branches:
   only:
