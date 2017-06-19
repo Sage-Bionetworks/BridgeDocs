@@ -1,3 +1,0 @@
-description: Authentication required (user not signed in).
-schema:
-    $ref: ../definitions/message.yml
