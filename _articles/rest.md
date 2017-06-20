@@ -13,7 +13,7 @@ information.</p>
     <dt><a href="/swagger-ui/index.html?url=/rest-api/{{site.data.versions.java_sdk}}/swagger.json" target="_blank">API Browser</a></dt>
     <dd>Documents the URLs of the API</dd>
 
-    <dt><a href="/model-browser.html">Model Browser</a></dt>
+    <dt><a href="/model-browser.html?url=/rest-api/{{site.data.versions.java_sdk}}/swagger.json">Model Browser</a></dt>
     <dd>Documents the JSON payloads sent back and forth in the API</dd>
 </dl>
 </div>
