@@ -11,8 +11,9 @@ request.addEventListener("load", function(response) {
     init();
     loadModel();
 });
+
 request.overrideMimeType("text/json; charset=utf-8");
-request.open("GET", "./swagger.json");
+request.open("GET", document.location.search.split("url=")[1]);
 request.send();
 
 marked.setOptions({gfm: true, tables: true});
