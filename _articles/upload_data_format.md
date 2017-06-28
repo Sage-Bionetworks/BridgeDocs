@@ -11,10 +11,10 @@ Each upload is a bundle with a series of files. Each file bundle is then zipped 
 
     Encrypted file
         * ZIP file
-        * info.json
-        * foo.json
-        * bar.json
-        * baz.json
+            * info.json
+            * foo.json
+            * bar.json
+            * baz.json
 
 ## iOS ResearchKit Uploads
 
