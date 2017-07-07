@@ -8,7 +8,7 @@ layout: article
 <p>Sage provides a Java-based REST client for interacting with Bridge services (v{{site.data.versions.java_sdk}}): </p>
 
 <dl>
-    <dt><a class="item" href="/rest-client/{{site.data.versions.java_sdk}}/apidocs/index.html">REST client API docs</a></dt>
+    <dt><a class="item" href="/rest-client/{{site.data.versions.java_sdk}}/rest-client/apidocs/index.html">REST client API docs</a></dt>
     <dd>JavaDocs for the REST client.</dd>
     
     <dt><a class="item" href="https://github.com/Sage-Bionetworks/BridgeJavaSDK">GitHub</a></dt>
