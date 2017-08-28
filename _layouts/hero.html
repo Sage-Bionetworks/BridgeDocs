@@ -4,7 +4,9 @@
 <div class="content">
     <script>
     if (document.location.hash) {
-        document.location.replace('/model-browser.html?'+document.location.hash); 
+        var version = document.querySelector("meta[name='sdk.version']").getAttribute('content');
+        var url = "/model-browser.html?url=/rest-api/"+version+"/rest-api/swagger.json"+document.location.hash;
+        document.location.replace(url); 
     }
     </script>
     {% include tabs.html %}
