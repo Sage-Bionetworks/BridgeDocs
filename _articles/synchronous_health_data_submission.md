@@ -23,7 +23,7 @@ The schema field names should match the keys in your submitted health data. For 
 
 Then your schema field names should be "sports", "sleep", and "sleep_unit".
 
-## Submitting Health Data
+## <a name="submitting-health-data">Submitting Health Data</a>
 
 To submit health data, send an HTTP POST request to /v3/healthdata (or use your platform's SDK). Example request body:
 
@@ -38,6 +38,11 @@ To submit health data, send an HTTP POST request to /v3/healthdata (or use your 
     "sports":["fencing", "running"],
     "sleep":7,
     "sleep_unit":"hour"
+  },
+  "metadata":{
+    "startDateTime":"2017-09-13T15:58:52.704-0700",
+    "endDateTime":"2017-09-13T15:59:36.265-0700",
+    "taskRunGuid":"d097a0cf-689d-4459-90f5-792b910229da"
   }
 }
 ```
@@ -50,6 +55,7 @@ To submit health data, send an HTTP POST request to /v3/healthdata (or use your 
 |schemaId|Schema ID used to process your health data.|
 |schemaRevision|Schema revision of the schema used to process your health data.|
 |data|Health data to submit, as key-value pairs in a JSON object.|
+|metadata|Health data metadata, as key-value pairs in a JSON object. See [Health Data Metadata](health_data_metadata.html) for more details.|
 
 You will get a response in the form
 
@@ -62,7 +68,12 @@ You will get a response in the form
   "id": "4f1d0d7e-0487-49c6-bc53-c5a84dacdc2d",
   "schemaId": "upload-test-json-data",
   "schemaRevision": 1,
-  "type": "HealthData"
+  "type": "HealthData",
+  "userMetadata":{
+    "startDateTime":"2017-09-13T15:58:52.704-0700",
+    "endDateTime":"2017-09-13T15:59:36.265-0700",
+    "taskRunGuid":"d097a0cf-689d-4459-90f5-792b910229da"
+  }
 }
 ```
 
@@ -73,6 +84,7 @@ You will get a response in the form
 |schemaId|Schema ID used to process your health data.|
 |schemaRevision|Schema revision of the schema used to process your health data.|
 |type|Always "HealthData". Identifies the response type.|
+|userMetadata|Health data metadata, as submitted in the request.<br /><br />**NOTE:** There is a field called "metadata" in the response, which is different from "userMetadata". The "metadata" field refers to an old legacy feature and has no relation to health data metadata.|
 
 ## For Surveys
 
