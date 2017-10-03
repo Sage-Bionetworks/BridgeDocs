@@ -418,11 +418,13 @@ Content-MD5: Z1nJ4MVKEcHnLyD16vBEFA==
 
 ### Call the Upload Complete API
 
-Send an HTTP POST request to /v3/uploads/{uploadId}/complete. The request body doesn't matter. The response is simply "200 Upload complete".
+Send an HTTP POST request to /v3/uploads/{uploadId}/complete. The request body doesn't matter.
 
 This will kick off an asynchronous job that decrypts, unzips, validates, and processes your uploaded bundle against the schema as specified in info.json.
 
-### Validating Your Bundle
+The response is an Upload Validation Status result, as described in the next session. This status result will mostly likely contain the upload ID and a validation status of validation_in_progress and not much else.
+
+### Validating Your Bundle With Status Calls
 
 After 5 to 30 seconds (depending on the size of the bundle), your bundle should finish processing. To get the status of the upload, send an HTTP GET request to /v3/uploadstatuses/{uploadId}. You should get a response that looks like
 
@@ -463,3 +465,13 @@ After 5 to 30 seconds (depending on the size of the bundle), your bundle should 
 |record.schemaRevision|Schema revision of the schema used to process your bundle.|
 |record.type|Always "HealthData". Identifies the response type.|
 |type|Always "UploadValidationStatus". Identifies the response type.|
+
+### Validating Your Bundle With Synchronous Mode
+
+Alternatively, you can validate your bundle by making the Upload Complete call in synchronous mode. To do so, add synchronous=true to the query string in your URL (or pass in the appropriate value in the SDK you are using). HTTP example:
+
+`/v3/uploads/{uploadId}/complete?synchronous=true`
+
+In synchronous mode, instead of kicking off an asynchronous process and returning immediately, the API call will wait until the upload bundle is finished processing (decrypt, unzip, validate, process) before returning the validation status. As such, the validation status will include all of the attributes described above, including the appropriate status and the record data, if present. In essence, synchronous mode allows you to combine the upload complete and get validation status calls into a single call, and you don't have to poll get validation status until it's complete.
+
+Note: Synchronous mode is only recommended for app development. Small uploads may take up to 10 seconds to process. Larger uploads may take longer. This API will automatically timeout on the server side after about 30 seconds.
