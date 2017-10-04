@@ -37,7 +37,7 @@ The user's current consent status is summarized in the [UserSessionInfo](/#UserS
 
 Timestamps are expressed in ISO 8601 format (e.g. 2011-12-03T22:11:34.554Z), using the extended notation, to represent dates, dates and times, or times (separate from a specific day or time zone).
 
-JSON objects returned from the Bridge server will contain a `type` property with a unique type string for that kind of object. This may aid deserialization. However, these type properties do not need to be submitted back to the server (the Bridge server can deduce the JSON object's type from the API endpoint). The [Model Browser](/model-browser.html) shows the type of every object returned by the Bridge server. Including the type property in your JSON back to the server is harmless.
+JSON objects returned from the Bridge server will contain a `type` property with a unique type string for that kind of object. This may aid deserialization. However, these type properties do not need to be submitted back to the server (the Bridge server can deduce the JSON object's type from the API endpoint). The [Model Browser](/model-browser.html?url=/rest-api/{{site.data.versions.java_sdk}}/rest-api/swagger.json) shows the type of every object returned by the Bridge server. Including the type property in your JSON back to the server is harmless.
 
 ## Roles
 
