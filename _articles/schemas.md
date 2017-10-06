@@ -168,16 +168,26 @@ A schema revision can only be updated if the changes are backwards compatible. C
 
 * Schema name change.
 * min/maxAppVersion changes (see below).
-* Adding non-required fields.
-* Flipping required from true to false (but not vice versa).
+* Adding or re-ordering fields.
+* Upgrading a field from a legacy attachment field (blob, csv, json\_blob, or json\_table) to attachment\_v2 (but not vice versa).
+* Converting an int to a float (but not vice versa).
+* Converting a numeric type (int or float) to an inline\_json\_blob.
+* Converting a constrained string type (calendar\_date, float, inline\_json\_blob, int, time\_v2) to an unconstrained string (single\_choice, string), but not vice versa.
+* Converting between unconstrained string types (single\_choice or string).
+* Converting an int into a timestamp (but not vice versa).
+* Increasing the max length of a string (but not beyond 1000 characters).
+* Flipping required from true to false and vice versa.
 * Attachment metadata, such as fileExtension and mimeType.
 * Adding fields to multiChoiceAnswerList.
 * Flipping allowOtherChoices from false to true (but not vice versa).
 
 All other field changes are not compatible and require cutting a new schema revision. Common updates that are not compatible are (this is not an exhaustive list):
 
-* Changing a field type.
-* Changing a string field's maxLength, or changing its unboundedText.
+* Changing the schema type (from ios\_survey to ios\_data or vice versa).
+* Deleting a field.
+* Any other field type change.
+* Decreasing the max length of a string.
+* Flipping unboundedText from false to true or vice versa.
 
 ## Advanced Schema Attributes
 
@@ -199,11 +209,3 @@ Schemas can be linked to [Shared Modules](shared_modules.html). You generally do
 ### surveyGuid/CreatedOn
 
 Schemas can be linked to a Survey. You generally don't need to specify these yourself. Rather, Bridge will automatically create a schema from a survey when you publish the survey, and will fill in the surveyGuid (string) and surveyCreatedOn (ISO8601 timestamp) automatically.
-
-### published
-
-Schema revisions can be marked as published, by setting the published attribute to true. A published schema revision cannot be updated (but you can still bump the revision number and create a new revision).
-
-This is most useful when your schema is finalized and you want to ensure no further unintentional or untracked changes are made to it.
-
-Note that schemas do not need to be published to be made available to users.

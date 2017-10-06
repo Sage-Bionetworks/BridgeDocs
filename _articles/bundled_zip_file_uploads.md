@@ -45,7 +45,7 @@ Bundles must include a JSON file called info.json, which looks like:
 |Attribute Name|Description|
 |---|---|
 |files|(V1 Legacy only) List of files in this bundle (excluding info.json). Each entry contains a filename and a timestamp. The timestamp is a string in ISO8601 format and corresponds to when the health data measurement was recorded. If the data was measured over a long period of time, the timestamp should represent when the data was last measured and written. This information is used to generate the createdOn field in the health data record.<br /><br />Similar to timestamp data as described in [Schemas](schemas.html), apps should refrain from "canonicalizing" to a default timezone such as UTC, as this is a loss of data.|
-|createdOn|(V2 Generic only) Timestamp string in ISO8601 format, corresponding to when the health data measurement was recorded, similar to the timestamp in V1 Legacy "files" attribute.|
+|createdOn|Timestamp string in ISO8601 format, corresponding to when the health data measurement was recorded, similar to the timestamp in V1 Legacy "files" attribute.<br /><br />If both this attribute and "files" is present, this attribute takes precedence.|
 |dataFilename|(V2 Generic only) Name of file in the bundle that Bridge should treat as the primary data file for JSON attributes. For more information, see [V2 Generic Bundles](#v2-generic-bundles).|
 |format|Either "v1\_legacy" or "v2\_generic". If not specified, defaults to "v1\_legacy"|
 |item|This should be filled in with the schema ID corresponding to the data in this bundle.|
