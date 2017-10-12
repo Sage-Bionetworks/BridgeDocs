@@ -340,7 +340,7 @@ In addition, you can have supplemental files in your schema that you reference b
 
 To submit metadata in the upload API, simply create a file called metadata.json in your ZIP file and write your metadata as key-value pairs.
 
-In our example above, our metadata.json file contents would look like:
+If our study defines the metadata fields "startDateTime", "endDateTime", and "taskRunGuid", then our metadata.json file contents would look like:
 
 ```json
 {

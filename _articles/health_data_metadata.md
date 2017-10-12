@@ -1,5 +1,5 @@
 ---
-title: Synchronous Health Data Submission
+title: Health Data Metadata
 layout: article
 ---
 
