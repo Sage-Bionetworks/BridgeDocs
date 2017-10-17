@@ -12,8 +12,10 @@ request.addEventListener("load", function(response) {
     loadModel();
 });
 
+var path = document.head.querySelector("meta[name='api.path']").getAttribute("content");
+
 request.overrideMimeType("text/json; charset=utf-8");
-request.open("GET", document.location.search.split("url=")[1]);
+request.open("GET", path);
 request.send();
 
 marked.setOptions({gfm: true, tables: true});
