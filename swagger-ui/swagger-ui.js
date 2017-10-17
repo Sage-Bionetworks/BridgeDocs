@@ -3540,11 +3540,7 @@ SwaggerClient.prototype.build = function (mock) {
 
   var self = this;
 
-  if (this.spec) {
-    this.progress('fetching resource list; Please wait.');
-  } else {
-    this.progress('fetching resource list: ' + this.url + '; Please wait.');
-  }
+  this.progress('Fetching API data. Please wait.');
 
   var obj = {
     useJQuery: this.useJQuery,
