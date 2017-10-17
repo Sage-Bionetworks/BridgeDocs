@@ -75,3 +75,9 @@ After sign-up, when the user needs to sign-in again due to a session expiration,
 The [UserSessionInfo](#/UserSessionInfo) payload returned by the sign in process includes a `reauthToken` that can be sent to the [reauthentication endpoint](). The token is a one-time token that will be replaced when it is used to generate a new session for the client (that session includes a new token in order to chain these requests indefinitely). In effect, the `reauthToken` is like an auto-generated password that avoids the need for users to sign in again once we establish their identity. 
 
 As long as the application holds on to this reauthentication token, it will not need to re-involve the user in authentication. If the app loses this token, it will have to sign in again using its preferred authentication channel. In the case of email/password credentials, the app may be able to cache the credentials and sign in again without prompting the user. In the case of email-only and phone-only authentication, the app will need to involve the user.
+
+## Adding additional credentials
+
+It is useful and important to collect further credentials than the minimum necessary to sign in. For example, if you prompt your user to enter only an email address, you may subsequently collect a telephone number, or password. The same is true of other credentials.
+
+Additional credentials will make it possible for the user to authenticate with Bridge if a phone number is re-assigned (there are even rare examples where Yahoo and Microsoft have re-assigned email addresses that they did not believe were in use). In this situation, the user will want to change these credentials, but they will need another pathway to authenticate in order to make this change. Your app will also need to provide support for that alternative method of authentication. 
