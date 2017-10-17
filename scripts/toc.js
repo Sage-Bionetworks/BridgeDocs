@@ -6,10 +6,10 @@ if (container) {
         var level = parseInt(header.nodeName.substring(1), 10) - 2; 
 
         var a = document.createElement("a");
-        a.style.marginLeft = (level*15) + "px";
+        a.style.marginLeft = (level*25) + "px";
         a.style.display = "block";
         a.textContent = header.textContent;
-        a.href = "#n" + i;
+        a.href = "#" + header.id;
         container.appendChild(a);
 
         var up = document.createElement("a");
@@ -18,7 +18,5 @@ if (container) {
         up.style.float = "right";
         up.style.fontSize = "small";
         header.appendChild(up);
-
-        header.id = "n" + i;
     }
 }

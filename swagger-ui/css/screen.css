@@ -1478,12 +1478,12 @@
   color: #999999;
 }
 .swagger-section #message-bar {
-  min-height: 30px;
   text-align: center;
   padding-top: 10px;
   font-weight: bold;
   font-size: larger;
   color: #b22222;
+  line-height: 4;
 }
 .swagger-section .swagger-collapse:before {
   content: "-";
