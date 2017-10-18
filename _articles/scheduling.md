@@ -48,6 +48,24 @@ Intervals are described using the [ISO 8601 Durations](https://en.wikipedia.org/
 ```
 _Schedule this activity every 3 days at 7am and 3pm in the time zone of the user. Expire each task after 6 hours._
 
+### Sequenced activities
+
+Recurring activities can also be restricted to a sequence (a limited period of time) by adding the `sequencePeriod` property to a schedule, with an ISO 8601 period value. This can be used to model crossover studies, using `delay` values in different schedules to generate "cool down" periods between sequences of activities. 
+
+Like other scheduled activities, the sequence is scheduled from an initial event, like enrollment in the study. Sequences are inclusive of the start and exclusive of the end of the period. In the example given below, activies are scheduled on day 0, day 3, and day 6, but not day 9. This makes the math easier to calculate—you divide the `sequencePeriod` by the `interval` to get the number of days the activity will be scheduled.
+
+
+```json
+{
+    "scheduleType": "recurring",
+    "interval": "P3D",
+    "times": ["07:00", "15:00"],
+    "expires": "PT6H",
+    "sequencePeriod": "P9D"
+}
+```
+_Schedule this activity every 3 days at 7am and 3pm in the zone zone of the user, expiring each activity after six hours, and ending after 9 days, for a total of 6 activities, two on each of 3 days in the sequence._
+
 ### Persistent activities
 
 This form of activity is always in the user's list of scheduled activities. When the client updates the activity to indicate it is finished, a new one is immediately added to the list of scheduled activities. This useful for tasks such as "Send Us Feedback" if you wish to control this from the server.

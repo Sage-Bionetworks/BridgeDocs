@@ -81,3 +81,7 @@ As long as the application holds on to this reauthentication token, it will not 
 It is useful and important to collect further credentials than the minimum necessary to sign in. For example, if you prompt your user to enter only an email address, you may subsequently collect a telephone number, or password. The same is true of other credentials.
 
 Additional credentials will make it possible for the user to authenticate with Bridge if a phone number is re-assigned (there are even rare examples where Yahoo and Microsoft have re-assigned email addresses that they did not believe were in use). In this situation, the user will want to change these credentials, but they will need another pathway to authenticate in order to make this change. Your app will also need to provide support for that alternative method of authentication. 
+
+## Sign Out
+
+When the [sign out API](/swagger-ui/index.html#!/Authentication/signOut) is called, the client should include the `Bridge-Session` token with the current session token. This will delete the session and invalidate the reauthentication token.
