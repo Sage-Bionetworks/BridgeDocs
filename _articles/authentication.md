@@ -23,7 +23,7 @@ After verifying their email address, the user must manually sign in to the appli
 
 See [reauthentication](#reauthentication) below for how to refresh a session once it expires, without user intervention.
 
-**Note:** It is possible to reset the password on an account with no password, and set a password for that account. That account will then be able to sign in with an email and password, if there is any way to do so in your app or another user interface. There are three separate endpoints for the three forms of authentication, so this will not cause problems for email-only authentication calls. This is most likely to come up for developers who use their email address for a test account in the app, as well as to sign in to our administrative interface, the [Bridge Study Manager.](https://research.sagebridge.org/)
+**Note:** It is possible to reset the password on an account with no password, and set a password for that account. That account will then be able to sign in with an email and password, if there is any way to do so in your app or another user interface. This is most likely to come up for developers who use their email address both for a test account in the app, and to sign in to our administrative interface, the [Bridge Study Manager.](https://research.sagebridge.org/)
 
 ## Email-Only Authentication
 
@@ -84,3 +84,7 @@ Additional credentials will make it possible for the user to authenticate with B
 ## Sign Out
 
 When the [sign out API](/swagger-ui/index.html#!/Authentication/signOut) is called, the client should include the `Bridge-Session` token with the current session token. This will delete the session and invalidate the reauthentication token.
+
+## A Note on Sign Up Behavior
+
+On signing up for an account with Bridge, if the user provides an email address and email verification is enabled (`emailVerificationEnabled`), an email will be sent to the address with a link that will verify and activate the account. If your application exclusively uses phone- or email-based sign in, you may wish to disable this verification email since authenticating via either of these channels will automatically enable the account.
