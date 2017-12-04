@@ -3,7 +3,7 @@ Bridge (Sage Bionetworks)
 
 [![Build Status](https://travis-ci.org/Sage-Bionetworks/BridgeDocs.svg?branch=release)](https://travis-ci.org/Sage-Bionetworks/BridgeDocs)
 
-Bridge developer portal website.
+[Bridge developer portal website](https://developer.sagebridge.org/index.html).
 
 This is a jekyll-based site, see: https://jekyllrb.com/ for further instructions. To view the output of any changes, you can run the following command (Ruby and bundler must be installed), and then open a web browser:
 
