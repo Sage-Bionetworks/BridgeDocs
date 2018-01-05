@@ -57,7 +57,7 @@ Users can authenticate using only their phone number. The steps for this form of
 On sign up for the study, the following steps must be executed:
 
 1. The user signs up for an account, entering a telephone number (but no password) as part of the [SignUp](#/SignUp) payload using the [sign-up API](/swagger-ui/index.html#!/Authentication/signUp);
-2. The server will send an SMS messages with a code to enter into your application;
+2. The server will send an SMS message with a code to enter into your application;
 3. The user enters the code. The app must send the following information to the server:
     * <code>phone</code>&mdash;the user's phone number (the user many need to be prompted to enter the phone number, depending on the platform);
     * <code>study</code>&mdash;the study identifier of the study;
