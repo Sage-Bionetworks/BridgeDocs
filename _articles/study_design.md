@@ -55,11 +55,13 @@ Scheduled activities and consents can be selectively chosen for a participant ba
 
 The criteria that can be used for filtering are:
 
-* **The operating system and application version of a user's request**<br>Through the use of our REST client, your application will send an HTTP header to Bridge that includes your application version. We can tailor content based on this version.
+* **The operating system and application version of a user's request**<br>Through the use of our REST client, your application will send an HTTP header (the User-Agent header) to Bridge that will include your application version. We can tailor content based on this version.
 
 * **The data group tags assigned to a user**<br>Data group tags can be assigned to users to model any of a number of differences between users (anything short of information that would be identifying for an individual user, like an ID).
 
 * **The user's preferred language**<br>Information about the user's preferred language is sent in an HTTP header and saved as part of the user's profile. This language preference can be used to return localized content to a study participant.
+
+**Note:** If a public API (one that does not require authentication) performs filtering on the returned content, then only the information found in the User-Agent and Accept-Language headers will be used to filter. Currently the only API of this nature is a public API to retrieve an app configuration from the server. 
 
 Using this filtering, Bridge can model a few different use cases: 
 
