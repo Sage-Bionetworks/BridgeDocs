@@ -61,6 +61,8 @@ The criteria that can be used for filtering are:
 
 * **The user's preferred language**<br>Information about the user's preferred language is sent in an HTTP header and saved as part of the user's profile. This language preference can be used to return localized content to a study participant.
 
+**Note:** If a public API (one that does not require authentication) performs filtering on the returned content, then only the information found in the User-Agent and Accept-Language headers will be used to filter. Currently the only API of this nature is a public API to retrieve an app configuration from the server. 
+
 Using this filtering, Bridge can model a few different use cases: 
 
 * **Study Cohorts**<br>Individuals can be tagged with a data group during enrollment, and your study can filter consents, schedules, surveys and tasks based upon these cohorts. Cohorts can include control groups, underage participants, and more.
