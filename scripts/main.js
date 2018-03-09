@@ -17,6 +17,12 @@ for (var i=0; i < items.length; i++) {
         $("#acc").css({opacity: 1});
     }
 }
+// Some "meta" pages aren't in the navigation, so in that case, open the general
+// section so some navigation is showing. Flag these articles with nav: nav in the 
+// meta YML of the article.
+if (document.body.hasAttribute('nav')) {
+    $("nav div:nth-child(2)").addClass('active').prev('.title').addClass('active');
+}
 var items = document.body.querySelectorAll("table");
 for (var i=0; i < items.length; i++) {
     var item = items[i];
