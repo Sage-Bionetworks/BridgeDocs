@@ -15,7 +15,6 @@ for (var i=0; i < items.length; i++) {
         item.classList.add("active");
         $(item).closest('.content').addClass('active').prev('.title').addClass('active');
         $("#acc").css({opacity: 1});
-        foundNavItem = true;
     }
 }
 // Some "meta" pages aren't in the navigation, so in that case, open the general
