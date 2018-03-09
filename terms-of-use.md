@@ -1,6 +1,7 @@
 ---
 title: Bridge Server Evaluation Terms of Use
 layout: article
+nav: nav
 ---
 
 This Bridge Server Evaluation Terms of Use (“Terms of Use”) is between you (“Institution”) and Sage Bionetworks (“Sage”). As used herein, “you” refers to an individual or institution who has agreed to an Evaluation Agreement with Sage (“Evaluation Agreement”). Institution and Sage may be referred to individually as a “Party” and collectively as the “Parties.”

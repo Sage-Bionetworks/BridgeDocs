@@ -95,7 +95,7 @@ For clinical studies, a required consent is optional. Most customers disable con
 
 ### Upload Schemas
 
-Upload schemas describe how to export data in JSON format, from your app to a Synapse table. With the correct schema, you can upload your data in a way that makes it easier to search and process data within Synapse, our data repository platform. See [Upload Data Format](upload_data_format.html) for details.
+Upload schemas describe how to export data in JSON format, from your app to a Synapse table. With the correct schema, you can upload your data in a way that makes it easier to search and process data within Synapse, our data repository platform. See [Submitting Health Data](submitting_health_data.html) for details.
 
 ### Schedules
 
