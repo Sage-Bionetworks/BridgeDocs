@@ -50,7 +50,7 @@ A schema's JSON representation looks like:
 |version|Version number of the schema revision. Used for optimistic version control and detection of concurrent modification. Leave this blank when creating a new schema revision. When updating a schema revision, get the schema revision from the server, and submit the same version when you update to the server.|
 |fieldDefinitions|List of field definitions. For more info, see [Field Definitions](#field-definitions).|
 
-## <a name="field-definitions">Field Definitions</a>
+## Field Definitions
 
 A field definition looks like
 
@@ -162,7 +162,7 @@ Examples
 }
 ```
 
-## <a name="updating-schemas">Updating Schemas</a>
+## Updating Schemas
 
 A schema revision can only be updated if the changes are backwards compatible. Changes that are considered backwards compatible include:
 

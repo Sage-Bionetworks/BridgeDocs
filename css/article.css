@@ -19,21 +19,17 @@ header {
 h1, h2, h3, h4, h5, h6, .ui.message .ui.header {
     font-family: 'Dosis', 'Helvetica Neue', Arial, sans-serif !important;
     font-weight: 300;
-    color: rgba(0,0,0,0.5);
+    color: black;
 }
 h1 {
-    font-size: 2rem;
-    color: black;
+    font-size: 2.25rem;
 }
 h2 {
-    font-size: 1.75rem;
+    margin-top: 2rem;
+    font-size: 2rem;
 }
 h3, h4, h5, h6, .ui.message .ui.header {
-    font-size: 1.75rem;
-    color: #000054;
-}
-.ui.message .ui.header {
-    color: black;
+    font-size: 1.5rem;
 }
 body {
     overflow: hidden;
