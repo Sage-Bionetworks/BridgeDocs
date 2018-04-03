@@ -55,7 +55,7 @@ In the [Bridge Study Manager](https://research.sagebridge.org/), navigate to Upl
 
 Once you've filled in the settings, click "Save". Your study should now be configured to export its data to Synapse.
 
-## <a name="exporting-your-data">Exporting Your Data</a>
+## Exporting Your Data
 
 Bridge automatically exports your study's data to Synapse every night. This export runs nightly at 3am Pacific Local Time and is subject to change without notice. Bridge will export all data from the previous day, using midnight Pacific Local Time as the nightly cutoff.
 

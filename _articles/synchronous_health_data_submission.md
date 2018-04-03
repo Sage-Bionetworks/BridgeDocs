@@ -23,7 +23,7 @@ The schema field names should match the keys in your submitted health data. For 
 
 Then your schema field names should be "sports", "sleep", and "sleep_unit".
 
-## <a name="submitting-health-data">Submitting Health Data</a>
+## Submitting Health Data
 
 To submit health data, send an HTTP POST request to /v3/healthdata (or use your platform's SDK). Example request body:
 
