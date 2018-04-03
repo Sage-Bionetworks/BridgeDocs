@@ -29,7 +29,8 @@ h2 {
     font-size: 1.75rem;
 }
 h3, h4, h5, h6, .ui.message .ui.header {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
+    color: #000054;
 }
 .ui.message .ui.header {
     color: black;
