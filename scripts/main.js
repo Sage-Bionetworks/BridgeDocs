@@ -7,6 +7,7 @@ for (var i=0; i < items.length; i++) {
         if (/http[s]?\:/.test(href)) {
             iconify(item, "external");
             item.target = "_blank";
+            item.setAttribute('rel', 'noopener');
         } else if (/mailto\:/.test(href)) {
             iconify(item, "mail outline");
         }
