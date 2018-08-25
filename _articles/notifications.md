@@ -1,19 +1,23 @@
 ---
-title: Push Notifications
+title: Notifications
 layout: article
 ---
 
 <div id="toc"></div>
 
-Bridge provides support to send push notifications to individual participants, or to groups of participants interested in specific [notification topics](/#NotificationTopic). Your client application registers for notifications, and subscribes to the topics the user is interested in. Later when a researcher sends a notification, we use a topic's [Criteria](/#Criteria) to send the notification only to those users who meet the criteria.
+Bridge provides support to send notifications to individual participants, or to groups of participants interested in specific [notification topics](/#NotificationTopic). These topics can be either push notifications or SMS notifications. Your client application registers for notifications, and subscribes to the topics the user is interested in.
 
-## Configuring Notifications
+Additionally, researchers can create topics with [Criteria](/#Criteria), to send the notification only to those users who meet the criteria.
+
+## Push Notifications
+
+### Configuring Push Notifications
 
 Mobile operating system providers (Apple and Google) provide push notification services (APNS and GCM, respectively). Each service must be configured separately for your study, and then Bridge must be updated with some key information to send push notifications to your app. This configuration is the same regardless of how you use push notifications through Bridge, and only needs to be set up one time.
 
 Bridge engineers will work with your app developers to configure Bridge to send push notifications through the Bridge Study Manager. 
 
-## Registering for Notifications
+### Registering for Push Notifications
 
 After a user consents to receive push notifications via the mobile operating system, the system will notify your application and provide a unique *device identifier* (APNS calls this the *device token*, and GCM calls this the *registrationId*). 
 
@@ -31,44 +35,40 @@ Once registered, you will be able to [send a push notification to an individual 
     <p>A study has asked participants to provide genetic history in a survey. If the user qualifies, the study would like to offer a free DNA testing kit to the participant. In this context, it would be appropriate to contact the participant directly, either through email or through a notification for a free offer of the kit.</p>
 </div>
 
+## SMS Notifications
+
+To register for SMS Notifications, all you need is a phone number. You'll need to call the [Create Notification Registration API](/swagger-ui/index.html#!/_For_Consented_Users/createNotificationRegistration), and include the sms protocol and the phone number, with the international calling code. For example:
+
+```json
+{
+  "protocol":"sms",
+  "endpoint":"+14255550123"
+} 
+```
+
+Only consented participants can register for SMS notifications, and a participant can only register for SMS notifications with a phone number associated to their account.
+
 ## Notification Topics
 
-To send notifications to more than one user, you must [create some *notification topics*](/swagger-ui/index.html#!/_For_Developers/createNotificationTopic).
+To send notifications to more than one user, you must [create some *notification topics*](/swagger-ui/index.html#!/_For_Developers/createNotificationTopic). You must define a name and a short name for your topic. The name will be displayed in the Bridge Study Manager (as well as the short name). The short name is displayed in SMS notifications and must be 10 characters or less.
 
 Under *Push Notifications* in the Bridge Study Manager, developers can create one or more topics. We strongly suggest you create a general topic to apply to all users, but you may create as many additional topics as you need. Apps then subscribe to one or more topics in order to [receive topic notifications](/swagger-ui/index.html#!/_For_Researchers/sendNotificationToTopic).
 
 Topic notifications can be sent from the Bridge Study Manager by navigating to the topic under *Push Notifications*.
 
-### Subscription options
+**NOTE:** If a device is unregistered with Bridge, or if a participant withdraws consent, all topic subscriptions are deleted as well.
 
-Your app must then [subscribe to any topic for which that user will receive notifications](/swagger-ui/index.html#!/_For_Consented_Users/subscribeToTopics). The topic GUIDs can be hard-coded in your application, but it is more advisable to [retrieve them from the server](/swagger-ui/index.html#!/_For_Consented_Users/getTopicSubscriptions) or from the user's session, which also contains the list of [SubscriptionStatus](/#SubscriptionStatus) records. 
+There are two types of notification topics: manual subscription topics and criteria-managed topics.
 
-**Users can subscribe to a topic even if they do not meet the criteria. If at a later time, they meet the criteria, they will receive notifications for that topic.**
+### Manual Subscription Topics
 
-If a device is unregistered with Bridge, all topic subscriptions are deleted as well.
+Manual subscription topics are notification topics that do not have criteria associated with them. Your app must [subscribe to any topic for which that user will receive notifications](/swagger-ui/index.html#!/_For_Consented_Users/subscribeToTopics). **NOTE:** When you call this API, you must specify *all* topics that the user should be subscribed to. Any manual subscription topics not included in this list will be unsubscribed. **NOTE:** Criteria-Managed Topics are not affected.
 
-Client developers can adopt one of two approaches to these subscriptions.
+The topic GUIDs can be hard-coded in your application, but it is more advisable to [retrieve them from the server](/swagger-ui/index.html#!/_For_Consented_Users/getTopicSubscriptions) or from the user's session, which also contains the list of [SubscriptionStatus](/#SubscriptionStatus) records.
 
-#### Option #1: Subscribe to all topics and let the server route notifications
+When the user gives permission to receive remote notifications, register their device and set up some default topic subscriptions (see below). In your app, present the list of topics to the user as a set of preferences to receive different types of notifications, so the user can turn notifications on or off for each topic.
 
-When the user gives permission to receive remote notifications, register their device with Bridge and subscribe to all notification topics. 
-
-In order for a user to receive a notification, they must meet the criteria defined for the topic. The user disables all notifications by deleting their registration with the Bridge server. They cannot manipulate individual topics separately. This is the simplest and most straightforward way to implement notifications.
-
-<div class="ui message">
-    <div class="ui header">Example</div>
-    <p>In a bilingual study, you could create a "General English" topic requiring the user's language to be "en" and "General Spanish" topic requiring the user's language to be "es".
-
-    <p>Your app could use subscribe the user to both topics. When sending notifications, your research manager would send an English message to the English channel and a Spanish message to the Spanish channel. Depending on the user's chosen language, they would receive one of the two notifications, in their chosen language.
-
-    <p>The advantage of this approach is that if the participant ever changes their language, they would immediately begin receiving the notifications in that language.
-</div>
-
-#### Option #2: Subscribe only to the topics chosen by the user
-
-When the user gives permission to receive remote notifications, register their device and set up some default topic subscriptions (see below). In your app, present the list of topics to the user as a set of preferences to receive different types of notifications, so the user can turn notifications on or off for each topic. 
-
-These subscriptions are persisted with the server. In order for a user to receive a notification, they must have subscribed to the topic, *and* they must meet any criteria defined for the topic. 
+These subscriptions are persisted with the server. In order for a user to receive a notification, they must have subscribed to the topic.
 
 During the first time onboarding experience, you can choose one of several defaults:
 
@@ -86,16 +86,35 @@ During the first time onboarding experience, you can choose one of several defau
     <p>Note that if a new topic is added later, no user will initially be subscribed to it. You will need to subscribe them in an app update, or notify users through a general topic channel that there is a new kind of notification available to them.
 </div>
 
-### Filtering Topic Notifications
+### Criteria-Managed Topics
 
-As previously mentioned, each topic has an optional set of [Criteria](/#Criteria) associated with it. If criteria are present, only those subscribed devices where the user meets the criteria will receive the notification.
+Criteria-Managed Topics are topics that are managed by criteria, such as the participant's language preferences and data group. When the participant first registers for notifications, or when their criteria change, Bridge server automatically subscribes the participant to matching topics. **NOTE:** Notification topics by app version is not yet supported. **NOTE:** Manual subscription topics are unaffected and must be subscribed to or unsubscribed from manually.
 
-Filtering occurs on top of subscriptions, so when using criteria to filter, for a participant to receive a topic notification, they must have: 
+<div class="ui message">
+    <div class="ui header">Example</div>
+    <p>In a bilingual study, you could create a "General English" topic requiring the user's language to be "en" and "General Spanish" topic requiring the user's language to be "es".
 
-1. registered their device for notifications; 
-2. subscribed to the topic in question; and 
-3. they must match the criteria assigned to the topic.
+    <p>Your app could use subscribe the user to both topics. When sending notifications, your research manager would send an English message to the English channel and a Spanish message to the Spanish channel. Depending on the user's chosen language, they would receive one of the two notifications, in their chosen language.
 
-## Push Notification Content
+    <p>The advantage of this approach is that if the participant ever changes their language, they would immediately begin receiving the notifications in that language.
+</div>
 
-The content of a push notification is defined by the [NotificationMessage](/#NotificationMessage) object. It is currently very simple, but will be augmented over time.
+## Notification Content
+
+The content of a notification is defined by the [NotificationMessage](/#NotificationMessage) object. It is currently very simple, but will be augmented over time.
+
+### SMS Notification Content
+
+SMS notifications are in the form:
+
+```
+[short name]> [message]
+```
+
+For example, if your topic has name "Monthly Reminder Topic" and short name "Reminder", and you send a notification with subject "Monthly Reminder" and message "This is your monthly reminder", then the SMS notification will appear as
+
+```
+Reminder> This is your monthly reminder
+```
+
+Note that the notification subject is not used for SMS notifications.
