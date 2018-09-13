@@ -168,55 +168,16 @@ For detailed usage, see code file `BridgeSDK/SBBBridgeInfo.m`
 |appUpdateURL|YES|YES|URL for updating the app|
 |appGroupIdentifier|YES|YES|The app group identifier under your target's Capabilities in Xcode if you want BridgeSDK to use that shared space.|
 
+### 6. Set up Sign-in and Main view controller
+
+[mPower 2](https://github.com/Sage-Bionetworks/mPower-2-iOS "mPower 2") is currently the only app that is using both phone SMS and external ID sign in. This application is structured with two target apps within it. `mPower` is the app that has been released to the Apple App Store. `mPowerTestApp` is used for unit testing, to allow UI testing of different permutations of a complicated activity schedule, and to test the `MotorControl` framework, which is designed as a stand-alone framework of active tasks that can be used independantly of either the containing application or Bridge services.
+
+It is recommended to structure your app using a "module" structure for the active tasks to facilitate using these validated tasks without requiring integration with Sage Bridge and Synapse services.
+
+To set up and use Bridge schedules and upload schemas, your view controllers will need to use a `SBAScheduleManager` instance or a `SBAReportManager` instance as the data source. See `TaskBrowserViewController` in the mPower project for an example.
 
 **- TODO: syoung 09/13/2018 Continue editing**
 
-
-### 6. Setup Onboarding
-
-The sample application shows an example of Onboarding that includes using a `StudyOverview` storyboard and 
-the json and html files used to show onboarding and consent. This includes:
-* \BridgeAppSDKSample\Resources\HTML\consent
-* \BridgeAppSDKSample\Resources\JSON\EligibilityRequirements.json
-* \BridgeAppSDKSample\Resources\JSON\Consent.json
-* \BridgeAppSDKSample\Resources\JSON\Onboarding.json
-
-However, to just get started, you might find it simpler to do the following:
-
-````
-//
-//  AppDelegate.swift
-//  GettingStarted
-//
-
-import UIKit
-import BridgeAppSDK
-
-@UIApplicationMain
-class AppDelegate: SBAAppDelegate {
-    
-    override func showOnboardingViewController(animated: Bool) {
-        
-        // Add consent signature. This will allow the user to be consented via login
-        // without going through the consent process. DO NOT USE IN PRODUCTION CODE!!!
-        currentUser.consentSignature = SBAConsentSignature(identifier: "signature")
-        
-        let loginStep = SBALoginStep(identifier: "login")
-        let task = SBANavigableOrderedTask(identifier: "login", steps: [loginStep])
-        let taskViewController = SBATaskViewController(task: task, taskRun: nil)
-        
-        // present the onboarding
-        taskViewController.delegate = self
-        self.transition(toRootViewController: taskViewController, state: .onboarding, animated: false)
-    }
-}
-````
-
-### 7. Setup Main
-
-The sample app includes a `Main` storyboard that has tabs showing what is currently supported within BridgeAPPSDK. 
-To get started with showing activities, you will want to include `ActivityTableViewController.swift` and it's 
-associated view controller in the storyboard.
 
 ## Bridge Survey Setup
 
@@ -231,12 +192,6 @@ in the upper right corner. Give your survey a name and identifier and then add a
 Because there is no auto-save of a survey that you are currently editing, you should tap the "Save" button 
 to save your progress after each step that you add to the survey.
 
-````
-Note: If the last step is an "Information Only" instruction step, then the default
-behavior defined in the SBASurveyFactory is to use a copyright link for the text
-entered as the prompt detail.
-````
-
 #### b. Save and Publish
 
 Tap the "Save" button to ensure that your progress has been saved. Then navigate to the "History & Publication" tab and tap the "Publish" button. Without this step, your survey will not be displayed in the scheduling interface. For a long survey, you should publish the survey intermittently so as to have a record of your changes.
@@ -247,103 +202,69 @@ Navigate to the "Scheduling" menu item. Tap the "New Schedule Plan" button in th
 the schedule, and include one or more activities. In this case, you will need to set "Take Survey" drop-down 
 with the survey you have just published. Remember to then tap the "Save" button to save your schedule.
 
+#### d. Add the Survey to the AppConfig
+
+Navigate to the "App Configs" and add the survey to the app config for your application. You can also add information to the clientData JSON blob, and add schemas that are used by your application to upload task data.
+
 ### 2. Within your App
 
-Using only the standard survey question types provided via the Bridge UI, no further actions are required. However, if you do wish to customize the Bridge surveys, you will need to subclass `SBAScheduledActivityManager` and override the methods as required. If you wish to replace a step with a custom step, you will need to subclass `SBASurveyFactory` and override the `createFactory()` method. If you wish to replace a step view controller with a custom class you will need to implement the `taskViewController(viewControllerFor:)` method.
+Using only the standard survey question types provided via the Bridge UI, no further actions are required. However, if you do wish to customize the Bridge surveys, you will need to implement the `taskViewController(_ taskViewController: UIViewController, viewControllerForStep stepModel: RSDStepViewModel) -> UIViewController?` method of the `RSDTaskViewControllerDelegate` to return a custom step view controller.
 
-## ResearchKit Task Setup
+## Research Task Setup
 
-The simplest way to get started with using `ResearchKit` defined task modules in your application is to 
-ask the Bridge team to copy the appropriate `Data Schema` into your Bridge research project. This guide will 
-use the memory task as an example.
+To add a custom active task, you will need to set up JSON files defining the task, include factory overrides for any custom steps, and include a storyboard or nib for any custom view controllers. See `MotorControl` within the mPower project for an example. Additionally, you will need to set up the task and schema for uploading to synapse and scheduling the task. 
 
-The spatial span memory task is included in [ResearchKit](https://github.com/Sage-Bionetworks/ResearchKit.git "ResearchKit")
-as a class function defined in `ORKOrderedTask`.
-
-````
-[ORKOrderedTask spatialSpanMemoryTaskWithIdentifier:(NSString *)identifier
-                                 intendedUseDescription:(nullable NSString *)intendedUseDescription
-                                            initialSpan:(NSInteger)initialSpan
-                                            minimumSpan:(NSInteger)minimumSpan
-                                            maximumSpan:(NSInteger)maximumSpan
-                                              playSpeed:(NSTimeInterval)playSpeed
-                                               maximumTests:(NSInteger)maximumTests
-                                 maximumConsecutiveFailures:(NSInteger)maximumConsecutiveFailures
-                                      customTargetImage:(nullable UIImage *)customTargetImage
-                                 customTargetPluralName:(nullable NSString *)customTargetPluralName
-                                        requireReversal:(BOOL)requireReversal
-                                                options:(ORKPredefinedTaskOption)options]
-````
-
-To include this task within an application that uses BridgeAppSDK, you will need to do the following. 
+The following example instructions use the "Tapping" test as an example.
 
 ### 1. Open the [Sage Researcher UI](https://research.sagebridge.org "Researcher UI")
 
 #### a. Add a `Task Identifier`
 
-Navigate to the "Task Identifiers" menu item using the left menu of the Bridge Study Manager UI. Enter "Memory Activity" 
-and tap the "Add" button. Then save by tapping the "Save" button.
+Navigate to the "Task Identifiers" menu item using the left menu of the Bridge Study Manager UI. Enter "Tapping" 
+and tap the "Add" button. Then save by tapping the "Save" button. **Use only alphanumeric characters in your identifiers!**
 
-#### b. Add a `Data Schema`
+#### b. Add a `Upload Schema`
 
-Navigate to the "Data Schema" menu item using the left menu. Tap on the "New Schema" button. Enter "Memory Activity" as
+Navigate to the "Upload Schemas" menu item using the left menu. Tap on the "New Schema" button. Enter "Tapping" as
 both the `Name` and `Identifier` for the task schema. Then add the fields that map to the results for this schema. 
 Be sure to tap the "Save" button to save your schema before navigating away from this tab.
 
-
-To understand how the mapping works, you will need to go spelunking in `ORKResults+ResultsExtension.swift` which
-includes the code for mapping an `ORKResult` into a Bridge schema.  For the memory task, the schema looks like this:
+To understand how the mapping works, you will need to go spelunking by searching out `RSDArchivable`. This is a protocol that is used to indicate which results should be archived and uploaded. For example, the `Tapping` schema would include the archived result from the motion sensors, the `MCTTappingResultObject`, and all `RSDAnswerResult` objects included in the top-level `RSDTaskResult`. The schema looks like this:
 
 |Field|Type|
 |---|---|
-|cognitive_memory_spatialspan.json.MemoryGameOverallScore|Integer|
-|cognitive_memory_spatialspan.json.MemoryGameNumberOfGames|Integer|
-|cognitive_memory_spatialspan.json.MemoryGameNumberOfFailures|Integer|
-|cognitive_memory_spatialspan.json.MemoryGameGameRecords|JSON Table|
-|metadata.json.scheduledActivityGuid|String|
-|metadata.json.taskRunUUID|String|
-|metadata.json.startDate|Date & Time/Timestamp|
-|metadata.json.endDate|Date & Time/Timestamp|
+|answers.handSelection|String|
+|answers.medicationTiming|String|
+|right_motion.json|Attachment|
+|left_motion.json|Attachment|
+|right_tapping.samples|Attachment|
+|left_tapping.samples|Attachment|
 
-In this case, "cognitive_memory_spatialspan" is the identifier for the `ORKStepResult` and `.json` is the 
-file extension for the dictionary representation of the results. The json dictionary contains keys for 
-each of the included fields (See the `ORKResults+ResultsExtension.swift` code file). The metadata is added
-by default to any `SBAActivityArchive`.
+The "answers" file is a JSON dictionary with a mapping of all the `RSDAnswerResult` objects where `identifier` is the key and 
+`value` is the value. The "right_motion.json" file is the motion sensor recording for the right hand and "left_motion.json" is 
+the motion sensor recording for the left hand. The "right_tapping.samples" and "left_tapping.samples" fields are defined by 
+the `MCTTappingResultObject` archive where a JSON dictionary file is created for "right_tapping" and "left_tapping" and the 
+"samples" is a key within that dictionary.
 
 #### c. Add a `Schedule`
 
 Navigate to the "Scheduling" menu item. Tap the "New Schedule Plan" button in the upper right. Assign a label for
 the schedule, and include one or more activities. In this case, you will need to set "Do Task" with the selected
-task as "Memory Activity". Remember to then tap the "Save" button to save your schedule. 
+task as "Tapping". Remember to then tap the "Save" button to save your schedule. 
 
-### 2. Map the identifiers in the `BridgeInfo.plist` file
+### 2. Map the identifiers in the App Config
 
-#### a. Add the `Task Identifier` to the `taskMapping` Array
+#### a. Add the `Task Identifier` to the `clientData`
 
-Add a `Dictionary` to the `taskMapping` Array with the following fields:
-|Key|Type|Value|
-|---|---|---|
-|taskIdentifier|String|Memory Activity|
-|taskType|String|memory|
+By default, for schedules that use a "Task Identifier", the schedule manager will look in the `SBABridgeConfiguration` for the 
+mapping to find the task. The default is to look for a resource file in the main bundle with the same name as the task. For a 
+more complicated set up, you can either add the task to the bridge configuration in code or by adding a JSON blob to the 
+client data. See the mPower `DataSourceManager` for an example of a hard coded mapping. See `SBAActivityMappingObject` for the 
+JSON schema for setting up client data for download from the AppConfig.
 
-The `taskType` field maps to values defined by the `SBAActiveTaskType` enum. Alternatively, you can use a 
-`resourceName` key to point to a json resource file or *only* include the `taskIdentifier` which maps to 
-the `Task Identifier` that you previously defined through the Researcher UI. If you do not include a 
-resource or task type, then you must override 
+#### b. Add the "Schema Revision" to the "Schemas (Tasks)" in the App Config
 
-````
-open func createTask(for schedule: SBBScheduledActivity) -> 
-    (task: ORKTask?, taskRef: SBATaskReference?)
-````
-in your application's subclass of the `SBAScheduledActivityManager`.
-
-#### b. Add the `Schema Revision` to the `schemaMapping` Array
-
-Add a `Dictionary` to the `schemaMapping` Array with the following fields:
-|Key|Type|Value|
-|---|---|---|
-|schemaIdentifier|String|Memory Activity|
-|schemaRevision|Number|The version of the schema shown in upper right of the schema|
+Navigate to the "App Config" menu item using the left menu of the Bridge Study Manager UI. Select the app configuration for your application. Under the list of schemas, add the schema and set the revision number. Hit the "Save" button to save. 
 
 ## Conclusion
 
