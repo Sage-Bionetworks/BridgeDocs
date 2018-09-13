@@ -4,9 +4,9 @@ layout: article
 ---
 
 These instructions are intended to guide you through setting up an iOS app that 
-uses [BridgeAppSDK](https://github.com/Sage-Bionetworks/BridgeAppSDK.git "BridgeAppSDK") 
+uses [BridgeApp](https://github.com/Sage-Bionetworks/BridgeApp-Apple-SDK.git "BridgeApp") 
 to link [BridgeSDK](https://github.com/Sage-Bionetworks/Bridge-iOS-SDK.git "BridgeSDK") 
-with [ResearchKit](https://github.com/Sage-Bionetworks/ResearchKit.git "ResearchKit").
+with [SageResearch](https://github.com/Sage-Bionetworks/SageResearch.git "SageResearch").
 This is not intended as a full guide to building iOS applications, but only as a guide
 to step your through the more convoluted parts of initial setup.  This guide is a work-in-progress
 and will be updated as functionality is added by the Bridge team to support shared tasks and 
@@ -16,35 +16,45 @@ activities.
 
 ### 1. Create a new project
 
-It is better to start with a new project rather than attempt to modify the sample app that is included 
-with ResearchKit or BridgeAppSDK directly. This is for two reasons. First, these projects are *not* setup
-to be able to release a production iOS app to the App Store or as an Enterprise App. Second, you cannot
-then save your changes to github because these projects are read-only *examples*.
+It is better to start with a new project rather than attempt to modify the sample apps that are included 
+with [SageResearch](https://github.com/Sage-Bionetworks/SageResearch.git "SageResearch") or 
+[BridgeApp](https://github.com/Sage-Bionetworks/BridgeApp-Apple-SDK.git "BridgeApp") directly. This is for two reasons. 
+First, these projects are *not* set up to be able to release a production iOS app to the App Store or as an 
+Enterprise App. Second, you cannot then save your changes to github because these projects are read-only 
+*examples*.
 
 ### 2. Add Capabilities
 
 You will need to add Capabilities for Keychain Sharing as well as certain background modes. Most projects
 that use Bridge are set up with the following:
 
-* Keychain Sharing - The login information is saved to the keychain. Applications that use app extensions
-will need to setup the same keychain service and access group for all applications that use the shared login.
+* Keychain Sharing - The login information is saved to the keychain. Your application will need to set up a 
+shared keychain `org.sagebase.Bridge` so that [BridgeSDK](https://github.com/Sage-Bionetworks/Bridge-iOS-SDK.git "BridgeSDK") 
+can manage saving and storing the login credentials in the keychain.
 
-* Background Modes - Some [ResearchKit](https://github.com/Sage-Bionetworks/ResearchKit.git "ResearchKit")
-tasks use background audio (to allow for spoken instructions) or location updates (6 minute walking task).
-Additionally, uploading task and survey results via [BridgeSDK](https://github.com/Sage-Bionetworks/Bridge-iOS-SDK.git "BridgeSDK")
-is done in the background.
+* Background Modes - Some [SageResearch](https://github.com/Sage-Bionetworks/SageResearch.git "SageResearch")
+tasks use background audio (to allow for spoken instructions) or location updates. Additionally, uploading task 
+and survey results via [BridgeSDK](https://github.com/Sage-Bionetworks/Bridge-iOS-SDK.git "BridgeSDK") is done 
+in the background.
 
-* HealthKit - [ResearchKit](https://github.com/Sage-Bionetworks/ResearchKit.git "ResearchKit") uses HealthKit
-(if available) for certain surveys and it is also commonly used by research studies to gather information 
-such as step count.
+* App Groups - The app groups allows for shared `UserDefaults` and `CoreData`. If setting up an app group, also include the `appGroupIdentifier` key in the `BridgeInfo-private.plist` file.
+
+* Associated Domains - If your app uses phone or email based sign-in with app links, you will need to specify whatever domain you are intercepting and the SMS/email sign-in messages would need to format the link with that domain.
+
+* HealthKit - If your app accesses `HealthKit` data. 
+**For `HealthKit` data that is required such as demographic information, this should be stored in the user's Bridge profile for use by researchers as well as for use by your application in case the user does *not* given your application authorization to access `HealthKit`.**
 
 ### 3. Add permissions to the Info.plist
 
-Certain [ResearchKit](https://github.com/Sage-Bionetworks/ResearchKit.git "ResearchKit") tasks require 
-user permissions. These permissions often require adding an intended usage description to the Info.plist
-file that is include in your application by default. The most common permissions used by research apps 
-can be setup using the `SBAPermissionsManager` with the following mapping of `SBAPermissionTypeIdentifier`
-to the required keys in the Info.plist. A full list of the required privacy permission keys is available 
+Many active tasks require user authorization in order to gather data from the phone's sensors or HealthKit. 
+
+For certain types of permissions, you can use 
+[RSDStandardPermissionsStep](http://researchkit.org/SageResearch/Documentation/Research/Protocols/RSDStandardPermissionsStep.html) 
+as a starting point for setting up the permissions required by your application.
+
+Typically, requesting authorization will be handled by the OS with a pop-up alert. You are required to include a description 
+that will appear in this alert to describe how, why, and when the phone's sensors are being accessed. A full list of the 
+required privacy permission keys is available 
 [here](https://developer.apple.com/library/content/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html "Cocoa Keys") .
 
 |SBAPermissionTypeIdentifier|Xcode Info.plist Name|
@@ -68,34 +78,34 @@ The Main storyboard should only be displayed to a signed in user.
 This [link](https://help.github.com/articles/adding-an-existing-project-to-github-using-the-command-line/ "Add Project to Github") 
 has instructions for adding an existing project via the command line.
 
-### 2. Adding [BridgeAppSDK](https://github.com/Sage-Bionetworks/BridgeAppSDK.git "BridgeAppSDK") as a submodule
+### 2. Adding [BridgeApp](https://github.com/Sage-Bionetworks/BridgeApp-Apple-SDK.git "BridgeApp") as a submodule
 This [link](https://github.com/blog/2104-working-with-submodules "Working with Submodules") 
 gives a good overview of working with submodules.  
 
-[BridgeAppSDK](https://github.com/Sage-Bionetworks/BridgeAppSDK.git "BridgeAppSDK") is setup to include
+[BridgeApp](https://github.com/Sage-Bionetworks/BridgeApp-Apple-SDK.git "BridgeAppSDK") is setup to include
 pointers to the submodule commits for all included frameworks that it references so you do not need to 
-add those submodules separately. To do this, you will need to add the submodule for BridgeAppSDK and then
+add those submodules separately. To do this, you will need to add the submodule for BridgeApp and then
 update the submodules that it references.
 
 ````
-git submodule add https://github.com/syoung-smallwisdom/BridgeAppSDK.git BridgeAppSDK
-cd BridgeAppSDK/
+git submodule add https://github.com/Sage-Bionetworks/BridgeApp-Apple-SDK.git BridgeApp-Apple-SDK
+cd BridgeApp-Apple-SDK/
 git submodule update --init --recursive
 cd ..
 ````
 
 ## Bridge Setup
 
-### 1. Add BridgeAppSDK.xcodeproj to your Xcode project
+### 1. Add BridgeApp.xcodeproj to your Xcode project
 
 Highlight the `Frameworks` group within your Xcode project. Select `Add Files to...` 
-to open a file selection dialog. Select all the projects that are required by BridgeAppSDK:
+to open a file selection dialog. Select all the projects that are required by BridgeApp:
 
-* `\BridgeAppSDK\BridgeAppSDK.xcodeproj` 
-* `\BridgeAppSDK\CMSSupport\openssl\openssl.xcodeproj`
-* `\BridgeAppSDK\ResearchKit\ResearchKit.xcodeproj`
-* `\BridgeAppSDK\BridgeSDK\BridgeSDK.xcodeproj`
-* `\BridgeAppSDK\ZipZap\ZipZap.xcodeproj`
+* `\BridgeApp\BridgeApp.xcodeproj` 
+* `\BridgeApp\BridgeSDK\BridgeSDK.xcodeproj`
+* `\BridgeApp\Research\Research.xcodeproj`
+* `\BridgeApp\ResearchUI\ResearchUI.xcodeproj`
+
 
 ### 2. Add each Framework as an Embedded Binary
 
@@ -120,7 +130,8 @@ from within the subclass.
 //
 
 import UIKit
-import BridgeAppSDK
+import BridgeApp
+import BridgeSDK
 
 @UIApplicationMain
 class AppDelegate: SBAAppDelegate {
@@ -139,30 +150,27 @@ your Xcode project.
 
 ### 5. Add `BridgeInfo.plist` (required) and `BridgeInfo-private.plist` (optional)
 
-Find the `BridgeInfo.plist` file that is included in `BridgeAppSDKSample`. Copy/paste the file into 
+Find the `BridgeInfo.plist` file that is included in `BridgeAppExample`. Copy/paste the file into 
 your project support files. Remove or edit the keys in this file to include those required by your 
 application. If your project is intended to be open source, you will want to include a file 
 `BridgeInfo-private.plist` that points to those fields that should be kept private. The private 
-plist will overwrite any fields included in the open source version of the file. `BridgeAppSDKSample`
+plist will overwrite any fields included in the open source version of the file. `BridgeAppExample`
 does not include a private plist so that it can be run from the simulator. The info included in this
 file is used defined the mapping to the [Sage Researcher UI](https://research.sagebridge.org "Researcher UI").
-For detailed usage, see code file `SBABridgeInfo.swift`
+For detailed usage, see code file `BridgeSDK/SBBBridgeInfo.m`
 
 |Key|Private|Optional|Description|
 |---|---|---|---|
 |studyIdentifier|YES|NO|"The identifier for this study" shown in "Settings -> General"|
 |certificateName|YES|NO|The name of the CMS public key pem file|
-|cacheDaysAhead|NO|YES|The number of days ahead to cache of upcoming scheduled activities|
-|cacheDaysBehind|NO|YES|The number of days behind to cache of completed and expired scheduled activities|
-|emailForLoginViaExternalId|YES|YES|The "Support email" shown in "Settings -> Email"|
-|newsfeedURL|YES|YES|The url for a blogspot newsfeed (WIP)|
-|logoImageName|NO|YES|The `imageName` for the app logo|
+|cacheDaysAhead|NO|NO|The number of days ahead to cache of upcoming scheduled activities|
+|cacheDaysBehind|NO|NO|The number of days behind to cache of completed and expired scheduled activities|
 |appUpdateURL|YES|YES|URL for updating the app|
-|keychainService|YES|YES|Keychain-protected properties will be stored in the keychain service with the given name|
-|keychainAccessGroup|YES|YES|Keychain-protected properties will be stored with this access group|
-|permissionTypes|NO|YES|Array of permission types. The included values are used by the `SBAPermissionObjectTypeFactory` to create `SBAPermissionObjectType` model objects for each required permission.|
-|schemaMapping|NO|YES|Mapping of the schema identifier for each task to the schema revision|
-|taskMapping|NO|YES|Mapping of task identifiers to included tasks defined either within your app or ResearchKit|
+|appGroupIdentifier|YES|YES|The app group identifier under your target's Capabilities in Xcode if you want BridgeSDK to use that shared space.|
+
+
+**- TODO: syoung 09/13/2018 Continue editing**
+
 
 ### 6. Setup Onboarding
 
