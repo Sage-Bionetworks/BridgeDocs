@@ -42,7 +42,7 @@ in the background.
 * Associated Domains - If your app uses phone or email based sign-in with app links, you will need to specify whatever domain you are intercepting and the SMS/email sign-in messages would need to format the link with that domain.
 
 * HealthKit - If your app accesses `HealthKit` data. 
-**For `HealthKit` data that is required such as demographic information, this should be stored in the user's Bridge profile for use by researchers as well as for use by your application in case the user does *not* given your application authorization to access `HealthKit`.**
+**For `HealthKit` data that is required such as demographic information, this should be stored in the user's Bridge profile for use by researchers as well as for use by your application in case the user does *not* give your application authorization to access `HealthKit`.**
 
 ### 3. Add permissions to the Info.plist
 
@@ -154,7 +154,7 @@ Find the `BridgeInfo.plist` file that is included in `BridgeAppExample`. Copy/pa
 your project support files. Remove or edit the keys in this file to include those required by your 
 application. If your project is intended to be open source, you will want to include a file 
 `BridgeInfo-private.plist` that points to those fields that should be kept private. The private 
-plist will overwrite any fields included in the open source version of the file. `BridgeAppExample`
+plist will override any fields included in the open source version of the file. `BridgeAppExample`
 does not include a private plist so that it can be run from the simulator. The info included in this
 file is used defined the mapping to the [Sage Researcher UI](https://research.sagebridge.org "Researcher UI").
 For detailed usage, see code file `BridgeSDK/SBBBridgeInfo.m`
@@ -170,14 +170,11 @@ For detailed usage, see code file `BridgeSDK/SBBBridgeInfo.m`
 
 ### 6. Set up Sign-in and Main view controller
 
-[mPower 2](https://github.com/Sage-Bionetworks/mPower-2-iOS "mPower 2") is currently the only app that is using both phone SMS and external ID sign in. This application is structured with two target apps within it. `mPower` is the app that has been released to the Apple App Store. `mPowerTestApp` is used for unit testing, to allow UI testing of different permutations of a complicated activity schedule, and to test the `MotorControl` framework, which is designed as a stand-alone framework of active tasks that can be used independantly of either the containing application or Bridge services.
+[mPower 2](https://github.com/Sage-Bionetworks/mPower-2-iOS "mPower 2") is currently the only app that is using both phone SMS and external ID sign in. This application is structured with two target apps within it. `mPower2` is the app that has been released to the Apple App Store. `mPower2TestApp` is used for unit testing, to allow UI testing of different permutations of a complicated activity schedule, and to test the `MotorControl` framework, which is designed as a stand-alone framework of active tasks that can be used independently of either the containing application or Bridge services.
 
-It is recommended to structure your app using a "module" structure for the active tasks to facilitate using these validated tasks without requiring integration with Sage Bridge and Synapse services.
+We recommend that you structure your app using a "module" structure for the active tasks to facilitate using these validated tasks without requiring integration with Sage Bridge and Synapse services.
 
-To set up and use Bridge schedules and upload schemas, your view controllers will need to use a `SBAScheduleManager` instance or a `SBAReportManager` instance as the data source. See `TaskBrowserViewController` in the mPower project for an example.
-
-**- TODO: syoung 09/13/2018 Continue editing**
-
+To set up and use Bridge schedules and upload schemas, your view controllers will need to use a `SBAScheduleManager` instance or a `SBAReportManager` instance as the data source. See `TaskBrowserViewController` in the mPower2 project for an example.
 
 ## Bridge Survey Setup
 
@@ -212,7 +209,7 @@ Using only the standard survey question types provided via the Bridge UI, no fur
 
 ## Research Task Setup
 
-To add a custom active task, you will need to set up JSON files defining the task, include factory overrides for any custom steps, and include a storyboard or nib for any custom view controllers. See `MotorControl` within the mPower project for an example. Additionally, you will need to set up the task and schema for uploading to synapse and scheduling the task. 
+To add a custom active task, you will need to set up JSON files defining the task, include factory overrides for any custom steps, and include a storyboard or nib for any custom view controllers. See `MotorControl` within the mPower2 project for an example. Additionally, you will need to set up the task and schema for uploading to synapse and scheduling the task. 
 
 The following example instructions use the "Tapping" test as an example.
 
@@ -259,8 +256,8 @@ task as "Tapping". Remember to then tap the "Save" button to save your schedule.
 By default, for schedules that use a "Task Identifier", the schedule manager will look in the `SBABridgeConfiguration` for the 
 mapping to find the task. The default is to look for a resource file in the main bundle with the same name as the task. For a 
 more complicated set up, you can either add the task to the bridge configuration in code or by adding a JSON blob to the 
-client data. See the mPower `DataSourceManager` for an example of a hard coded mapping. See `SBAActivityMappingObject` for the 
-JSON schema for setting up client data for download from the AppConfig.
+client data. See the mPower2 `DataSourceManager` for an example of a hard coded mapping. See `SBAActivityMappingObject` for 
+the JSON schema for setting up client data for download from the AppConfig.
 
 #### b. Add the "Schema Revision" to the "Schemas (Tasks)" in the App Config
 
