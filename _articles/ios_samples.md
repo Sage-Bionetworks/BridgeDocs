@@ -5,5 +5,5 @@ layout: article
 
 |App Name|Description|
 |---|---|
-|[Smart4SURE](https://github.com/Sage-Bionetworks/Smart4SURE "Smart4SURE")|A Parkinson Disease research study|
-|[BridgeAppSDK](https://github.com/Sage-Bionetworks/BridgeAppSDK "BridgeAppSDK")|A Sample Study set up as an example for linking BridgeSDK and ResearchKit|
+|[mPower2](https://github.com/Sage-Bionetworks/mPower-2-iOS "mPower 2")|A Parkinson Disease research study|
+|[CRF](https://github.com/Sage-Bionetworks/CardiorespiratoryFitness-iOS "CRF")|Stand-alone task modules for measuring cardiorespiratory fitness|
