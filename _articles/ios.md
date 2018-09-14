@@ -4,7 +4,7 @@ layout: article
 ---
 
 <div class="ui positive message">
-<p>We support iOS development with three frameworks: BridgeSDK, BridgeAppSDK, and CMSSupport, as well as our own forks of Apple's open-source ResearchKit and AppCore frameworks.</p>
+<p>We support iOS development with three frameworks: BridgeSDK, BridgeApp, and Research.</p>
 
 <p>The relevant Github repos are:</p>
 
@@ -12,17 +12,11 @@ layout: article
     <dt><a href="https://github.com/Sage-Bionetworks/Bridge-iOS-SDK.git">BridgeSDK</a></dt>
     <dd>A framework to access the Bridge REST API</dd>
 
-    <dt><a href="https://github.com/Sage-Bionetworks/BridgeAppSDK.git">BridgeAppSDK</a></dt>
-    <dd>An extensible, customizable application framework for building mHealth apps using Bridge and ResearchKit</dd>
+    <dt><a href="https://github.com/Sage-Bionetworks/BridgeApp-Apple-SDK.git">BridgeApp</a></dt>
+    <dd>An extensible, customizable application framework for building mHealth apps using Bridge and Research</dd>
 
-	<dt><a href="https://github.com/Sage-Bionetworks/CMSSupport.git">CMSSupport</a></dt>
-    <dd>A framework providing support for correctly encrypting files for upload to Bridge</dd>
-
-	<dt><a href="https://github.com/Sage-Bionetworks/AppCore.git">AppCore</a></dt>
-    <dd>Deprecated; use BridgeAppSDK instead. Sage's updated and modified fork of <a href="https://github.com/ResearchKit/AppCore.git">Apple's AppCore framework</a></dd>
-	
-    <dt><a href="https://github.com/Sage-Bionetworks/ResearchKit.git">ResearchKit</a></dt>
-    <dd>Sage's fork of <a href="https://github.com/ResearchKit/ResearchKit.git">Apple's ResearchKit framework</a></dd>
+    <dt><a href="https://github.com/Sage-Bionetworks/SageResearch.git">Research/ResearchUI</a></dt>
+    <dd>Sage's fork of <a href="https://github.com/Sage-Bionetworks/SageResearch.git">Research, a task modeling framework hosted by Apple's ResearchKit</a></dd>
 </dl>
 </div>
 
@@ -34,7 +28,7 @@ BridgeSDK supports Xcode 7 and newer, and has a minimum target version of iOS 8.
 
 ### Adding BridgeSDK directly to your project
 
-BridgeAppSDK (see below) includes BridgeSDK as a sub-project, so if you intend to use that framework, skip these instructions and follow the ones in that section.
+BridgeApp (see below) includes BridgeSDK as a sub-project, so if you intend to use that framework, skip these instructions and follow the ones in that section.
 
 Otherwise:
 
@@ -64,7 +58,7 @@ Objective-C:
 - (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
 	...
-	[BridgeSDK setupWithStudy:@"mystudyname" cacheDaysAhead:4 cacheDaysBehind:1];
+	[BridgeSDK setup];
 	...
 }
 ```
@@ -74,7 +68,7 @@ Swift:
 ```swift
 func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         ...
-        BridgeSDK.setup(withStudy: "mystudyname", cacheDaysAhead: 4, cacheDaysBehind: 1)
+        BridgeSDK.setup()
         ...
     }
 ```
@@ -119,7 +113,7 @@ authManager.signUp(withEmail: email, username: email, password: password) { (_, 
 }
 ```
 
-See the BridgeSDK documentation for more details, and the BridgeAppSDK framework and sample app source code for working examples.
+See the BridgeSDK documentation for more details, and the BridgeApp framework and sample app source code for working examples.
 
 ## CMSSupport
 
@@ -129,14 +123,14 @@ Apple no longer actively maintains their fork of the AppCore framework, and our 
 
 You would need to use the CMSSupport framework directly only if you are either building an app based on one of the open-source sample apps in ResearchKit on github, which we do not recommend; adding Bridge support to an existing app; or building a Bridge-based mHealth app from scratch without using either AppCore or BridgeAppSDK.
 
-## BridgeAppSDK
+## BridgeApp
 
-The BridgeAppSDK framework is written primarily in Swift 3.0, and provides an extensible and customizable application framework for building mHealth apps using Bridge and ResearchKit. It supersedes both Apple's and Sage's forks of the older AppCore framework, which was not built to be extensible or customizable and is therefore no longer being actively supported.
+The BridgeApp framework is written primarily in Swift 4.0, and provides an extensible and customizable application framework for building mHealth apps using Bridge and SageResearch. It supersedes both Apple's and Sage's forks of the older AppCore framework, which was not built to be extensible or customizable and is therefore no longer being actively supported.
 
-BridgeAppSDK includes the correct commits of BridgeSDK, CMSSupport, and ResearchKit as git submodules, so when you clone it you should do so recursively:
+BridgeApp includes the correct commits of BridgeSDK and SageResearch as git submodules, so when you clone it you should do so recursively:
 
 ```bash
-git clone --recursive https://github.com/Sage-Bionetworks/BridgeAppSDK.git
+git clone --recursive https://github.com/Sage-Bionetworks/BridgeApp-Apple-SDK.git
 ```
 
 If you've already cloned the repo without the --recursive option, you can do this from within the BridgeAppSDK directory to get the submodules:
@@ -145,4 +139,4 @@ If you've already cloned the repo without the --recursive option, you can do thi
 git submodule update --init --recursive
 ```
 
-The BridgeAppSDK Xcode project includes the BridgeAppSDK target for building the framework, and the BridgeAppSDKSample target for building a sample app demonstrating how to use the framework to build a basic functioning Bridge/ResearchKit mHealth app.
+The BridgeApp Xcode project includes the BridgeApp target for building the framework, and the BridgeAppExample target for building a sample app demonstrating how to use the framework to build a basic functioning Bridge/Research mHealth app.
