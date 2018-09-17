@@ -28,9 +28,9 @@ Enterprise App. Second, you cannot then save your changes to github because thes
 You will need to add Capabilities for Keychain Sharing as well as certain background modes. Most projects
 that use Bridge are set up with the following:
 
-* Keychain Sharing - The login information is saved to the keychain. Your application will need to set up a 
-shared keychain `org.sagebase.Bridge` so that [BridgeSDK](https://github.com/Sage-Bionetworks/Bridge-iOS-SDK "BridgeSDK") 
-can manage saving and storing the login credentials in the keychain.
+* Keychain Sharing - The login password (if used) and session/reauth tokens are saved to the keychain. If you use Bridge in an app extension, your application will need to set up a 
+shared keychain and specify it in the keychainAccessGroup property of BridgeInfo so that [BridgeSDK](https://github.com/Sage-Bionetworks/Bridge-iOS-SDK "BridgeSDK") 
+can access the same session and reauth tokens from within both the app and the extension. You might consider setting this up anyway, in case you later choose to support app extensions.
 
 * Background Modes - Some [SageResearch](https://github.com/Sage-Bionetworks/SageResearch "SageResearch")
 tasks use background audio (to allow for spoken instructions) or location updates. Additionally, uploading task 
