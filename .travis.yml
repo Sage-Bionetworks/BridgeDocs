@@ -18,7 +18,7 @@ deploy:
       skip_cleanup: true
       acl: public_read
       detect_encoding: false
-      endpoint: developer.sagebridge.org.s3-website-us-east-1.amazonaws.com
+      endpoint: https://developer.sagebridge.org.s3-website-us-east-1.amazonaws.com
       region: "us-east-1"
       local_dir: _site
       on:
