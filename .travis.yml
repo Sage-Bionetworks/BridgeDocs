@@ -1,8 +1,4 @@
 language: ruby
-rvm:
-  - 2.4.1
-node_js:
-  - 6.6.0
 install:
   - bundle install
 script:
