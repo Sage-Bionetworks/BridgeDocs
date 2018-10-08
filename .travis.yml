@@ -1,20 +1,14 @@
-language: ruby
-install:
-- bundle install
-script:
-- bundle exec jekyll build
+sudo: false
+language: python
+python: 3.5
+cache: pip
+fast_finish: true
 branches:
   only:
   - release
-deploy:
-- provider: s3
-  access_key_id: "${S3_ACCESS_KEY_ID}"
-  secret_access_key: "${S3_SECRET_KEY}"
-  bucket: "developer.sagebridge.org"
-  skip_cleanup: true
-  acl: public_read
-  detect_encoding: false
-  endpoint: "https://developer.sagebridge.org.s3-website-us-east-1.amazonaws.com"
-  local_dir: _site
-  on:
-    branch: release
+install:
+- wget https://github.com/Sage-Bionetworks/infra-utils/archive/master.zip -O /tmp/infra-utils.zip
+- unzip -j -n /tmp/infra-utils.zip -x infra-utils-master/.gitignore infra-utils-master/LICENSE infra-utils-master/README.md
+- ./setup_aws_cli.sh || travis_terminate 1
+script:
+- aws s3 cp app/ s3://research-staging.sagebridge.org/ --recursive
