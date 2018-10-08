@@ -1,21 +1,24 @@
 language: ruby
 install:
-  - bundle install
+- bundle install
 script:
-  - bundle exec jekyll build
+- bundle exec jekyll build
 branches:
   only:
-    - release
+  - release
 deploy:
-    - provider: s3
-      access_key_id: ${S3_ACCESS_KEY_ID}
-      secret_access_key: ${S3_SECRET_KEY}
-      bucket: "developer.sagebridge.org"
-      skip_cleanup: true
-      acl: public_read
-      detect_encoding: false
-      endpoint: "https://developer.sagebridge.org.s3-website-us-east-1.amazonaws.com"
-      region: "us-east-1"
-      local_dir: _site
-      on:
-          branch: release    
+- provider: s3
+  access_key_id: "${S3_ACCESS_KEY_ID}"
+  secret_access_key: "${S3_SECRET_KEY}"
+  bucket: developer.sagebridge.org
+  skip_cleanup: true
+  acl: public_read
+  detect_encoding: false
+  endpoint: https://developer.sagebridge.org.s3-website-us-east-1.amazonaws.com
+  local_dir: _site
+  on:
+    branch: release
+env:
+  global:
+  - secure: AogWAjqgENZYkBViif484pJ/XX5MTGwK6ncA41+tI36ZviQSSz/ZfuI6+OCoO6nkVEVrRgavq7mYsk9Z86+YUhmagE4Hlc7Ot2YLdI/fbHCA0Y3Bpm3QkSONI4mymOsdqUwo1vV4GupqE0cp1c2Wxw3ibtV5FZMDWycsNJh/mnUwyRpKUiOJHjPHYblOQ37BHBqUhMFhxDMNsCcHy3gdJ6eQZ17/Yr5dOlnqrVkZZjWfDu9WzEUQfE9UYRmbqlwKAEN4PCsfw+kUYGtTc7ogQw9tH4HV8bvIyaOKOlNSmJ708Srph72Hri3fpXUmW/5g935RRQxqXZ+XqFcRrcrhUT7gg4hnjeFyw9VCbtSr8fuKQ8Be+Kvi49J+eEdJeyNmeiDT1XA4r/HoGzOSFa3ehfamRfnSrH8msDnBIlrIGzS0m8mJs/DQi3zwkn8XiUOpv+UzavIIYfeHvUV+iRM5VmAkTu9IlVb5TxnZwSt2/W3T5V85+wEjsvESZYA2AUowAzLoBn6yz40FJiWcN1tww5gpiyVaHZsTd9HgUK/7nTxWaWFhS9dJRqiRJiKwcIx3TWfAAK33sjAtlamLLQjFtBtscWEez41q/JVuPwLZS6PRYypNvGL4NqX7UnECA4XJXVhoC5uGGQHWsmiEgJiId0EPex4WSaj21TmmMGXJz1k=
+  - secure: wPuXP6QSvaOmNpoBxzdN895jZienuHPlJHf9zZJ1Zt+jG/zCY3aZ6lo3FAqZBV4zgim08gaYRsoUcWBugFtdbKZOf19eSxAg8Avn/Qv8BC34vYndfgFtQEuyLypyZzzdqFJw6kLOPrIIstCXA3cCMrsbTHFfBCd5eqyWe6DujXoudWFmYxRiMKLSzm2lhdwEmFVJGO3nIM1pdLoLTYfAej8rOdnAvPW5qV3nGlL8Lg7EqysfEOlegvwugtdjeqTkpQmy2dKkB1O9/K1X4RPaAAWWsyO/4iT+DRaRDiEkA3rygtz+SsBCbkejTAzdVBfCJrk/6RqJnQm67MXHzXUy+F7/fkSeydTbGKFZBAdyHQgMcFO/Qy5J+7dYvTwuErdwYZ2B3ts9M/Qr7e29RvDq4YKZ5t7ujKSlIzHy06qsOrnLe/1iPXwgPqu/v5gxDzMSNXpXO3qMFT2bcWut1DbraryBzWdXR9/wlc2ZuMnGzRAiCmqOs53Zon+RJUi2BmqKiYAv6i/XoxVYY9dtkSTtenbDhTtuQU9UOZGTJ0VdxtoIu4jVGbmMP2Mmlw5cz4NioWwmMFq2hUHI1x9q0nNhA6E21MStS4EKL7OY9qmSuupLIWqzPiP9QQpBoqqqy3cTdLfJuIX8ezp8YR/9zI4sLgILhYI8QmZfuVaoy+uB8l4=
