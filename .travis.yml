@@ -13,4 +13,5 @@ install:
 script:
 - bundle install
 - bundle exec jekyll build
-- aws s3 cp _site/ s3://research-staging.sagebridge.org/ --recursive --acl public-read
+- aws s3 cp _site/ s3://developer.sagebridge.org/ --recursive --acl public-read
+
