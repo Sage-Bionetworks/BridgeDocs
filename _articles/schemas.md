@@ -162,6 +162,13 @@ Examples
 }
 ```
 
+## Reserved Keywords
+
+Schema fields cannot use the following names (case-insensitive):
+
+* row_id
+* row_version
+
 ## Updating Schemas
 
 A schema revision can only be updated if the changes are backwards compatible. Changes that are considered backwards compatible include:
