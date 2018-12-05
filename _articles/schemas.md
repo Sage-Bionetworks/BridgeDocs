@@ -66,7 +66,7 @@ It generally corresponds one-to-one with columns in the Synapse table, although 
 
 Every field has 3 basic properties:
 
-* name - The field's unique name/identifier. Must start and end with an alphanumeric character. Can only contain alphanumeric characters, spaces, dashes, underscores, and periods. Can't contain two or more non-alphanumeric characters in a row. For more information on how to set the correct field name, see the corresponding sections in [Bundled Zip File Uploads](bundled_zip_file_uploads.html) and [Synchronous Health Data Submission](synchronous_health_data_submission.html).
+* name - The field's unique name/identifier. Cannot be more than 256 characters. Must start and end with an alphanumeric character. Can only contain alphanumeric characters, spaces, dashes, underscores, and periods. Can't contain two or more non-alphanumeric characters in a row. For more information on how to set the correct field name, see the corresponding sections in [Bundled Zip File Uploads](bundled_zip_file_uploads.html) and [Synchronous Health Data Submission](synchronous_health_data_submission.html).
 * required - If the field is required and strict validation is turned on for the study, Bridge will validate that the field value exists and is of the correct type (eg, no strings for ints). If not specified, this defaults to true.
 * type - Field type. See details below.
 
@@ -166,6 +166,7 @@ Examples
 
 Schema fields cannot use the following names (case-insensitive):
 
+* row_etag
 * row_id
 * row_version
 
