@@ -14,7 +14,7 @@ window.onload = function() {
   const ui = SwaggerUIBundle({
     url: url,
     dom_id: '#swagger-ui',
-    deepLinking: false,
+    deepLinking: true,
     docExpansion: 'none',
     tagsSorter: 'alpha',
     layout: "StandaloneLayout",
@@ -27,7 +27,6 @@ window.onload = function() {
       SwaggerUIBundle.plugins.DownloadUrl
     ]
   })
-
   window.ui = ui
 }
 </script>
