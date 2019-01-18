@@ -10,7 +10,6 @@ layout: html5
 <script>
 window.onload = function() {
   var url = document.getElementById("api_url").getAttribute("content");
-  //var url = "/swagger.json";
   const ui = SwaggerUIBundle({
     url: url,
     dom_id: '#swagger-ui',

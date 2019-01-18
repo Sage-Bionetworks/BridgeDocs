@@ -5,7 +5,7 @@ layout: article
 
 <div id="toc"></div>
 
-Bridge supports three main authentication methods. Each pathway requires different credentials and different forms of interaction from the user, so you will want to evaluate the approach that is best for your onboarding experience. 
+Bridge supports a variety of authentication methods. Each pathway requires different credentials and different forms of interaction from the user, so you will want to evaluate the approach that is best for your onboarding experience. 
 
 ## Email and Password Authentication
 For backend system accounts and some studies, users can sign up with an email address and a password they themselves supply. 
@@ -69,6 +69,19 @@ See [reauthentication](#reauthentication) below for how to refresh a session onc
 
 ### Phone-Only Sign-In
 After sign-up, when the user needs to sign-in again due to a session expiration, the app will either need to use the cached phone number, or prompt for the number again, to trigger a [phone sign-in request](/swagger-ui/index.html#!/Authentication/requestPhoneSignIn). This sends an SMS message as described from step #2 above.
+
+## External ID with Password
+
+For clinical studies that wish to maintain the total anonymity of the study participant in Bridge, a user can authenticate using only an external ID. Unless the partner organization tracks the assignment of this external ID, this account is truly anonymous.
+
+However, before users can access an account this way, a researcher must create an external ID and an associated account using the API or the [Bridge Study Manager](https://research.sagebridge.org). After this set up, the user will not need to sign up for an account. Instead, the app must be taken to the clinic.
+
+### Password Generation
+
+1. In the clinic, an unauthenticated app should provide a means for a researcher to sign in to the Bridge server.
+2. Once authenticated, the app should call the [generate password API](/swagger-ui/index.html#/_For_Researchers/generatePassword) to generate and receive back a random password.
+3. The app signs the researcher out, and signs in the external ID using the newly retrieved password. The session that is returned to the app has the necessary token to [reauthenticate](#reauthentication) the app periodically, as in any other authenticated session.
+4. The app now reauthenticates using the reauthentication API. If the app should no longer have a valid reauthentication token, do to a network error or the like, then the app will need to have another password set by the researcher, which involves bringing the app into the lab.
 
 ## Reauthentication
 The [UserSessionInfo](#/UserSessionInfo) payload returned by the sign in process includes a `reauthToken` that can be sent to the [reauthentication endpoint](). The token is a one-time token that will be replaced when it is used to generate a new session for the client (that session includes a new token in order to chain these requests indefinitely). In effect, the `reauthToken` is like an auto-generated password that avoids the need for users to sign in again once we establish their identity. 
