@@ -3,17 +3,19 @@ title: Consenting Participants
 layout: article
 ---
 
+<div id="toc"></div>
+
 *All participants in your mHealth study must consent to participate in your research before you can collect their data.* The United States requires this **informed consent,** along with approval of your research by an Institutional Review Board. Once you have approval to do the research, Bridge can help you collect and manage these consents.
 
 ### Scenario 1: Bridge manages consent
 
-If you are managing consents through Bridge, then any authenticated user who has not consented to research will receive a 412 HTTP response from the server when calling a participant-facing API ("Precondition Required"). This response will include the user's session in the body of the response. The user is signed in, just not authorized to send or to receive data from Bridge.
+If you are managing consents through Bridge, an authenticated user will receive back a 412 HTTP response from the server when calling a participant-facing API ("Precondition Required"). This response will include [the user's session](/#UserSessionInfo) in the body of the response. The user is authenticated, but not authorized to send or to receive data from Bridge.
 
-To consent, the user must [send a consent record to the API](/swagger-ui/index.html#/Consents/createConsentSignature). The call returns the user's session updated with the new consent status. Thereafter, participant-facing calls will work as expected.
+To consent, the user must [send a consent record to the API](/swagger-ui/index.html#/Consents/createConsentSignature) (the subpopulation GUID for the default consent is the study identifier, the same used to authenticate with the correct study when contacting the Bridge server). The call returns the user's session updated with the new consent status. Thereafter, participant-facing calls will work as expected.
 
-Bridge can support multiple consent groups (initially, a Bridge study will have one default consent group that is required, and the subpopulation GUID for that group will be the study's identifier). It will determine all the consent groups that apply to a user (see [customizing content](/articles/filtering.html)), and the user will need to consent to all required consent groups before accessing Bridge services. Users do not need to agree to optional consents to use Bridge services. If you update the contents of a consent document after a user has signed it, this will be noted in the user's session, but they will not be required to consent again.
+Bridge can support multiple [consent groups](/#Subpopulation) (initially, a Bridge study will have one default consent group that is required, but this is configurable). It will determine all the consent groups that apply to a user (see [customizing content](/articles/filtering.html)), and the user will need to consent to all required consent groups before accessing Bridge services. Users do not need to agree to optional consents to use Bridge services. If you update the contents of a consent document after a user hask signed it, this will be noted in the user's session, but they will not be required to consent again.
 
-At the time of consent, a signed version of the document will sent via email or SMS link to the user for their records (this feature can be disabled). You can update the consent document contents and save new versions of this document; when you wish to do so, you can publish a new version as the approved version of the consent to present to users.
+At the time of consent, a signed version of the document will sent via email or SMS link to the user for their records (this feature can be disabled). You can [update the consent document contents and save new versions of this document;](/swagger-ui/index.html#/Study%20Consents) when you wish to do so, you can [publish](/swagger-ui/index.html#/Study%20Consents/publishConsent) a new version as the approved version of the consent to present to users.
 
 ### Scenario 2: No electronic consent required
 
@@ -21,22 +23,22 @@ If you are consenting your users in a clinical or similar setting, and that cons
 
 ### Scenario 3: Consent before creating a Bridge account
 
-In some scenarios you may wish for users to consent before downloading your app. For example, Sage Bionetwork's mPower app has [a web-based consent process](https://parkinsonmpower.org/study/intro) that users can complete before downloading the app. In this scenario, users do not make an account before they give consent. To support this, Bridge has the "intent to participate" API (currently this service only supports phone-based accounts). 
+In some scenarios you may wish for users to consent before downloading your app. For example, Sage Bionetwork's mPower app has [a web-based consent process](https://parkinsonmpower.org/study/intro) that users can complete before downloading the app. In this scenario, users do not make an account before they give consent. To support this, Bridge has the [intent to participate API](/swagger-ui/index.html#/IntentToParticipate/submitIntentToParticipate) (currently this service only supports phone-based accounts). 
 
 The workflow is as follows:
 
 - The user navigates to a consent web site, and agrees to consent by giving their telephone number;
-- The website detects it is not embedded in an app, and sends the consent to the [intent to participate](/swagger-ui/index.html#/Consents/createConsentSignature) api;
+- The website detects it is not embedded in an app, and sends the consent to the [intent to participate API](/swagger-ui/index.html#/Consents/createConsentSignature);
 - The Bridge server responds by sending an SMS message to the user with a link to download the app (the message content is configurable in the Bridge Study Manager);
 - The user clicks on the link, downloads the app, and opens it;
 - When the app is opened, it asks again for a phone number;
-- The app takes the user's phone number and signs up for an account, then requests an SMS link at the same phone number in order to sign in to the app;
+- The app takes the user's phone number and [signs up](/articles/authentication.html#phone-only-sign-up) for an account, then requests an SMS link at the same phone number in order to [sign in](/articles/authentication.html#phone-only-sign-in) to the app;
 - The user clicks on the link which opens up the app. The app extracts a token in the link to complete sign in via a phone number;
 - On sign in, the system detects that the user has already submitted an intent to participate under that phone number, and completes the consent process without further intervention by the user. The sign in request thus returns a 200 HTTP status response and a consented session.
 
-This sequence of events can also support cases where the user downloads and installs your app without visiting your consent website... as is possible once you publish your app in an app store.
+This sequence of events can also support cases where the user downloads and installs your app without visiting your consent website... as is possible once you publish your app in a public app store.
 
-- The user downloads your app from the app store
+- The user downloads your app from the app store;
 - When the app is opened, it asks for a phone number;
 - The app takes the user's phone number and signs up for an account, then requests an SMS link at the same phone number in order to sign in to the app;
 - The user clicks on the link which opens up the app. The app extracts a token in the link to complete sign in via a phone number;
