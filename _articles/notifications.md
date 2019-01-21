@@ -21,13 +21,13 @@ Bridge engineers will work with your app developers to configure Bridge to send 
 
 After a user consents to receive push notifications via the mobile operating system, the system will notify your application and provide a unique *device identifier* (APNS calls this the *device token*, and GCM calls this the *registrationId*). 
 
-Your app should [send this device identifier](/swagger-ui/index.html#!/_For_Consented_Users/createNotificationRegistration) to Bridge in order to register for notifications. Bridge returns a registration GUID which you can use to [update the device identifier at a later time](/swagger-ui/index.html#!/_For_Consented_Users/updateNotificationRegistration), as well as to subscribe to notification topics (see below).
+Your app should [send this device identifier](/swagger-ui/index.html#!/_For%20Consented%20Users/createNotificationRegistration) to Bridge in order to register for notifications. Bridge returns a registration GUID which you can use to [update the device identifier at a later time](/swagger-ui/index.html#!/_For%20Consented%20Users/updateNotificationRegistration), as well as to subscribe to notification topics (see below).
 
-It is possible to [retrieve a list of device registrations for a participant](/swagger-ui/index.html#!/_For_Consented_Users/getNotificationRegistrations) (if the participant installs your app on multiple devices. there will be more than one).
+It is possible to [retrieve a list of device registrations for a participant](/swagger-ui/index.html#!/_For%20Consented%20Users/getNotificationRegistrations) (if the participant installs your app on multiple devices. there will be more than one).
 
 Some notification services, like APNS, suggest that this device identifier can change over the lifetime of your app's installation. Follow the advice of your push notification provider. Bridge allows the registration to be updated at any time.
 
-Once registered, you will be able to [send a push notification to an individual user](/swagger-ui/index.html#!/_For_Researchers/sendNotificationToParticipant) on the registered device. In the Bridge Study Manager, find an individual user, and navigate to their *Push Notifications* tab. If they have a registration, they can receive a notification.
+Once registered, you will be able to [send a push notification to an individual user](/swagger-ui/index.html#!/_For%20Researchers/sendNotificationToParticipant) on the registered device. In the Bridge Study Manager, find an individual user, and navigate to their *Push Notifications* tab. If they have a registration, they can receive a notification.
 
 <div class="ui message">
     <div class="ui header">Example</div>
@@ -37,7 +37,7 @@ Once registered, you will be able to [send a push notification to an individual 
 
 ## SMS Notifications
 
-To register for SMS Notifications, all you need is a phone number. You'll need to call the [Create Notification Registration API](/swagger-ui/index.html#!/_For_Consented_Users/createNotificationRegistration), and include the sms protocol and the phone number, with the international calling code. For example:
+To register for SMS Notifications, all you need is a phone number. You'll need to call the [Create Notification Registration API](/swagger-ui/index.html#!/_For%20Consented%20Users/createNotificationRegistration), and include the sms protocol and the phone number, with the international calling code. For example:
 
 ```json
 {
@@ -50,9 +50,9 @@ Only consented participants can register for SMS notifications, and a participan
 
 ## Notification Topics
 
-To send notifications to more than one user, you must [create some *notification topics*](/swagger-ui/index.html#!/_For_Developers/createNotificationTopic). You must define a name and a short name for your topic. The name will be displayed in the Bridge Study Manager (as well as the short name). The short name is displayed in SMS notifications and must be 10 characters or less.
+To send notifications to more than one user, you must [create some *notification topics*](/swagger-ui/index.html#!/_For%20Developers/createNotificationTopic). You must define a name and a short name for your topic. The name will be displayed in the Bridge Study Manager (as well as the short name). The short name is displayed in SMS notifications and must be 10 characters or less.
 
-Under *Push Notifications* in the Bridge Study Manager, developers can create one or more topics. We strongly suggest you create a general topic to apply to all users, but you may create as many additional topics as you need. Apps then subscribe to one or more topics in order to [receive topic notifications](/swagger-ui/index.html#!/_For_Researchers/sendNotificationToTopic).
+Under *Push Notifications* in the Bridge Study Manager, developers can create one or more topics. We strongly suggest you create a general topic to apply to all users, but you may create as many additional topics as you need. Apps then subscribe to one or more topics in order to [receive topic notifications](/swagger-ui/index.html#!/_For%20Researchers/sendNotificationToTopic).
 
 Topic notifications can be sent from the Bridge Study Manager by navigating to the topic under *Push Notifications*.
 
@@ -62,9 +62,9 @@ There are two types of notification topics: manual subscription topics and crite
 
 ### Manual Subscription Topics
 
-Manual subscription topics are notification topics that do not have criteria associated with them. Your app must [subscribe to any topic for which that user will receive notifications](/swagger-ui/index.html#!/_For_Consented_Users/subscribeToTopics). **NOTE:** When you call this API, you must specify *all* topics that the user should be subscribed to. Any manual subscription topics not included in this list will be unsubscribed. **NOTE:** Criteria-Managed Topics are not affected.
+Manual subscription topics are notification topics that do not have criteria associated with them. Your app must [subscribe to any topic for which that user will receive notifications](/swagger-ui/index.html#!/_For%20Consented%20Users/subscribeToTopics). **NOTE:** When you call this API, you must specify *all* topics that the user should be subscribed to. Any manual subscription topics not included in this list will be unsubscribed. **NOTE:** Criteria-Managed Topics are not affected.
 
-The topic GUIDs can be hard-coded in your application, but it is more advisable to [retrieve them from the server](/swagger-ui/index.html#!/_For_Consented_Users/getTopicSubscriptions) or from the user's session, which also contains the list of [SubscriptionStatus](/#SubscriptionStatus) records.
+The topic GUIDs can be hard-coded in your application, but it is more advisable to [retrieve them from the server](/swagger-ui/index.html#!/_For%20Consented%20Users/getTopicSubscriptions) or from the user's session, which also contains the list of [SubscriptionStatus](/#SubscriptionStatus) records.
 
 When the user gives permission to receive remote notifications, register their device and set up some default topic subscriptions (see below). In your app, present the list of topics to the user as a set of preferences to receive different types of notifications, so the user can turn notifications on or off for each topic.
 

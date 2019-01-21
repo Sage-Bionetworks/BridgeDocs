@@ -79,7 +79,7 @@ However, before users can access an account this way, a researcher must create a
 ### Password Generation
 
 1. In the clinic, an unauthenticated app should provide a means for a researcher to sign in to the Bridge server.
-2. Once authenticated, the app should call the [generate password API](/swagger-ui/index.html#/_For_Researchers/generatePassword) to generate and receive back a random password.
+2. Once authenticated, the app should call the [generate password API](/swagger-ui/index.html#/_For%20Researchers/generatePassword) to generate and receive back a random password.
 3. The app signs the researcher out, and signs in the external ID using the newly retrieved password. The session that is returned to the app has the necessary token to [reauthenticate](#reauthentication) the app periodically, as in any other authenticated session.
 4. The app now reauthenticates using the reauthentication API. If the app should no longer have a valid reauthentication token, do to a network error or the like, then the app will need to have another password set by the researcher, which involves bringing the app into the lab.
 
