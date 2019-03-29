@@ -55,3 +55,7 @@ Our above example would be converted to the following example table fragment:
 ### Conflicts in Field Names
 
 If for whatever reason, there is already a schema field named "metadata.[fieldName]", the field defined in the schema takes precedence over the metadata field. (This applies to both type and value.) A good way to remember this is "specific beats general".
+
+## Limits
+
+Metadata fields cannot create more than 20 columns or 2500 bytes. Note that the size limit is for space allocated, not for how much data is actually submitted. This also does not count against the column or size limit for schema fields. For more information, including column size by field type, see [Schema Limits](schemas.html#limits)
