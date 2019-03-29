@@ -23,25 +23,26 @@ If you are consenting your users in a clinical or similar setting, and that cons
 
 ### Scenario 3: Consent before creating a Bridge account
 
-In some scenarios you may wish for users to consent before downloading your app. For example, Sage Bionetwork's mPower app has [a web-based consent process](https://parkinsonmpower.org/study/intro) that users can complete before downloading the app. In this scenario, users do not make an account before they give consent. To support this, Bridge has the [intent to participate API](/swagger-ui/index.html#/IntentToParticipate/submitIntentToParticipate) (currently this service only supports phone-based accounts). 
+In some scenarios you may wish for users to consent before downloading your app. For example, Sage Bionetwork's mPower app has [a web-based consent process](https://parkinsonmpower.org/study/intro) that users can complete before downloading the app. In this scenario, users do not make an account before they give consent. To support this, Bridge has the [intent to participate API](/swagger-ui/index.html#/Intent%20To%20Participate/submitIntentToParticipate). 
 
 The workflow is as follows:
 
-- The user navigates to a consent web site, and agrees to consent by giving their telephone number;
-- The website detects it is not embedded in an app, and sends the consent to the [intent to participate API](/swagger-ui/index.html#/Consents/createConsentSignature);
-- The Bridge server responds by sending an SMS message to the user with a link to download the app (the message content is configurable in the Bridge Study Manager);
-- The user clicks on the link, downloads the app, and opens it;
-- When the app is opened, it asks again for a phone number;
-- The app takes the user's phone number and [signs up](/articles/authentication.html#phone-only-sign-up) for an account, then requests an SMS link at the same phone number in order to [sign in](/articles/authentication.html#phone-only-sign-in) to the app;
-- The user clicks on the link which opens up the app. The app extracts a token in the link to complete sign in via a phone number;
-- On sign in, the system detects that the user has already submitted an intent to participate under that phone number, and completes the consent process without further intervention by the user. The sign in request thus returns a 200 HTTP status response and a consented session.
+1. The user navigates to a consent web site, and agrees to consent. This consent includes a credential that will be used to sign in the user, either an email address or a telephone number;
+1. The website detects it is not embedded in an app, and sends the consent to the [intent to participate API](/swagger-ui/index.html#/Intent%20To%20Participate/submitIntentToParticipate);
+1. The Bridge server responds by sending either an email or SMS message to the user with a link to download the app (the message content is configurable in the Bridge Study Manager);
+1. The user clicks on the link, downloads and installs the app, and then opens it;
+1. When the app is opened, it asks again for the same email address or phone number;
+1. The app takes that credential and [signs up](/articles/authentication.html) for an account, then immediately triggers a [sign in](/articles/authentication.html) request via email or SMS;
+1. The user gets an email message or SMS message with a link that they click on. This link is intercepted by the host operating system and opens the app (this requires some additional configuration on [Android](https://developer.android.com/training/app-links/verify-site-associations.html) or [iOS](https://developer.apple.com/library/archive/documentation/General/Conceptual/AppSearch/UniversalLinks.html) to give the operating system permission to intercept the link; Bridge can be configured to serve as the [host domain](https://research.sagebridge.org/#/app_links) for this purpose);
+1. The app extracts a token in the link to complete sign in via [email address](/swagger-ui/index.html#/Authentication/signInViaEmail) or [phone number](/swagger-ui/index.html#/Authentication/signInViaPhone);
+1. On sign in, the system detects that the user has already submitted an intent to participate under that credential, and completes the consent process without further intervention by the user. The sign in request thus returns a 200 HTTP status response and a consented session.
 
 This sequence of events can also support cases where the user downloads and installs your app without visiting your consent website... as is possible once you publish your app in a public app store.
 
-- The user downloads your app from the app store;
-- When the app is opened, it asks for a phone number;
-- The app takes the user's phone number and signs up for an account, then requests an SMS link at the same phone number in order to sign in to the app;
-- The user clicks on the link which opens up the app. The app extracts a token in the link to complete sign in via a phone number;
-- On sign in, the app receives a 412 response and goes into the same consent workflow, embedded in the app.
+1. The user downloads your app from the app store;
+1. When the app is opened, it asks for an email address or phone number (as in step #5 above);
+1. The app takes the user's credential and signs up for an account, then requests an email or SMS link at that address or phone number in order to sign in to the app (as in step #6 above);
+1. The user clicks on the link which opens up the app. The app extracts a token in the link to complete sign in via a email address or phone number (steps #7 and #8);
+1. On sign in, the app receives a 412 response and goes into the same consent workflow, embedded in the app.
 
 In [Sage Bionetworks applications](https://github.com/Sage-Bionetworks/web-mpower-2), we use the same consent website for both scenarios. The key component is [the Sign.vue file](https://github.com/Sage-Bionetworks/web-mpower-2/blob/release/src/components/study/Sign.vue), where we test the computed property `isEmbedded`. When the website is accessed on the desktop, it submits the consent to the ITP service. When the website detects that it is being displayed in a `WebView`, it passes the consent back to the client through a JavaScript bridge, so the native client can call the consent service, record the updated session state, and if everything is successful, close the `WebView`. The user is now consented and can use all of the Bridge APIs.
