@@ -43,6 +43,7 @@ This sequence of events can also support cases where the user downloads and inst
 1. When the app is opened, it asks for an email address or phone number (as in step #5 above);
 1. The app takes the user's credential and signs up for an account, then requests an email or SMS link at that address or phone number in order to sign in to the app (as in step #6 above);
 1. The user clicks on the link which opens up the app. The app extracts a token in the link to complete sign in via a email address or phone number (steps #7 and #8);
-1. On sign in, the app receives a 412 response and goes into the same consent workflow, embedded in the app.
+1. On sign in, the app receives a 412 response and goes into the same consent workflow, embedded in the app;
+1. This consent is submitted through the normal [consent to research API](/swagger-ui/index.html#/Consents/createConsentSignature).
 
 In [Sage Bionetworks applications](https://github.com/Sage-Bionetworks/web-mpower-2), we use the same consent website for both scenarios. The key component is [the Sign.vue file](https://github.com/Sage-Bionetworks/web-mpower-2/blob/release/src/components/study/Sign.vue), where we test the computed property `isEmbedded`. When the website is accessed on the desktop, it submits the consent to the ITP service. When the website detects that it is being displayed in a `WebView`, it passes the consent back to the client through a JavaScript bridge, so the native client can call the consent service, record the updated session state, and if everything is successful, close the `WebView`. The user is now consented and can use all of the Bridge APIs.
