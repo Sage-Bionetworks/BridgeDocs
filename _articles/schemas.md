@@ -9,6 +9,8 @@ layout: article
 
 Schemas are a mapping from unstructured or semi-structured data to the column model that we see in Synapse.
 
+**IMPORTANT:** Schemas are required for Bridge to process the data and export it to Synapse. Without a valid schema, the data will be thrown out by Bridge.
+
 **NOTE:** For server-side surveys, schemas are automatically created when the survey is published. For all other data types, schemas must be manually created, either through the REST API or through the Bridge Study Manager.
 
 A schema's JSON representation looks like:
@@ -80,6 +82,7 @@ Every field has 3 basic properties:
 |float|Floating point numbers (floats, doubles, and decimals). Integers are trivially converted to floating point numbers. If the app submits an string, we use [Java's BigDecimal](https://docs.oracle.com/javase/8/docs/api/java/math/BigDecimal.html#BigDecimal-java.lang.String-) to parse it.|
 |inline\_json\_blob|Writes a small JSON blob inline into the health data table. Should only be used for data that is &lt; 10kb.|
 |int|Integer type. If the app submits a float, we truncate using Java's double to int semantics. If the app submits a string, we use [Java's BigDecimal](https://docs.oracle.com/javase/8/docs/api/java/math/BigDecimal.html#BigDecimal-java.lang.String-) to parse it, then truncate to an int. Supports up to 64-bit ints (longs in Java).|
+|large\_text\_attachment|Text or JSON that should be rendered inline in the Synapse column. Should only be used for data between 10kb and 2mb. For smaller text, use inline\_json\_blob or string. For larger text, use attachment\_v2.|
 |multi\_choice|A JSON array of strings, representing answers to a multiple choice question that allows multiple selections. For example `[ "fencing", "swimming" ]`|
 |single\_choice|A string representing the answer to a multiple choice question that allows only a single selection. For backwards compatibility, the answer may be submitted as a JSON array with a single element. If the array doesn't have exactly 1 element, that is an error.|
 |string|A string. If the app submits a value that's not a string, it is trivially converted into a string.|
@@ -196,6 +199,38 @@ All other field changes are not compatible and require cutting a new schema revi
 * Any other field type change.
 * Decreasing the max length of a string.
 * Flipping unboundedText from false to true or vice versa.
+
+## Choosing Schema Fields
+
+Because schemas have a field limit (see [Limits](#limits) below), you may need to be selective what fields go into a top-level schema field. We recommend that you define schema fields only in the following cases:
+
+1. The field is important metadata, such as task run IDs.
+2. The field is commonly used for queries or dashboards, such as demographic information.
+
+For all other data in the participant's health data upload, you should define entire files as schema fields (eg for key-value pairs or sensor data), or be consumed from the rawData column.
+
+**NOTE:** Currently, all schemas must have at least one field.
+
+## Limits
+
+Schemas cannot create more than 100 columns or a row larger than 50000 bytes. Note that the row size is calculated by how much space has to be allocated to store the row, not how much space is actually being used by individual rows. Also note that this includes only fields defined by schema field definitions. Bridge will automatically create other columns as specified in [Exporting to Synapse](exporting_to_synapse.html) that don't count against this limit.
+
+See the table below to determine the number of columns and bytes for each schema field type.
+
+|Field Type|Columns|Bytes|
+|---|---|---|
+|attachment\_v2|1|20|
+|boolean|1|5|
+|calendar\_date|1|30|
+|float|1|23|
+|inline\_json\_blob|1|3 bytes per character, 3000 for unbounded|
+|int|1|20|
+|large\_text\_attachment|1|3000|
+|multi\_choice|1 for each possible answer, plus 1 if allowOtherChoices is true|5 for each possible answer, plus 3000 if allowOtherChoices is true|
+|single\_choice|1|3 bytes per character, 3000 for unbounded|
+|string|1|3 bytes per character, 3000 for unbounded|
+|time\_v2|1|36|
+|timestamp|2|35|
 
 ## Advanced Schema Attributes
 
