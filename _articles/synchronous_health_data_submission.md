@@ -88,7 +88,11 @@ You will get a response in the form
 
 ## For Surveys
 
+When you publish a survey, Bridge will automatically create a schema for it, as described in [V1 Legacy Surveys](bundled_zip_file_uploads.html#v1-legacy-surveys).
+
 Submitting health data for surveys is exactly the same as submitting health data for schemas, except instead of using the schemaId and schemaRevision attributes, you use the surveyGuid and surveyCreatedOn attributes. This surveyGuid and surveyCreatedOn correspond to the survey (in Bridge server) that the bundle should be submitted against.
+
+For your data, you should submit a map of key-value pairs, where the key is the survey question name, and the value is the answer. Bridge will automatically transcribe the data in the specified file into the answers field.
 
 In this case, your request body would look like:
 
@@ -106,6 +110,18 @@ In this case, your request body would look like:
   }
 }
 ```
+
+Then the "answers" field in the health data record would look like:
+
+```json
+{
+  "sports":["fencing", "running"],
+  "sleep":7,
+  "sleep_unit":"hour"
+}
+```
+
+**NOTE:** For backwards compatibility with the old survey format, if the existing survey schema has fields that match the survey question name (as matched to the key in the submitted data file), it will also attempt to populate that field with the answer to that survey question.
 
 **IMPORTANT NOTE:** surveyCreatedOn corresponds to the survey's createdOn timestamp, NOT when the survey response was created. Using the wrong timestamp for surveyCreatedOn will result in a "schema not found" error.
 
