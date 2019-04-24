@@ -15,6 +15,7 @@ window.onload = function() {
     dom_id: '#swagger-ui',
     deepLinking: true,
     docExpansion: 'none',
+    defaultModelRendering: 'model',
     tagsSorter: 'alpha',
     layout: "StandaloneLayout",
     validatorUrl: null,
