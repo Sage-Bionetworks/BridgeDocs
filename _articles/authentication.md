@@ -33,7 +33,7 @@ Users can authenticate using only their email address. The steps for this form o
 On sign up for the study, the following steps must be executed:
 
 1. Disable "Verify email as part of sign up" through the [Bridge Study Manager.](https://research.sagebridge.org/) (`Study > Email Templates > Verify Email`). This step will not be needed;
-2. The user signs up for an account, entering an email address (but no password) as part of the [SignUp](#/SignUp) payload using the [sign-up API](/swagger-ui/index.html#!/Authentication/signUp).
+2. The user signs up for an account, entering an email address (but no password) as part of the [SignUp](/#SignUp) payload using the [sign-up API](/swagger-ui/index.html#!/Authentication/signUp).
 
 ### Email-Only Sign-In
 
@@ -58,7 +58,7 @@ Users can authenticate using only their phone number. The steps for this form of
 On sign up for the study, the following steps must be executed:
 
 1. Disable "Verify a phone number as part of sign up" through the [Bridge Study Manager.](https://research.sagebridge.org/) (`Study > Text Message Templates > Verify Phone`). This step will not be needed;
-2. The user signs up for an account, entering a telephone number (but no password) as part of the [SignUp](#/SignUp) payload using the [sign-up API](/swagger-ui/index.html#!/Authentication/signUp).
+2. The user signs up for an account, entering a telephone number (but no password) as part of the [SignUp](/#SignUp) payload using the [sign-up API](/swagger-ui/index.html#!/Authentication/signUp).
 
 ### Phone-Only Sign-In
 
@@ -90,7 +90,7 @@ However, before users can access an account this way, a researcher must create a
 
 ## Reauthentication
 
-If reauthentication is enabled for your study, the [UserSessionInfo](#/UserSessionInfo) payload returned by the sign in process includes a `reauthToken` that can be sent to the [reauthentication endpoint](). The token is a one-time token that will be replaced when it is used to generate a new session for the client (that session includes a new token in order to chain these requests indefinitely). In effect, the `reauthToken` is like an auto-generated password that avoids the need for users to sign in again once we establish their identity. 
+If reauthentication is enabled for your study, the [UserSessionInfo](/#UserSessionInfo) payload returned by the sign in process includes a `reauthToken` that can be sent to the [reauthentication endpoint](). The token is a one-time token that will be replaced when it is used to generate a new session for the client (that session includes a new token in order to chain these requests indefinitely). In effect, the `reauthToken` is like an auto-generated password that avoids the need for users to sign in again once we establish their identity. 
 
 As long as the application holds on to this reauthentication token, it will not need to re-involve the user in authentication. If the app loses this token, it will have to sign in again using its preferred authentication channel. It is best practice to involve the user in this sign in process, rather than trying to store the password on the device (for email-only and phone-only authentication, the app must involve the user).
 
@@ -100,7 +100,7 @@ It is useful and important to collect further credentials than the minimum neces
 
 Additional credentials will make it possible for the user to authenticate with Bridge if a phone number is re-assigned (there are even rare examples where Yahoo and Microsoft have re-assigned email addresses that they did not believe were in use). In this situation, the user will want to change these credentials, but they will need another pathway to authenticate in order to make this change. Your app will also need to provide support for that alternative method of authentication. 
 
-Additional credentials can be added using the [IdentifierUpdate](#/IdentifierUpdate) payload via the [updated identifiers API](/swagger-ui/index.html#/Participants/updateUsersIdentifiers)
+Additional credentials can be added using the [IdentifierUpdate](/#IdentifierUpdate) payload via the [updated identifiers API](/swagger-ui/index.html#/Participants/updateUsersIdentifiers)
 
 ## Sign Out
 
