@@ -69,11 +69,12 @@ The Export Now feature remembers the last time data was exported for this study 
 
 Bridge exports your data to Synapse as tables. To find them, navigate to your Project in Synapse and click on the Tables tab.
 
-Bridge creates 3 different types of tables in your Project:
+Bridge creates 4 different types of tables in your Project:
 
 1. Health Data Summary Table, previously known as the appVersion table. This table contains a summary of all health data exported to Synapse. Each health data record is a single row in this table. This table is best used for statistics, reporting, and general health checks.
 2. Individual health data tables. Bridge creates a table for each revision of each schema. These tables contain the submitted health data. Each health data record is a single row in one of these tables.
-3. Study status table. Each export job (nightly or on-demand) appends a row to this table. This is used for advanced features not covered in this doc.
+3. Default Health Data Record Table. This is used for health data records that do not correspond to any particular schema (or for records whose schemas could not be found). Each health data record is a single row in this table.
+4. Study status table. Each export job (nightly or on-demand) appends a row to this table. This is used for advanced features not covered in this doc.
 
 ### Common Fields
 
@@ -93,7 +94,6 @@ Both the summary table and the health data tables contain a set of common fields
 |userSharingScope|Participant's sharing scope, representing what level of sharing they have consented to. The two possible values are:<ul><li>**ALL\_QUALIFIED\_RESEARCHERS** - Participant has consented to sharing their data with any researcher who qualifies given the governance qualifications of this data set.</li><li>**SPONSORS\_AND\_PARTNERS** - Participant has consented only to sharing their data with the original study researchers and their affiliated research partners. This data should not be shared with anyone else.</li></ul>|
 |validationErrors|Error messages indicating that this health data record failed validation. For example, the record may have missing required fields, may have fields of the wrong type, or may have multiple-choice answers that are not allowed.|
 |substudyMemberships|A mapping from substudy ID to the participant's external ID. If the participant is not in that substudy, there will be no entry for that particular substudy. A user might be in a substudy without an external ID. The data is in the format "&#124;[substudyId1]=[externalId1]&#124;[substudyId2]=[externalId2]&#124;".|
-|rawData|The unencrypted raw data uploaded by the participant.|
 
 ### Summary Table
 
@@ -108,3 +108,9 @@ The Health Data Summary Table (previously called the appVersion table) includes 
 In addition to common fields, health data tables also includes fields defined by [health data metadata](health_data_metadata.html) and by [schemas](schemas.html). See those pages for further information.
 
 Some fields in the health data tables are file handles (attachments). In the Synapse Web UI, these are displayed as links, which allow you to download the attached file. In the Synapse API or through the R, Python, or Java clients, these are file handle IDs, and require a separate call to Synapse to download the attached files.
+
+Lastly, every row in the health data tables also includes a rawData field, which includes a link to the raw JSON or zip file submitted by the client.
+
+### Default Health Data Record Table
+
+This table also includes the same common fields, health data metadata fields, and raw data fields as health data tables. The key difference is that records in this table do not correspond to any schema (or to non-existent schemas).

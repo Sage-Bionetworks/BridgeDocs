@@ -252,3 +252,7 @@ Schemas can be linked to [Shared Modules](shared_modules.html). You generally do
 ### surveyGuid/CreatedOn
 
 Schemas can be linked to a Survey. You generally don't need to specify these yourself. Rather, Bridge will automatically create a schema from a survey when you publish the survey, and will fill in the surveyGuid (string) and surveyCreatedOn (ISO8601 timestamp) automatically.
+
+## Schemaless Health Data
+
+Bridge now supports uploading health data without the use of a schema. If you submit health data without a schema ID (or if you reference a non-existent schema), Bridge will automatically export your data to the Default Health Data Record Table. This table includes all same [common fields as other tables](exporting_to_synapse.html#common-fields), as well as a rawData field including the raw submitted JSON or zip file as uploaded by the client app.
