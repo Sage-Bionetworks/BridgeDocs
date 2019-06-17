@@ -48,8 +48,8 @@ Bundles must include a JSON file called info.json, which looks like:
 |createdOn|Timestamp string in ISO8601 format, corresponding to when the health data measurement was recorded, similar to the timestamp in V1 Legacy "files" attribute.<br /><br />If both this attribute and "files" is present, this attribute takes precedence.|
 |dataFilename|(V2 Generic only) Name of file in the bundle that Bridge should treat as the primary data file for JSON attributes. For more information, see [V2 Generic Bundles](#v2-generic-bundles).|
 |format|Either "v1\_legacy" or "v2\_generic". If not specified, defaults to "v1\_legacy"|
-|item|This should be filled in with the schema ID corresponding to the data in this bundle.|
-|schemaRevision|This is an integer and should be filled in with the schema revision.|
+|item|This should be filled in with the schema ID corresponding to the data in this bundle. Do not include this field for Schemaless uploads.|
+|schemaRevision|This is an integer and should be filled in with the schema revision. Do not include this field for Schemaless uploads.|
 |appVersion|App version, as reported by the app. Generally in the form "version 1.0.0, build 2". Must be 48 chars or less.|
 |phoneInfo|Phone info, for example "iPhone9,3" or "iPhone 5c (GSM)". Should also include OS version if available. Must be 48 chars or less.|
 
@@ -458,8 +458,8 @@ After 5 to 30 seconds (depending on the size of the bundle), your bundle should 
 |record.data|Data parsed from the uploaded bundle into the health data record. For non-attachment fields, the data is inlined in this JSON object. For attachment fields, an attachment ID is used as the value in the key-value pairs.<br /><br />**IMPORTANT NOTE:** If this JSON object is empty, or if it doesn't contain the data you expect from your bundle, there is probably something wrong with your schema or with your bundle.|
 |record.userMetadata|Health data metadata, as submitted in the bundle.<br /><br />**NOTE:** There is a field called "metadata" in the response, which is different from "userMetadata". The "metadata" field refers to an old legacy feature and has no relation to health data metadata.|
 |record.id|Record ID. Very useful if you want to track your bundle's progress through Bridge Server all the way to Synapse. Be sure to remember this as part of your QA process.|
-|record.schemaId|Schema ID used to process your bundle.|
-|record.schemaRevision|Schema revision of the schema used to process your bundle.|
+|record.schemaId|Schema ID used to process your bundle. Null for Schemaless uploads.|
+|record.schemaRevision|Schema revision of the schema used to process your bundle. Null for Schemaless uploads.|
 |record.type|Always "HealthData". Identifies the response type.|
 |type|Always "UploadValidationStatus". Identifies the response type.|
 

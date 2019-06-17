@@ -9,7 +9,7 @@ Synchronous Health Data Submission works best if you have a small amount of data
 
 ## Setting Up Your Schema
 
-For Health Data Submission, the schemaType doesn't matter. However, the field is still required and you should still set it to something reasonable. If for whatever reason you're also using this schema for Bundle Zip File Uploads, you should set this value to be consistent with what a Bundle Zip File Upload would expect.
+If you're using a schema, the schemaType doesn't matter. However, the schemaType field is still required and you should still set it to something reasonable. If for whatever reason you're also using this schema for Bundle Zip File Uploads, you should set this value to be consistent with what a Bundle Zip File Upload would expect.
 
 The schema field names should match the keys in your submitted health data. For example, if your health data looks like
 
@@ -52,8 +52,8 @@ To submit health data, send an HTTP POST request to /v3/healthdata (or use your 
 |appVersion|App version, as reported by the app. Generally in the form "version 1.0.0, build 2". Must be 48 chars or less.|
 |createdOn|ISO8601 timestamp of when this data measurement was recorded. If the data was measured over a long period of time, the timestamp should represent when the data was last measured and written.<br /><br />Similar to timestamp data as described in [Schemas](schemas.html), apps should refrain from "canonicalizing" to a default timezone such as UTC, as this is a loss of data.|
 |phoneInfo|Phone info, for example "iPhone9,3" or "iPhone 5c (GSM)". Must be 48 chars or less.|
-|schemaId|Schema ID used to process your health data.|
-|schemaRevision|Schema revision of the schema used to process your health data.|
+|schemaId|Schema ID used to process your health data. Do not include this field for Schemaless health data.|
+|schemaRevision|Schema revision of the schema used to process your health data. Do not include this field for Schemaless health data.|
 |data|Health data to submit, as key-value pairs in a JSON object.|
 |metadata|Health data metadata, as key-value pairs in a JSON object. See [Health Data Metadata](health_data_metadata.html) for more details.|
 
@@ -81,8 +81,8 @@ You will get a response in the form
 |---|---|
 |data|The submitted health data. This is usually the same as the "data" field in the posted HTTP request. Some fields may be canonicalized according to the field types in the schema. If you have attachment fields, the value will be replaced with the attachment ID, which is a reference to the attachment.<br /><br />**IMPORTANT NOTE:** If there are fields missing, or if data is empty, there is probably something wrong with your schema or with your health data submission.|
 |id|Record ID. Very useful if you want to track your submission's progress through Bridge Server all the way to Synapse. Be sure to remember this as part of your QA process.|
-|schemaId|Schema ID used to process your health data.|
-|schemaRevision|Schema revision of the schema used to process your health data.|
+|schemaId|Schema ID used to process your health data. Null for Schemaless health data.|
+|schemaRevision|Schema revision of the schema used to process your health data. Null for Schemaless health data.|
 |type|Always "HealthData". Identifies the response type.|
 |userMetadata|Health data metadata, as submitted in the request.<br /><br />**NOTE:** There is a field called "metadata" in the response, which is different from "userMetadata". The "metadata" field refers to an old legacy feature and has no relation to health data metadata.|
 
