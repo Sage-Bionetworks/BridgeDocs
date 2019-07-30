@@ -7,7 +7,7 @@ layout: article
 <p>The REST API has been specified as a <a href="/rest-api/{{site.data.versions.java_sdk}}/rest-api/swagger.json">Swagger specification 
 file</a>, which can be used to generate a simple Bridge REST client in a wide 
 variety of languages. See <a href="http://swagger.io/">Swagger</a> for more 
-information.</p>
+information, or our <a href="swagger_guidance.html">Swagger Guidance</a> document for an explanation of how we interpret the Swagger 2.0 specification).</p>
 
 <dl>
     <dt><a href="/swagger-ui/index.html" target="_blank" rel="noopener">API Browser</a></dt>
