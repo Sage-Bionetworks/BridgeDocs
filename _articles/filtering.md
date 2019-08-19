@@ -7,17 +7,36 @@ layout: article
 
 As described in [Study Design](/articles/study_design.html), study content can be tailored to users for the purpose of implementing features like app updates, localization, or study cohorts. 
 
-On the server, [Subpopulations](/#Subpopulation) (consent groups) and [Schedules](/#SchedulePlan) can both be configured with the information in the [Criteria](/#Criteria) object. Clients can then send the `User-Agent` and `Accept-Language` headers, and along with data groups you assign to each participant, the server can filter the objects for a given user.
+The following server objects can be filtered based on the caller requesting them:
 
-**Filtering is opt-in**: if a request doesn't include filtering information, everything is applied to that user.
+* [Subpopulations](/#Subpopulation) (consent groups);
+* [Schedules](/#SchedulePlan) (and through schedules, specific surveys or tasks);
+* [App configs](/#AppConfig) (and through app configs, specific app config elements);
+* [Templates](/#Template);
+* [Notification topics](/#NotificationTopic).
+
+Each object includes a [Criteria](/#Criteria) property that matches the following aspects of a request or authenticated user:
+
+* The language of the requesting user (as specified in the `Accept-Language` header);
+* The minimum or maximum version of the app making the call on a specific platform (as specified in the `User-Agent` header using a Bridge-specific format);
+* Data groups that the user is required or prohibited from having (authenticated requests only);
+* Substudies that the user is required or prohibited from being a member of (authenticated requests only);
+
+**Filtering is opt-in**: if a request doesn't include filtering information, all objects will be considered to be relevant for that user.
 
 Subpopulation filtering returns *all matches that apply,* because a user may have more than one applicable consent agreement they must agree to.
 
-Criteria schedule plans return *the first applicable schedule.* The plan examines the criteria for each potential schedule, in order, until a match is found. It then uses that schedule to schedule tasks for the participant.
+Other objects return *the first matching object.* Note that the language preference weight of the `Accept-Language` header is honored, so this is the first match with the results ordered by language preference.
+
+For example, if a request for an app config included the following header:
+
+    Accept-Language: fr-CH, fr;q=0.9, en;q=0.8, de;q=0.7, *;q=0.5
+
+And there were three app configs, specifying the languages English, German, and French (in that order), the request would return the French language app config, even though the English language app config matches first, simply because the user has indicated that they prefer French to English.
 
 ## On the server: Criteria
 
-When creating server configuration, all fields in the criteria object are optional. If a field is not provided, then all participants are assumed to match on that criteria. 
+When creating server configuration, all fields in the criteria object are optional. If a field is not provided, then all participants are assumed to match on that aspect of the criteria. 
 
 For example, if `allOfGroups` is an empty array, the participant can be assigned any data groups and they will match when selecting server objects. If no `User-Agent` header is included with a request, no filtering will be done based on the version of the application. And so forth.
 
@@ -28,25 +47,34 @@ For example, if `allOfGroups` is an empty array, the participant can be assigned
 |maxAppVersions|Object|This object maps operating system names to a maximum app version. For example, "iPhone OS" may be set to version 2, while "Android" might be set to version 10. Any operating system names can be used, but these two strings are expected for these two common mobile operating systems. The object associated with these criteria should be returned to participants only if the User-Agent header specifies an application version that is equal to or less than the version given for that operating system. Minimum and maximum values, when both specified, indicate a range of valid application version numbers. If no value for the operating system, there is no maximum required version.|
 |allofGroups|String[]|The object associated with these criteria should be returned to participants only if the user making the request has been assigned *ALL* of the data groups contained in this set (duplicate values in the array are removed). If the set is empty, there are no required data groups. Data groups must be defined as part of the [Study](/#Study) object before they can be included in this set or assigned to participants, and the same data group cannot be in the allOfGroups and noneOfGroups sets at the same time|
 |noneOfGroups|String[]|The object associated with these criteria should be returned to participants only if the user making the request has been assigned *NONE* of the data groups contained in this set (duplicate values in the array are removed). If the set is empty, there are no prohibited data groups. Data groups must be defined as part of the [Study](/#Study) object before they can be included in this set or assigned to participants, and the same data group cannot be in the allOfGroups and noneOfGroups sets at the same time.|
+|allOfSubstudyIds|String[]|The object associated with these criteria should be returned to participants only if the user making the request has been assigned to *ALL* of the substudies in this set (duplicate values of the array are removed). If the set is empty, there are no required substudy memberships. The same substudy IDs cannot be in the allOfSubstudyIds and noneOfSubstudyIds sets at the same time.|
+|noneOfSubstudyIds|String[]|The object associated with these criteria should be returned to participants only if the user making the request has been assigned *NONE* of the substudies contained in this set (duplicate values in the array are removed). If the set is empty, there are no prohibited substudy memberships. The same substudy ID cannot be in the allOfGroups and noneOfGroups sets at the same time.|
 
 ### Example
 
 ```json
-{ 
-    "language": "en",
-    "minAppVersions": {
-        "iPhone OS": 3,
-        "Android": 10
+{
+    ...
+    "criteria": {
+        "language": "en",
+        "minAppVersions": {
+            "iPhone OS": 3,
+            "Android": 10
+        },
+        "maxAppVersions": {
+            "iPhone OS": 22
+        },
+        "allOfGroups":["b","a"],
+        "noneOfGroups":["c","d"],
+        "allOfSubstudyIds":[],
+        "noneOfSubstudyIds":["sage"],
+        "type": "Criteria"
     },
-    "maxAppVersions": {
-        "iPhone OS": 22
-    },
-    "allOfGroups":["b","a"],
-    "noneOfGroups":["c","d"]
+    "type": "SomeFilterableObject"
 }
 ```
 
-In this example the iOS application would only see the object if it was a version between 3-22, while an Android application would see the object if it was version 10 or greater (no upper limit). The user would have to have data groups "a" and "b", and could not have data groups "c" and "d". Finally, the user would need to declare English as an accepted language. 
+In this example the iOS application would only see the object if it was a version between 3-22, while an Android application would see the object if it was version 10 or greater (no upper limit). The user would have to have data groups "a" and "b", and could not have data groups "c" and "d". Finally, the user would need to declare English as an accepted language, and they cannot be in the Sage Bionetworks (`sage`) substudy.
 
 ## From the client
 
@@ -72,14 +100,26 @@ The [Java REST client](/articles/java.html) provides APIs to set this header thr
 
 The user's language preference is provided using the standard semantics of the HTTP `Accept-Language` header. Because study requirements can change significantly based on a user's language, Bridge saves these language preferences in the user's participant record and does not use different language preferences after that. 
 
-The `Accept-Language` header value is typically captured and persisted during sign up (as long as the application sends it). If you wish to allow a user to change their language choice after enrolling, you will need to update the language using the user's participant record.
+**Note that we can only use a persisted language choice for authenticated calls.** The following table describes what can be matched for the API calls associated to each object:
 
-The participat record stores language preferences as an ordered list of two-letter language codes, from most desired to least desired (but still acceptable) language choice. For example, "en, fr" would indicate that the server should return English resources if they exist, or French otherwise. 
+|Name|Authenticated?|Applicable criteria|
+|---|---|---|
+|Subpopulations|Yes|All criteria, using headers or user settings|
+|Schedules|Yes|All criteria, using headers or user settings|
+|App configs|No|Language and app/platform from HTTP headers|
+|Templates|Mostly No|Language and app/platform from HTTP headers|
+|Notification topics|Yes|All criteria, using headers or user settings|
 
-**Note that if the user's language match changes, this may infer a change in the governance jurisdiction of the user. This is why we will not change the language choice even if a user updates the language preferences on their device and starts sending a different `Accept-Language` header.**
+The `Accept-Language` header value is typically captured and persisted on sign in (as long as the application sends it). If you wish to allow a user to change their language choice after enrolling, you will need to update the language using the user's participant record.
+
+The participant record stores language preferences as an ordered list of two-letter language codes, from most desired to least desired (but still acceptable) language choice. For example, "en, fr" would indicate that the server should return English resources if they exist, or French otherwise. 
 
 ### Data groups
 
-Finally, data groups are string "tags" that are assigned to a participant's record using the participant record APIs. The server will also filter content based on the data groups of the participant making a request. They do not have to be sent with the request (the server knows them already). They can really represent anything about a group of users that you need to track through the Bridge server, for filtering or any other purpose. 
+Data groups are string "tags" that are assigned to a participant's record using the participant record APIs. The server will also filter content based on the data groups of the participant making a request. They do not have to be sent with the request (the server knows them already). They can really represent anything about a group of users that you need to track through the Bridge server, for filtering or any other purpose. 
 
 To prevent abuse of data groups, all possible data group strings must be defined beforehand as part of the [Study](/#Study) object.
+
+### Substudies
+
+Finally, users can be assigned to substudies, usually by signing up with an external ID (which is associated to a specific substudy), or by matching and consenting to a specific consent group. Content can be filtered to include or exclude users based on their substudy memberships.
