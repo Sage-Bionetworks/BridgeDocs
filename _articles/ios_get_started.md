@@ -195,7 +195,7 @@ Active task modules built by Sage Bionetworks require these frameworks as depend
 
 * Research/ResearchMotion.framework - A framework that includes a standard motion sensor recorder and permission handling.
 * Research/ResearchLocation.framework - A framework that includes a standard GPS distance recorder and permission handling.
-* BridgeApp/DataTracking.framwork - A WIP framework used by Sage for tracking user data.
+* BridgeApp/DataTracking.framework - A WIP framework used by Sage for tracking user data.
 
 ### 3. Modify `AppDelegate` to inherit from `SBAAppDelegate`
 
