@@ -8,13 +8,96 @@ uses [BridgeApp](https://github.com/Sage-Bionetworks/BridgeApp-Apple-SDK "Bridge
 to link [BridgeSDK](https://github.com/Sage-Bionetworks/Bridge-iOS-SDK "BridgeSDK") 
 with [SageResearch](https://github.com/Sage-Bionetworks/SageResearch "SageResearch").
 This is not intended as a full guide to building iOS applications, but only as a guide
-to step your through the more convoluted parts of initial setup.  This guide is a work-in-progress
+to step you through the more convoluted parts of initial setup.  This guide is a work-in-progress
 and will be updated as functionality is added by the Bridge team to support shared tasks and 
 activities.
 
+## Github Project Setup
+
+### 1. Create the repo on github 
+
+This [link](https://help.github.com/articles/adding-an-existing-project-to-github-using-the-command-line/ "Add Project to Github") 
+has instructions for adding an existing project via the command line. 
+
+### 2. Clone the project locally
+
+Note: If you use iCloud to manage your Documents directory, you should clone your repository to a different location to avoid performance issues.
+
+## Carthage Setup
+
+We use [Carthage](https://github.com/Carthage/Carthage "Carthage") for dependency management. Once Swift Package Manager supports bundled resources we will work to support that dependency tool as well.
+
+### 1. Create Cartfile
+
+```
+touch Cartfile
+open -a Xcode Cartfile 
+```
+
+Edit your Cartfile to include pointers to the projects that your app will depend upon. For example, the mPower Cartfile looks like this:
+
+```
+github "Sage-Bionetworks/SageResearch" ~> 2.4
+github "Sage-Bionetworks/BridgeApp-Apple-SDK" ~> 3.0
+github "Sage-Bionetworks/MotorControl-iOS" ~> 1.6
+```
+
+This tells developers that MotorControl, SageResearch, and BridgeApp are all directly referenced by the mPower application. If you do not directly use SageResearch, you do not need to add it as a dependency since BridgeApp and MotorControl will resolve the appropriate dependencies for you.
+
+Note: Check the github repositories for the latest versions of these dependencies to ensure that you are getting the most recent versions. This article will not always be up-to-date with the latest recommended versions.
+
+### 2. Create Cartfile.private (Optional)
+
+```
+touch Cartfile.private
+open -a Xcode Cartfile.private 
+```
+
+If you are intending to create a framework that can be used by other developers that does *not* depend upon Bridge, but will be including a sample or demo application that does, then you may wish to include `github "Sage-Bionetworks/BridgeApp-Apple-SDK" ~> 3.0` in a private Cartfile instead. That will allow you to set up your application to use Bridge and Synapse without requiring developers that use the frameworks you have created to *also* import `BridgeApp`.
+
+[CardiorespiratoryFitness-iOS](https://github.com/Sage-Bionetworks/CardiorespiratoryFitness-iOS "CardiorespiratoryFitness-iOS") includes an example where this set up is used. That github project includes a validation application that pushes results to Bridge using BridgeApp and BridgeSDK but the framework can be imported by projects that do not use Bridge because it is included as a private dependency.
+
+### 3. Create a `setup` script file
+
+```
+mkdir bin
+touch bin/setup
+chmod 755 bin/setup
+open -a Xcode bin/setup
+```
+
+Edit the setup file to run Carthage updates. For mPower, the setup file looks like this:
+
+```
+#!/usr/bin/env sh
+
+if ! command -v carthage > /dev/null; then
+printf 'Carthage is not installed.\n'
+printf 'See https://github.com/Carthage/Carthage for install instructions.\n'
+exit 1
+fi
+
+carthage update --platform iOS --use-submodules --no-use-binaries --no-build
+```
+
+This sets up Carthage to only include dependencies for the iOS platform, to use submodules, to not use binaries, and to not attempt to build the project from the command line. While there are other ways that developers may choose to set up Carthage, the set up that is described in this article does not require building at this step. The frameworks are embedded and built dynamically using Xcode in the next section.
+
+### 4. Run the setup executable
+
+```
+bin/setup
+```
+
+This will set up your Cartfile.resolved file, check out the submodules, and resolve all dependencies.
+
+### 5. Commit your changes and push
+
+Once you have set up Carthage, we recommend committing your changes and pushing to GitHub.
+
+
 ## Xcode Project Setup
 
-### 1. Create a new project
+### 1. Create a new workspace and app project
 
 It is better to start with a new project rather than attempt to modify the sample apps that are included 
 with [SageResearch](https://github.com/Sage-Bionetworks/SageResearch "SageResearch") or 
@@ -22,6 +105,10 @@ with [SageResearch](https://github.com/Sage-Bionetworks/SageResearch "SageResear
 First, these projects are *not* set up to be able to release a production iOS app to the App Store or as an 
 Enterprise App. Second, you cannot then save your changes to github because these projects are read-only 
 *examples*.
+
+You should start with a workspace to make Carthage dependency management easier to maintain and build.
+
+From within Xcode, first create a Workspace that is named after your app project. Then add the app project to that workspace. Optionally, if you are planning to add task modules that can be shared across projects, you may wish to create a separate project within the workspace for those frameworks. This will allow for simpler management of Carthage dependencies as well as moving the framework to a separate github repo at a later time should you desire.
 
 ### 2. Add Capabilities
 
@@ -72,50 +159,43 @@ required privacy permission keys is available
 
 The Main storyboard should only be displayed to a signed in user.
 
-## Github Project Setup
-
-### 1. Create the repo on github 
-This [link](https://help.github.com/articles/adding-an-existing-project-to-github-using-the-command-line/ "Add Project to Github") 
-has instructions for adding an existing project via the command line.
-
-### 2. Adding [BridgeApp](https://github.com/Sage-Bionetworks/BridgeApp-Apple-SDK "BridgeApp") as a submodule
-This [link](https://github.com/blog/2104-working-with-submodules "Working with Submodules") 
-gives a good overview of working with submodules.  
-
-[BridgeApp](https://github.com/Sage-Bionetworks/BridgeApp-Apple-SDK "BridgeAppSDK") is setup to include
-pointers to the submodule commits for all included frameworks that it references so you do not need to 
-add those submodules separately. To do this, you will need to add the submodule for BridgeApp and then
-update the submodules that it references.
-
-````
-git submodule add https://github.com/Sage-Bionetworks/BridgeApp-Apple-SDK.git BridgeApp-Apple-SDK
-cd BridgeApp-Apple-SDK/
-git submodule update --init --recursive
-cd ..
-````
-
 ## Bridge Setup
 
-### 1. Add BridgeApp.xcodeproj to your Xcode project
+Due to certain limitations in how Xcode manages Info.plist permissions and building applications that use app extensions, both [SageResearch](https://github.com/Sage-Bionetworks/SageResearch "SageResearch") and [BridgeApp](https://github.com/Sage-Bionetworks/BridgeApp-Apple-SDK "BridgeApp") require embedding multiple frameworks. Which ones your app will require will depend upon your use-case.
 
-Highlight the `Frameworks` group within your Xcode project. Select `Add Files to...` 
-to open a file selection dialog. Select all the projects that are required by BridgeApp:
+### 1. Open Finder and drag the following Xcode projects into your workspace:
 
-* `\BridgeApp\BridgeApp.xcodeproj` 
-* `\BridgeApp\BridgeSDK\BridgeSDK.xcodeproj`
-* `\BridgeApp\Research\Research.xcodeproj`
-* `\BridgeApp\ResearchUI\ResearchUI.xcodeproj`
+* Carthage/Checkouts/BridgeApp-Apple-SDK/BridgeApp/BridgeApp.xcodeproj/
+* Carthage/Checkouts/Bridge-iOS-SDK/BridgeSDK.xcodeproj/
+* Carthage/Checkouts/SageResearch/Research/Research.xcodeproj/
 
-
-### 2. Add each Framework as an Embedded Binary
+### 2. Embed frameworks required for your application:
 
 * Select the App project and select the `General` settings tab.
 * Under `Embedded Binaries` select the `+` button.
-* Add each of the Framework binaries listed above. 
-* Then under `Linked Frameworks and Libraries` move the `BridgeAppSDK.framework` to 
-build **after** the other frameworks.
+* Add each of the frameworks listed below.
+* After linking the binaries for each framework, build the project.
 
-After linking the binaries for each framework, build the project.
+##### Always
+
+* BridgeApp/BridgeApp.framework (iOS)
+* BridgeSDK/BridgeSDK.framework
+* Research/Research.framework (iOS)
+
+BridgeApp requires both Research and BridgeSDK. It is the "glue" that connects Research tasks and Bridge surveys together.
+
+##### Recommended
+
+* BridgeApp/BridgeAppUI.framework (iOS) - BridgeAppUI is recommended for applications that run on iOS. It includes view controllers and app delegate classes that are useful for jump-starting a new application.
+* Research/ResearchUI.framework (iOS) - ResearchUI includes view controllers and views that can be used to run a task on an iOS device.
+
+Active task modules built by Sage Bionetworks require these frameworks as dependencies. These frameworks are *not* designed for app extensions and should not be included for those targets.
+
+##### Optional
+
+* Research/ResearchMotion.framework - A framework that includes a standard motion sensor recorder and permission handling.
+* Research/ResearchLocation.framework - A framework that includes a standard GPS distance recorder and permission handling.
+* BridgeApp/DataTracking.framework - A WIP framework used by Sage for tracking user data.
 
 ### 3. Modify `AppDelegate` to inherit from `SBAAppDelegate`
 
