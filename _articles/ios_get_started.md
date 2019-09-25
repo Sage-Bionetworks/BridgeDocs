@@ -53,7 +53,7 @@ touch Cartfile.private
 open -a Xcode Cartfile.private 
 ```
 
-If you are intending to create a framework that can be used by other developers that does *not* depend upon Bridge, then you may wish to include `github "Sage-Bionetworks/BridgeApp-Apple-SDK" ~> 3.0` in a private Cartfile instead. That will allow you to set up your application to use Bridge and Synapse without requiring developers that use the frameworks you have created to *also* import `BridgeApp`.
+If you are intending to create a framework that can be used by other developers that does *not* depend upon Bridge, but will be including a sample or demo application that does, then you may wish to include `github "Sage-Bionetworks/BridgeApp-Apple-SDK" ~> 3.0` in a private Cartfile instead. That will allow you to set up your application to use Bridge and Synapse without requiring developers that use the frameworks you have created to *also* import `BridgeApp`.
 
 [CardiorespiratoryFitness-iOS](https://github.com/Sage-Bionetworks/CardiorespiratoryFitness-iOS "CardiorespiratoryFitness-iOS") includes an example where this set up is used. That github project includes a validation application that pushes results to Bridge using BridgeApp and BridgeSDK but the framework can be imported by projects that do not use Bridge because it is included as a private dependency.
 
