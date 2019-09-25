@@ -80,7 +80,7 @@ fi
 carthage update --platform iOS --use-submodules --no-use-binaries --no-build
 ```
 
-This sets up Carthage to only include for the iOS platform, use submodules, don't use binaries, and do not attempt to build from the command line. While there are other ways that developers may choose to set up Carthage, the set up that is described in this article does not require building at this step. The frameworks are embedded and built dynamically using Xcode in the next section.
+This sets up Carthage to only include dependencies for the iOS platform, to use submodules, to not use binaries, and to not attempt to build the project from the command line. While there are other ways that developers may choose to set up Carthage, the set up that is described in this article does not require building at this step. The frameworks are embedded and built dynamically using Xcode in the next section.
 
 ### 4. Run the setup executable
 
