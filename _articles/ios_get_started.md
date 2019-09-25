@@ -108,7 +108,7 @@ Enterprise App. Second, you cannot then save your changes to github because thes
 
 You should start with a workspace to make Carthage dependency management easier to maintain and build.
 
-From within Xcode, first create a Workspace that is named after your app project. Then add the app project to that workspace. Optionally, if you are planning to add task modules that can be shared across projects, you may wish to create a separate project within the workspace for those frameworks. This will allow for simplier management of Carthage dependencies as well as moving the framework to a separate github repo at a later time should you desire.
+From within Xcode, first create a Workspace that is named after your app project. Then add the app project to that workspace. Optionally, if you are planning to add task modules that can be shared across projects, you may wish to create a separate project within the workspace for those frameworks. This will allow for simpler management of Carthage dependencies as well as moving the framework to a separate github repo at a later time should you desire.
 
 ### 2. Add Capabilities
 
