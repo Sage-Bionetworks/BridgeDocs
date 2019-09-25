@@ -92,7 +92,7 @@ This will set up your Cartfile.resolved file, check out the submodules, and reso
 
 ### 5. Commit your changes and push
 
-Once you have set up Carthage, we recommend commiting your changes and pushing to github.
+Once you have set up Carthage, we recommend committing your changes and pushing to GitHub.
 
 
 ## Xcode Project Setup
