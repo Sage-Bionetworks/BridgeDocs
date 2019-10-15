@@ -241,6 +241,9 @@ function processProperty(definitions, propName, def, property) {
     }
   }
   property.required = (def.required.indexOf(propName) > -1);
+  if (property.required) {
+    property.optional = false;
+  }
   if (property.enum) {
     property.type = "Enumeration";
   }
