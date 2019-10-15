@@ -73,3 +73,9 @@ For the [intent to participate](/articles/consent.html#scenario-3-consent-before
 You can provide separate links for iOS and Android and the API will use the submitted `osName` (`iOS` or `Android`) to select a link for inclusion in the the message template (see below). If you wish to do content negotiation and forward the user from an intermediate web site, you can provide one `Universal` link. The system will look first for the OS-specific link, then fallback to the universal link if it is defined.
 
 This install link will be embedded in the "App Install Link" email or SMS template, depending on what identifying credential was submitted to the [Intent To Participate API](/swagger-ui/index.html#/Intent%20To%20Participate/submitIntentToParticipate). If you are using the universal link, you can also just include it directly in the templates, since it will never change.
+
+## Hosted Files
+
+Developers can upload [hosted files](/articles/hosted_files.html) to Bridge that can be referenced in your app config files. Once a file revision has been uploaded through the Bridge Study Manager, the app config JSON includes a "files" property that can include an array of [FileReference](/model-browser.html#FileReference) objects. These include an "href" property with an URL that can be used to download the file. 
+
+Referencing key files (even other configuration files) in your app config file will allow you to issue updates or fixes to your installed app base, as long as your apps periodically retrieve and check the app config file. This will need to be balanced with the performance cost of downloading files, using the phone's network and your user's cellular data plan.
