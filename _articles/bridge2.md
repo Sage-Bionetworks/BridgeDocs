@@ -3,8 +3,6 @@ title: Evolution of the Bridge System
 layout: article
 ---
 
-vi 
-
 CLIENT DOMAIN
 
 App Config (/v3/appconfigs and /v3/appconfigs/elements)
