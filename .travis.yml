@@ -3,6 +3,8 @@ language: python
 python: 3.5
 cache: pip
 fast_finish: true
+rvm:
+  - ruby 2.5.3p105
 branches:
   only:
   - release
