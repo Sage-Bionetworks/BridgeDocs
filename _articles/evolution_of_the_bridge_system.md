@@ -1,6 +1,7 @@
 ---
 title: Evolution of the Bridge System
 layout: article
+nav: nav
 ---
 
 The Bridge platform encompasses two principle domains: *the mobile app domain,* including support for the mobile app development lifecycle and support for a mobile app in production; and the *scientific research domain,* which includes the APIs to conduct research.
