@@ -8,6 +8,7 @@ layout: article
 <div id="toc"></div>
 
 ## Introduction 
+
 Any activity a user performs in your app that collects data for scientific research is called an *assessment* in Bridge. 
 
 Answering a survey, filling out a medication tracker, or doing a test with device sensors are all assessments of your participant. Assessments with good scientific validity are a team effort involving scientists and software engineers. Bridge provides features to share validated assessments between apps, and within the studies that are conducted in an app. These assessments can then be scheduled for participants who have been allocated to one or more arms of your study. The system allows for controlled customization of these assessments as a software component in your app.
