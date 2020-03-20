@@ -13,11 +13,13 @@ Any activity a user performs in your app that collects data for scientific resea
 
 Answering a survey, filling out a medication tracker, or doing a test with device sensors are all assessments of your participant. Assessments with good scientific validity are a team effort involving scientists and software engineers. Bridge provides features to share validated assessments between apps, and within the studies that are conducted in an app. These assessments can then be scheduled for participants who have been allocated to one or more arms of your study. The system allows for controlled customization of these assessments as a software component in your app.
 
-The [Assessments API](/swagger-ui/index.html#/Assessments) has two main components. First, an [Assessment](/model-browser.html#Assessment) and its associated [ExternalResource](/model-browser.html#ExternalResource) links provide documentation for the assessment (both technical and scientific). We expect most documentation will live outside of our shared assessment tools, hosted in places like Sage Bionetworks’ [Synapse wikis](https://docs.synapse.org/articles/wikis.html) or on [Github](https://github.com/). Second, each assessment has an associated [configuration] that Bridge’s client app SDK uses to present the user interface in an app. 
+[![Bridge Assessment Model](/images/BridgeAssessmentModel.svg)](/images/BridgeAssessmentModel.svg)
+
+The [Assessments API](/swagger-ui/index.html#/Assessments) has two main components. First, an [Assessment](/model-browser.html#Assessment) and its associated [ExternalResource](/model-browser.html#ExternalResource) links provide documentation for the assessment (both technical and scientific). We expect most documentation will live outside of our shared assessment tools, hosted in places like Sage Bionetworks’ [Synapse wikis](https://docs.synapse.org/articles/wikis.html) or on [Github](https://github.com/). Second, each assessment has an associated configuration that Bridge’s client app SDK uses to present the user interface in an app. While this configuration drives the implementation of an assessment’s UI and is intended for client app developers, the metadata and customization APIs allow for controlled customization of these configurations by study designers. The assessment metadata indicates specific fields that can be customized for your app, without undermining the scientific validity of the assessment. 
 
 Assessments are conceptually organized into an ordered set of revisions that share a common `identifier`. The higher the `revision` number, the more recently that revision should have been created (although this isn’t strictly enforced; the `createdOn` timestamp can be used to determine the actual temporal order of revisions). Each assessment revision can *also* be retrieved by a unique GUID, which is easier to work with than an `identifier` and `revision` value. Revisions logically replace one another and form a history of changes to an assessment.
 
-Bridge has a shared assessment library of validated, high-quality assessments that researchers can include in their apps. Once copied for use in an app, they can be scheduled as part of a study design. The assessment also indicates specific fields that can be customized for your app, without undermining the scientific validity of the assessment. 
+Bridge has a shared assessment library of validated, high-quality assessments that researchers can include in their apps. Once copied for use in an app, they can be scheduled as part of a study design. 
 
 ## Using assessments
 
@@ -41,50 +43,95 @@ Curated assessments are available through our [Shared Assessments APIs](/swagger
 |website|Any other website.|
 |other|Any other kind of resource that might not be linkable (if you  can link to it, it may be better to categorize it as a website).|
 
-To use a shared assessment, it must be [imported into your app](/swagger-ui/index.html#/Shared%20Assessments/importSharedAssessment). You must be signed in to the app context on Bridge, and you must include the ID of the organization that will own the local copy of the shared assessment (in most cases, there is only one choice here: your own organization). Everyone working on an app (in all organizations) will be able to see and schedule this assessment, but only members of the owning organization will be able to edit or customize the assessment.
-
-[TODO: customization]
+To use a shared assessment, it must be [imported into your app](/swagger-ui/index.html#/Shared%20Assessments/importSharedAssessment). You must be signed in to the app context on Bridge, and you must include the ID of the organization that will own the local copy of the shared assessment (in most cases, there is only one choice here: your own organization). Everyone working on an app (in all organizations) will be able to see and schedule this assessment, but only members of the owning organization will be able to edit or customize the assessment. The imported assessment has a link to the shared assessment so you can retrieve all of the resources that document the assessment.
 
 ## Developing assessments
 
 ### Assessment metadata
 
-Assessments will begin their development lifecycle in a specific app context. At first, they are likely to be thin on documentation as developers work out the appropriate configuration to drive the right UI and collect the right data. 
+Assessments will begin their development lifecycle in a specific app context. At this point the assessment object is sparse as developers work out an appropriate configuration for the assessment. Once the assessment has been tested and validated, appropriate documentation can be added through the `Assessment` fields and its associated `ExternalResource`s. It can then be [published to the shared assessment library](/swagger-ui/index.html#/Assessments/publishAssessment). When the assessment record is published, a locked copy of the configuration will be published with it as well. The resources documenting the assessment [can then also be published](/swagger-ui/index.html#/Assessments/publishAssessmentResource) to the shared library.
 
-Once the assessment has been tested and validated, and appropriate documentation has been prepared, it can be [published to the shared assessment library](/swagger-ui/index.html#/Assessments/publishAssessment). The assessment, all its resources, and its configuration will be copied to the shared library. 
+If the assessment has never been published to the library before (its identifier is unique), it will be published at revision 1. Otherwise it will be published at the next highest revision number.
 
-If the assessment has never been published to the library before (its identifier is unique), it will be published at revision 1.
+The *local* copy of the published assessment will be updated to reflect that it is now a logical “copy” of the newly shared assessment (its `originGuid` will be set to the GUID of the new shared assessment revision, and its configuration node tree will be marked as “locked”). 
 
-Otherwise it will be published at the highest existing revision number + 1. *All the existing ExternalResource records in the shared library for this assessment stream will be deleted and replaced with the ExternalResource records in the local study.*
-
-The *local* assessment will be updated to reflect that it is now a logical “copy” of the new shared assessment (its `originGuid` will be set to the GUID of the new shared assessment revision, and all its configuration nodes will be marked as “locked”).
-
-After publication, if any part of the local assessment is updated (metadata *or* configuration), it will lose its link to the shared assessment. If another assessment links to nodes in this assessment’s configuration tree, an update of *that* assessment will copy the shared nodes on write so the linked assessment remains unchanged. Like any other copy of a shared component, however, the local assessment *can* be customized through the customization API.
-
-In the shared assessment library, members of the owning organization will be able to edit the metadata of the shared assessment (the assessment and resources), *but not the shared configuration.* To change the configuration, you will need to publish a new revision of your assessment (which should be treated like any other software release).
+While members of the owning organization will be able to edit the metadata of shared assessments (the assessment and resources), *they will not be able to edit the shared configuration.* To change the configuration, you will need to publish a new revision of your assessment (which should be treated like any other software release; see below).
 
 <div class="ui icon message">
   <i class="circle info icon"></i>
-  <p style="margin:0"><b>Why are assessment configurations “locked”?</b> The configurations define the code that collects and formats the data produced by the assessment. Changing the configuration could inadvertently change the structure, formatting, or semantic meaning of the data produced. This could invalidate the assessment’s scientific utility.</p>
+  <p style="margin:0"><b>Why are shared assessment configurations “locked”?</b> The configurations define the code that collects and formats the data produced by the assessment. Changing the configuration could inadvertently change the structure, formatting, or semantic meaning of the data produced. This could invalidate the assessment’s scientific utility.</p>
 </div>
 
-### Assessment configuration
+Alternatively, you may find a shared assessment that you wish to [import into your app context](/swagger-ui/index.html#/Shared%20Assessments/importSharedAssessmentResource). Importing will create a local copy that will have its `originGuid` set to the GUID of the shared assessment revision, and all its configuration nodes will be marked as “locked”. (If you are only interested in using the assessment, there is no need to import the resources as these are the same as the documentation of the shared assessment.)
 
-[now talk about the configuration]
+Thus no matter how you create a copy of a shared assessment (publishing or importing), your local copy will be the same:
+
+- if it is updated (metadata *or* configuration), it will lose its link to the shared assessment;
+- if another assessment links to nodes in this assessment’s configuration tree (because nodes can be shared between assessments), an update of *that* assessment will copy the shared nodes on write so the referenced configuration node tree remains unchanged. 
+
+However, the local copy of a shared component *can* be customized through the customization API while still being linked to a shared assessment (while still being considered a valid instance of the assessment).
+
+If you do wish to change a local copy of a shared assessment (e.g. to fix bugs or introduce new behavior), you can do so. If you are a member of the organization that owns the shared assessment, you can publish it as a later revision of the shared assessment. Otherwise you can change the identifier and publish it as a new kind of assessment in the shared library. 
+
+If you want to edit the resources that document the assessment, you have these choices (best done as part of publishing a new revision in the shared library):
+
+- edit the `ExternalResource` in the shared library (for example, you can change the `minRevision` and `maxRevision` fields to reflect whether or not the resource is applicable to the new revision);
+- create a new `ExternalResource` and publish it to the shared library;
+- delete a resource in the shared library (be careful with this option. if it applies to an older revision of the shared assessment, do not delete it and instead, set a `maxRevision` value).
+- import an `ExternalResource`, edit it, and then publish it at the time you publish the rest of the assessment (this last option just lets you coordinate your updates to the shared library).
 
 ### Configuration customization
 
-The `customizationFields` of the [Assessment](/model-browser.html#Assessment) model specifies the specific nodes and fields of an `AssessmentNode` that can be changed without invalidating the assessment (changes are made to a copy of a shared assessment in an app context). The field looks like this:
+The `customizationFields` of the [Assessment](/model-browser.html#Assessment) model specifies the specific nodes and fields of an `AssessmentNode` that can be changed without invalidating the assessment (changes are made to the local copy of the shared assessment). The field looks like this:
 
 ```json
 {
   "Bnm_u6qFhrdmvW82nx2nFRyi": [
-    "label", "prompt"
+    "label", 
+    "prompt"
   ],
   "L4gdW7rIttLVuurmBg5P9k5x": [
-    "metadata:back_button_label", "metadata:forward_button_label"
+    "metadata:back_button_label", 
+    "metadata:forward_button_label"
   ]
 }
 ```
 
 These customization options allow the local copy of the assessment to be changed through the configuration API in specific ways: the node with GUID "Bnm\_u6qFhrdmvW82nx2nFRyi" allows the `label` and `prompt` fields to be updated; and the node with the GUID "L4gdW7rIttLVuurmBg5P9k5x" allows two keys in its `metadata` map to be updated: `back_button_label` and `forward_button_label`.
+
+## Assessment configuration
+
+The assessment configuration is represented through a tree of `AssessmentNode` objects. The nodes provide support for both strict typing, and a more dynamic declaration of type information by assessment designers. The systems work together to provide flexibility in configuration development, while providing certain benefits, like the validation of configuration syntax.
+
+Configuration can be loaded and updated separately from the metadata that describes an assessment, through a separate set of APIs. Client apps will generally only be concerned with the assessment configuration, while study designers may only work with what can be customized in the configuration through the customization API.
+
+### Strict type system
+
+The [AssessmentNode](/model-browser.html#AssessmentNode) is the root type of a type hierarchy that captures some common building blocks of app assessments. This base node includes basic information for UIs that may or may not be used depending on the position of the node in the tree. The meaning of a field like `label` or `prompt` thus depends on the position and type of the node in the tree.
+
+Subtypes of this node capture further information for common configuration items like questions, forms, surveys, and sections. Here is the currently proposed class hierarchy of sub-types which will replace Bridge’s existing "task identifier" and `Survey` model:
+
+[![Assessment type hierarchy  ](/images/AssessmentTypeHierarchy.svg)](/images/AssessmentTypeHierarchy.svg)
+
+Strictly typed nodes can capture more specific configuration information, and the server can validate the configuration (e.g. a survey node can only contain form or section child nodes; a form can only contain input types; a date control cannot set the latest allowable date to a date before the earliest allowable date).
+
+### Dynamic type system
+
+In addition, the assessment configurations provide for some dynamic typing through three mechanisms:
+
+1. Any node can declare an arbitrary type for the node’s `type` field (the strict type of the node will still be available from the node’s `baseType` property);
+2. Each node has a metadata dictionary of String key/value entries that can record additional properties for the node;
+3. While nodes by default have a `children` array of child nodes, a configuration node can have multiple named sets of children. If the JSON submitted to the server includes multiple properties with arrays of `AssessmentNode` objects, these will be persisted and returned separately (instead of one `children` array).
+
+Assessment developers can use these configuration features to define new kinds of nodes. If these configurations fall into common use, Bridge may later incorporate them into the strict typing system.
+
+For example, Mary wishes to create a container node that indicates two processes should be run currently—one UI thread will always be a user interface of some sort, and a second thread will be a passive instrument running to measure the participant's performance. She decides to cue her app with the introduction of a “Parallel” node type, that has two child configuration nodes: a “ui” node and an “instrument” node. 
+Here is one of several ways that this configuration could be represented in JSON:
+
+```json
+{
+  "type": "Parallel"
+  "ui": [ /* UI-based assessment nodes */ ],
+  "instrument": [ {"type": "MotionSensor"} ] 
+}
+```
