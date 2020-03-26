@@ -98,3 +98,7 @@ The `customizationFields` of the [Assessment](/model-browser.html#Assessment) mo
 ```
 
 These customization options allow the local copy of the assessment to be changed through the configuration API in specific ways: the node with GUID "Bnm\_u6qFhrdmvW82nx2nFRyi" allows the `label` and `prompt` fields to be updated; and the node with the GUID "L4gdW7rIttLVuurmBg5P9k5x" allows two keys in its `metadata` map to be updated: `back_button_label` and `forward_button_label`.
+
+## Assessment configuration
+
+[TBD]
