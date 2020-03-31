@@ -86,7 +86,7 @@ The assessment configuration can be any valid JSON and is not currently constrai
 
 **Note:** as Sage Bionetworks refines the assessment configuration model, these rules may change and more type information may be introduced.
 
-### Customizing an assessment's configuration
+## Customizing an assessment's configuration
 
 Only local assessments can be customized (shared assessments, being shared, cannot be tailored to use in a specific app). The `customizationFields` of the [Assessment](/model-browser.html#Assessment) model specifies the nodes of a JSON tree that can be customized. The top-level properties are the identifiers of the nodes that have customizable properties. The value is an array of [PropertyInfo](/model-browser.html#PropertyInfo) objects. Each of these objects describes one property of the object node that can be customized through the customization API, along with some metadata for editing tools.
 
