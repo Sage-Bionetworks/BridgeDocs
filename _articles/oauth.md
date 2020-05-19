@@ -36,7 +36,7 @@ See [RFC 6749](https://tools.ietf.org/html/rfc6749#section-4.1) for the first st
 
 ## Authorize Bridge to Retrieve an Access Grant
 
-The client app then calls Bridge's [OAuth access grant endpoint](/swagger-ui/index.html#!/_For%20Consented%20Users/requestOAuthAccessToken), sending the [OAuthAuthorizationToken](/#OAuthAuthorizationToken) payload. If successful, an [OAuthAccessToken](/#OAuthAccessToken) payload is returned to the client, and the Bridge serve will be able to access data on the user's behalf.
+The client app then calls Bridge's [OAuth access grant endpoint](/swagger-ui/index.html#/_For%20Consented%20Users/requestOAuthAccessToken), sending the [OAuthAuthorizationToken](/#OAuthAuthorizationToken) payload. If successful, an [OAuthAccessToken](/#OAuthAccessToken) payload is returned to the client, and the Bridge serve will be able to access data on the user's behalf.
 
 * When an authorization token is sent to the server, Bridge always refreshes the access grant token and returns it to the client, if it can;
 

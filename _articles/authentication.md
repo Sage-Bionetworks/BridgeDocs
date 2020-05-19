@@ -15,11 +15,11 @@ In the past, apps have cached user passwords to sign the user back into the serv
 ### Email/Password Sign-Up
 On sign up for the study, the following steps must be executed:
 
-1. The user signs up for an account, entering an email address and password as part of the [SignUp](/#SignUp) payload and the [sign-up API](/swagger-ui/index.html#!/Authentication/signUp). *Your app should verify a password has been entered, otherwise the server will assume this account will be authenticated using the email-only pathway;*
+1. The user signs up for an account, entering an email address and password as part of the [SignUp](/#SignUp) payload and the [sign-up API](/swagger-ui/index.html#/Authentication/signUp). *Your app should verify a password has been entered, otherwise the server will assume this account will be authenticated using the email-only pathway;*
 2. The server will send an email with a link to verify the email address. This link does **not** need to be intercepted by the app, and the link can be opened in any web browser on any device. The link will open a web browser where the page fetched will verify control of the email address.
 
 ### Email/Password Sign-In
-After verifying their email address, the user must manually sign in to the application. They can sign in using their email and password using the [SignIn](/#SignIn) payload and the [sign-in API](/swagger-ui/index.html#!/Authentication/signIn). This request, when successful, returns a session. The status code will either be 200 or 412 (Precondition Required) if the user must consent to research in order to use the API.
+After verifying their email address, the user must manually sign in to the application. They can sign in using their email and password using the [SignIn](/#SignIn) payload and the [sign-in API](/swagger-ui/index.html#/Authentication/signIn). This request, when successful, returns a session. The status code will either be 200 or 412 (Precondition Required) if the user must consent to research in order to use the API.
 
 See [reauthentication](#reauthentication) below for how to refresh a session once it expires, without user intervention.
 
@@ -33,14 +33,14 @@ Users can authenticate using only their email address. The steps for this form o
 On sign up for the study, the following steps must be executed:
 
 1. Disable "Verify email as part of sign up" through the [Bridge Study Manager.](https://research.sagebridge.org/) (`Study > Email Templates > Verify Email`). This step will not be needed;
-2. The user signs up for an account, entering an email address (but no password) as part of the [SignUp](/#SignUp) payload using the [sign-up API](/swagger-ui/index.html#!/Authentication/signUp).
+2. The user signs up for an account, entering an email address (but no password) as part of the [SignUp](/#SignUp) payload using the [sign-up API](/swagger-ui/index.html#/Authentication/signUp).
 
 ### Email-Only Sign-In
 
 1. The app requests an email to be sent to the user to sign in, using the [EmailSignInRequest](/#EmailSignInRequest) via the [request email sign in API](/swagger-ui/index.html#/Authentication/requestEmailSignIn);
 2. The server will send an email with a link to sign in to the application;
 3. If the user clicks the link in the email. The link should be captured as a "deep link" by the app. The link contains a query string portion that has a `token` parameter the app should extract from the URL. 
-4. The app sends the following information to the server using the [EmailSignIn](/#EmailSignIn) playload via the [email sign in API](/swagger-ui/index.html#!/Authentication/signInViaEmail):
+4. The app sends the following information to the server using the [EmailSignIn](/#EmailSignIn) playload via the [email sign in API](/swagger-ui/index.html#/Authentication/signInViaEmail):
     * <code>email</code>&mdash;the user's email address;
     * <code>study</code>&mdash;the study identifier of the study;
     * <code>token</code>&mdash;the token that was sent via email;
@@ -58,13 +58,13 @@ Users can authenticate using only their phone number. The steps for this form of
 On sign up for the study, the following steps must be executed:
 
 1. Disable "Verify a phone number as part of sign up" through the [Bridge Study Manager.](https://research.sagebridge.org/) (`Study > Text Message Templates > Verify Phone`). This step will not be needed;
-2. The user signs up for an account, entering a telephone number (but no password) as part of the [SignUp](/#SignUp) payload using the [sign-up API](/swagger-ui/index.html#!/Authentication/signUp).
+2. The user signs up for an account, entering a telephone number (but no password) as part of the [SignUp](/#SignUp) payload using the [sign-up API](/swagger-ui/index.html#/Authentication/signUp).
 
 ### Phone-Only Sign-In
 
 1. The app requests an SMS message to be sent to the user to sign in, using the [PhoneSignInRequest](/#PhoneSignInRequest) via the [request phone sign in API](/swagger-ui/index.html#/Authentication/requestPhoneSignIn)
 2. The server will send an SMS message with a link to sign in to the application;
-3. If the user clicks the link in the message. The link should be captured as a "deep link" by the app. The link contains a query string portion that has a `token` parameter the app should extract from the URL. The app sends the following information to the server using the [PhoneSignIn](/#PhoneSignIn) playload via the [phone sign in API](/swagger-ui/index.html#!/Authentication/signInViaPhone):
+3. If the user clicks the link in the message. The link should be captured as a "deep link" by the app. The link contains a query string portion that has a `token` parameter the app should extract from the URL. The app sends the following information to the server using the [PhoneSignIn](/#PhoneSignIn) playload via the [phone sign in API](/swagger-ui/index.html#/Authentication/signInViaPhone):
     * <code>phone</code>&mdash;the user's phone number object;
     * <code>study</code>&mdash;the study identifier of the study;
     * <code>token</code>&mdash;the token that was sent via SMS message;
@@ -104,7 +104,7 @@ Additional credentials can be added using the [IdentifierUpdate](/#IdentifierUpd
 
 ## Sign Out
 
-When the [sign out API](/swagger-ui/index.html#!/Authentication/signOut) is called, the client should include the `Bridge-Session` token with the current session token. This will delete the session and invalidate any outstanding reauthentication tokens.
+When the [sign out API](/swagger-ui/index.html#/Authentication/signOut) is called, the client should include the `Bridge-Session` token with the current session token. This will delete the session and invalidate any outstanding reauthentication tokens.
 
 ## A Note on Sign Up Behavior
 
