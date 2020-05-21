@@ -13,6 +13,8 @@ Bundled Zip File Uploads work best if you have large amounts of data (like accel
 
 Each upload is a bundle with a series of files. Each file bundle is then zipped using the ZIP format, consistent with a [ZipInputStream](http://docs.oracle.com/javase/7/docs/api/java/util/zip/ZipInputStream.html). The ZIP archive is then encrypted using the public encryption key installed in each app. The structure essentially looks like
 
+NOTE: Encryption is optional. If you choose not to use encryption, you'll need to set the "encrypted" flag to false when you [call the Upload Request API](#call-the-upload-request-api).
+
 ```
 Encrypted file
 * ZIP file
@@ -377,7 +379,9 @@ Send an HTTP POST to /v3/uploads (or use your platform's SDK). Example request b
 |name|Name of the file to be uploaded.|
 |contentLength|Length (in bytes) of the file to be uploaded.|
 |contentType|MIME type of the file to be uploaded. This is usually either "application/zip" or "application/octet-stream".|
-|contentMd5|Base64 encoded string of the MD5 hash of uploaded file. Note that this should be MD5 hash of the encrypted zip file, NOT the unencrypted zip file, and NOT the individual files inside the zip.<br /><br />Also note that this is the MD5 of the WHOLE file, not a concatenation of blockwise MD5 hashes of file chunks.<br /><br />You can generate the contentMD5 in your unix command line using the command:<br />`cat file | openssl dgst -md5 -binary | base64`|
+|contentMd5|Base64 encoded string of the MD5 hash of uploaded file. Note that this should be MD5 hash of the encrypted zip file, NOT the unencrypted zip file, and NOT the individual files inside the zip.<br /><br />Also note that this is the MD5 of the WHOLE file, not a concatenation of blockwise MD5 hashes of file chunks.<br /><br />You can generate the contentMD5 in your unix command line using the command:<br />`cat file \| openssl dgst -md5 -binary \| base64`|
+|encrypted|Boolean. True if the upload is encrypted. False if it is not encrypted. If not specified, defaults to true.|
+|zipped|Boolean. True if the upload is zipped. False if it is a single file. If not specified, defaults to true. FOr more information, see [Single File Uploads](single_file_uploads.html).|
 
 You will get a response in the form
 
