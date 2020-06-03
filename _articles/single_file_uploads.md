@@ -19,3 +19,5 @@ You can now upload single files as health data to Bridge. Simply follow the step
   "zipped":false
 }
 ```
+
+Note that because single-file uploads don't conform to any particular upload format, we treat this upload as [schemaless health data](schemas.html#schemaless-health-data). This data will be exported to the Default Health Data Record Table in Synapse and will contain the same [common fields](exporting_to_synapse.html#common-fields) and rawData field as normal.
