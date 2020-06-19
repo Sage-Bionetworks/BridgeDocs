@@ -3,7 +3,7 @@ matrix:
   include:
     - language: ruby
       rvm:
-      - 3.6.3
+      - 3.6
       script:
       - gem install bundler
       - bundle install
