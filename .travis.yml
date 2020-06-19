@@ -1,8 +1,17 @@
 sudo: false
-language: ruby
-rvm: 
-- 2.6.3
-cache: pip
+matrix:
+  include:
+    - language: ruby
+      rvm:
+      - 3.6.3
+      script:
+      - gem install bundler
+      - bundle install
+      - bundle exec jekyll build
+    - language: python
+      cache: pip
+      script:
+      - aws s3 cp _site/ s3://developer.sagebridge.org/ --recursive --acl public-read
 fast_finish: true
 branches:
   only:
@@ -11,8 +20,3 @@ install:
 - wget https://github.com/Sage-Bionetworks/infra-utils/archive/master.zip -O /tmp/infra-utils.zip
 - unzip -j -n /tmp/infra-utils.zip -x infra-utils-master/.gitignore infra-utils-master/LICENSE infra-utils-master/README.md
 - ./setup_aws_cli.sh || travis_terminate 1
-script:
-- gem install bundler
-- bundle install
-- bundle exec jekyll build
-- aws s3 cp _site/ s3://developer.sagebridge.org/ --recursive --acl public-read
