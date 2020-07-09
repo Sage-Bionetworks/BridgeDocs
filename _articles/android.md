@@ -3,7 +3,7 @@ title: Android SDK
 layout: article
 ---
 
-<div class="ui positive message">
+<div class="ui message">
     <p>
     	We support Android development with Bridge Android SDK and Bridge ResearchStack SDK, available on <a href="https://github.com/Sage-Bionetworks/BridgeAndroidSDK">Github</a>.
     </p>

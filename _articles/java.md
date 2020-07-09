@@ -3,7 +3,7 @@ title: REST Java Client
 layout: article
 ---
 
-<div class="ui positive message">
+<div class="ui message">
 
 <p>Sage provides a Java-based REST client for interacting with Bridge services (v{{site.data.versions.java_sdk}}): </p>
 

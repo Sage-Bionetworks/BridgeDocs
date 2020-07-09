@@ -3,7 +3,7 @@ title: Platform Overview
 layout: article
 ---
 
-<div class="ui positive message">
+<div class="ui message">
 <p>Key components of Sage's platform are:</p>
 
 <dl>
