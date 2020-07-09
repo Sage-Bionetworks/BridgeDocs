@@ -3,7 +3,7 @@ title: iOS &amp; Research SDKs
 layout: article
 ---
 
-<div class="ui positive message">
+<div class="ui message">
 <p>We support iOS development with three frameworks: BridgeSDK, BridgeApp, and Research.</p>
 
 <p>The relevant Github repos are:</p>
