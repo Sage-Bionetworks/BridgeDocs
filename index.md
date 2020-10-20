@@ -9,4 +9,4 @@ Bridge services support mobile registration and consent to participate in resear
 
 Bridge SDKs are designed to integrate with the open source Research Kit (iPhone) and Research Stack (Android) frameworks to allow rapid and flexible development of research apps.
 
-Bridge is developed and maintained by [Sage Bionetworks](http://sagebionetworks.org/mobile-health/), a not-for profit biomedical research institute active in the design, execution, and analysis of multiple mobile health studies. For technical support on Bridge or questions about this documentation please contact us at [bridge.info@sagebionetworks.org](mailto:bridge.info@sagebionetworks.org).
+Bridge is developed and maintained by [Sage Bionetworks](https://sagebionetworks.org/digital-health-assessments/), a not-for profit biomedical research institute active in the design, execution, and analysis of multiple mobile health studies. For technical support on Bridge or questions about this documentation please contact us at [bridge.info@sagebionetworks.org](mailto:bridge.info@sagebionetworks.org).
