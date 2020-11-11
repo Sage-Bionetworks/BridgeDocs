@@ -3,15 +3,13 @@ title: Studies
 layout: article
 ---
 
+<div class="ui warning message">
+  <p>This documentation is not yet complete. APIs are in active development.</p>
+</div>
+
 <div id="toc"></div>
 
-A Bridge app can be used to run one or more studies, which may have overlapping or discrete participants. Each study is sponsored by one or more organizations, and the administrative accounts for that organization will have privileged access to work with the study.
-
-## Organizational sponsors
-
-A study can be ”sponsored” by one or more organizations. The members of this organization have privileged access to the study, based on the user’s roles(s). Other administrators in a Bridge app may be able to view the presence of some aspects of a study, but will not be able to edit the study, enroll or withdraw members, or see the data collected for the study.
-
-After creating an account, it can be associated to a study through the [add member](/swagger-ui/index.html#/Organizations/addMember) and [remove member](/swagger-ui/index.html#/Organizations/removeMember) APIs. The members of an organization can be [enumerated through a search API](/swagger-ui/index.html#/Organizations/getMembers) as well, and a special API exists to return [administrative users who are currently unassigned to an organization](/swagger-ui/index.html#/Organizations/getUnassignedAdminAccounts) (useful for finding the account you have just created).
+A Bridge app can be used to run one or more studies, which may have overlapping or discrete participants. Each study is sponsored by one or more [organizations,](./organizations.html) and the administrative accounts for that organization will have privileged access to work with the study.
 
 ## Enrollment
 
