@@ -4,8 +4,7 @@ layout: html5
 ---
 
 <div id="swagger-ui"></div>
-<!--<div id="api_url" content="/rest-api/{{site.data.versions.java_sdk}}/rest-api/swagger.json"></div>-->
-<div id="api_url" content="/swagger.json"></div>
+<div id="api_url" content="/rest-api/{{site.data.versions.java_sdk}}/rest-api/swagger.json"></div>
 <script src="./swagger-ui-bundle.js"> </script>
 <script src="./swagger-ui-standalone-preset.js"> </script>
 <script>
