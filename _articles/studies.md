@@ -3,8 +3,8 @@ title: Studies
 layout: article
 ---
 
-<div class="ui warning message">
-  <p>This documentation is not yet complete. APIs are in active development.</p>
+<div class="ui message">
+  <p>NOTE: This documentation is not yet complete. APIs are in active development.</p>
 </div>
 
 <div id="toc"></div>
