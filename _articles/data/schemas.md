@@ -247,7 +247,7 @@ You can configure min- and maxAppVersions per OS for a given schema. This allows
 
 ### moduleId/Version
 
-Schemas can be linked to [Shared Modules](/articles/data/shared_modules.html). You generally don't need to specify these yourself. Rather, Bridge will automatically populate these when you import a Shared Module into your study. moduleId is the unique string identifier of the module. moduleVersion is an integer and refers to the module's version.
+Schemas can be linked to [Shared Modules](/articles/shared_modules.html). You generally don't need to specify these yourself. Rather, Bridge will automatically populate these when you import a Shared Module into your study. moduleId is the unique string identifier of the module. moduleVersion is an integer and refers to the module's version.
 
 ### surveyGuid/CreatedOn
 

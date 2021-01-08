@@ -21,7 +21,7 @@ The simplest schedule generates an activity to be done one time, after an event 
 
 ### Cron Schedules
 
-A cron expression is a configuration string that describes times on a calendar, and allows for schedules such as "Mondays and Fridays at 8am" or "The first Thursday of every month at noon." The format of the cron expression is the seven field format as described in the [Java Quartz Scheduler](http://www.quartz-scheduler.org/documentation/quartz-2.x/tutorials/crontrigger.html) documentation (note that there are other formats that take up to eleven fields, this [online cron expression generator](http://www.cronmaker.com/) creates expressions in the right format). Although cron-based schedules are not super-useful for scheduling study tasks, if you need this kind of schedule, cron expressions are a tested and successful way of describing them.
+A cron expression is a configuration string that describes times on a calendar, and allows for schedules such as "Mondays and Fridays at 8am" or "The first Thursday of every month at noon." The format of the cron expression is the seven field format as described in the [Java Quartz Scheduler](http://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/tutorial-lesson-06.html) documentation (note that there are other formats that take up to eleven fields, this [online cron expression generator](http://www.cronmaker.com/) creates expressions in the right format). Although cron-based schedules are not super-useful for scheduling study tasks, if you need this kind of schedule, cron expressions are a tested and successful way of describing them.
 
 ```json
 {

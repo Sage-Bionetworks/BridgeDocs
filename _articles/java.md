@@ -8,7 +8,7 @@ layout: article
 <p>Sage provides a Java-based REST client for interacting with Bridge services (v{{site.data.versions.java_sdk}}): </p>
 
 <dl>
-    <dt><a class="item" href="/rest-client/{{site.data.versions.java_sdk}}/rest-client/apidocs/index.html">REST client API docs</a></dt>
+    <dt><a class="item" href="/rest-client/{{site.data.versions.java_sdk}}/apidocs/index.html">REST client API docs</a></dt>
     <dd>JavaDocs for the REST client.</dd>
     
     <dt><a class="item" href="https://github.com/Sage-Bionetworks/BridgeJavaSDK">GitHub</a></dt>
@@ -72,7 +72,7 @@ try {
 
 ```
 
-The available [Api clients](/rest-client/{{site.data.versions.java_sdk}}/apidocs/org/sagebionetworks/bridge/rest/api/package-summary.html) are documented in the javadocs for the REST client. You can create them using the `ClientManager` (as shown above).
+The available [Api clients](/rest-client/{{site.data.versions.java_sdk}}/rest-client/apidocs/org/sagebionetworks/bridge/rest/api/package-summary.html) are documented in the javadocs for the REST client. You can create them using the `ClientManager` (as shown above).
 
 The `ClientManager` class provides the means to configure your clients using a `bridge-sdk.properties` file in your user home directory (`~/bridge-sdk.properites` on Mac OSX and Linux):
 
@@ -116,7 +116,7 @@ ClientManager manager = new ClientManager.Builder()
     .withClientConfig(config).build();
 ```
 
-See [customizing content](/articles/mobile/filtering.html) and the [`ClientInfo`](/#ClientInfo) object for further details.
+See [customizing content](/articles/filtering.html) and the [`ClientInfo`](/#ClientInfo) object for further details.
 
 Finally you may wish to sign out when you are done:
 
