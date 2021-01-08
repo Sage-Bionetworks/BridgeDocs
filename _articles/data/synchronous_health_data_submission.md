@@ -50,12 +50,12 @@ To submit health data, send an HTTP POST request to /v3/healthdata (or use your 
 |Attribute Name|Description|
 |---|---|
 |appVersion|App version, as reported by the app. Generally in the form "version 1.0.0, build 2". Must be 48 chars or less.|
-|createdOn|ISO8601 timestamp of when this data measurement was recorded. If the data was measured over a long period of time, the timestamp should represent when the data was last measured and written.<br /><br />Similar to timestamp data as described in [Schemas](schemas.html), apps should refrain from "canonicalizing" to a default timezone such as UTC, as this is a loss of data.|
+|createdOn|ISO8601 timestamp of when this data measurement was recorded. If the data was measured over a long period of time, the timestamp should represent when the data was last measured and written.<br /><br />Similar to timestamp data as described in [Schemas](/articles/data/schemas.html), apps should refrain from "canonicalizing" to a default timezone such as UTC, as this is a loss of data.|
 |phoneInfo|Phone info, for example "iPhone9,3" or "iPhone 5c (GSM)". Must be 48 chars or less.|
 |schemaId|Schema ID used to process your health data. Do not include this field for Schemaless health data.|
 |schemaRevision|Schema revision of the schema used to process your health data. Do not include this field for Schemaless health data.|
 |data|Health data to submit, as key-value pairs in a JSON object.|
-|metadata|Health data metadata, as key-value pairs in a JSON object. See [Health Data Metadata](health_data_metadata.html) for more details.|
+|metadata|Health data metadata, as key-value pairs in a JSON object. See [Health Data Metadata](/articles/data/health_data_metadata.html) for more details.|
 
 You will get a response in the form
 
@@ -88,7 +88,7 @@ You will get a response in the form
 
 ## For Surveys
 
-When you publish a survey, Bridge will automatically create a schema for it, as described in [V1 Legacy Surveys](bundled_zip_file_uploads.html#v1-legacy-surveys).
+When you publish a survey, Bridge will automatically create a schema for it, as described in [V1 Legacy Surveys](/articles/data/bundled_zip_file_uploads.html#v1-legacy-surveys).
 
 Submitting health data for surveys is exactly the same as submitting health data for schemas, except instead of using the schemaId and schemaRevision attributes, you use the surveyGuid and surveyCreatedOn attributes. This surveyGuid and surveyCreatedOn correspond to the survey (in Bridge server) that the bundle should be submitted against.
 

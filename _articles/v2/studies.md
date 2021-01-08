@@ -9,7 +9,7 @@ layout: article
 
 <div id="toc"></div>
 
-A Bridge app can be used to run one or more studies, which may have overlapping or discrete participants. Each study is sponsored by one or more [organizations,](./organizations.html) and the administrative accounts for that organization will have privileged access to work with the study.
+A Bridge app can be used to run one or more studies, which may have overlapping or discrete participants. Each study is sponsored by one or more [organizations,](/articles/v2/authorization.html#organizations) and the administrative accounts for that organization will have privileged access to work with the study.
 
 ## Enrollment
 

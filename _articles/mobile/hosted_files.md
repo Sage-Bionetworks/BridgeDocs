@@ -13,7 +13,7 @@ Hosting a file on the Bridge server involves several steps:
 1. The developer should PUT the file contents to S3;
 1. The developer should call [the API to mark the file content upload as completed](/swagger-ui/index.html#/Files/finishFileRevision). (This can also be called to clean up orphaned revision records. If the S3 upload has failed, the revision record will be deleted.)
 
-Once a file revision exists on the server, the app developer can link to it via the [app configurations](/articles/appconfigs.html).
+Once a file revision exists on the server, the app developer can link to it via the [app configurations](/articles/mobile/appconfigs.html).
 
 Using the [Java REST SDK](/articles/java.html), this can be broken down into two steps. First, developers need to create a metadata object describing your file in all its revisions:
 

@@ -116,7 +116,7 @@ ClientManager manager = new ClientManager.Builder()
     .withClientConfig(config).build();
 ```
 
-See [customizing content](/articles/filtering.html) and the [`ClientInfo`](/#ClientInfo) object for further details.
+See [customizing content](/articles/mobile/filtering.html) and the [`ClientInfo`](/#ClientInfo) object for further details.
 
 Finally you may wish to sign out when you are done:
 

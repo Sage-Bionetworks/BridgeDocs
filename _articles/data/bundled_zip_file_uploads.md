@@ -46,7 +46,7 @@ Bundles must include a JSON file called info.json, which looks like:
 
 |Attribute Name|Description|
 |---|---|
-|files|(V1 Legacy only) List of files in this bundle (excluding info.json). Each entry contains a filename and a timestamp. The timestamp is a string in ISO8601 format and corresponds to when the health data measurement was recorded. If the data was measured over a long period of time, the timestamp should represent when the data was last measured and written. This information is used to generate the createdOn field in the health data record.<br /><br />Similar to timestamp data as described in [Schemas](schemas.html), apps should refrain from "canonicalizing" to a default timezone such as UTC, as this is a loss of data.|
+|files|(V1 Legacy only) List of files in this bundle (excluding info.json). Each entry contains a filename and a timestamp. The timestamp is a string in ISO8601 format and corresponds to when the health data measurement was recorded. If the data was measured over a long period of time, the timestamp should represent when the data was last measured and written. This information is used to generate the createdOn field in the health data record.<br /><br />Similar to timestamp data as described in [Schemas](/articles/data/schemas.html), apps should refrain from "canonicalizing" to a default timezone such as UTC, as this is a loss of data.|
 |createdOn|Timestamp string in ISO8601 format, corresponding to when the health data measurement was recorded, similar to the timestamp in V1 Legacy "files" attribute.<br /><br />If both this attribute and "files" is present, this attribute takes precedence.|
 |dataFilename|(V2 Generic only) Name of file in the bundle that Bridge should treat as the primary data file for JSON attributes. For more information, see [V2 Generic Bundles](#v2-generic-bundles).|
 |format|Either "v1\_legacy" or "v2\_generic". If not specified, defaults to "v1\_legacy"|
@@ -242,7 +242,7 @@ If you publish a new version of an existing survey, Bridge will attempt to re-us
 
 V2 Generic Bundles look very similar to [V1 Legacy Bundles](#v1-legacy-bundles) with a few key differences:
 
-* The [schema's schemaType attribute](schemas.html) is ignored, since in V2 Generic, non-survey bundles and [survey bundles](#v2-generic-surveys) look the same. (Note that the schemaType attribute is still required and you should still set it to something reasonable. If this schema is also used for V1 Legacy, it should consistent with what V1 Legacy would expect.)
+* The [schema's schemaType attribute](/articles/data/schemas.html) is ignored, since in V2 Generic, non-survey bundles and [survey bundles](#v2-generic-surveys) look the same. (Note that the schemaType attribute is still required and you should still set it to something reasonable. If this schema is also used for V1 Legacy, it should consistent with what V1 Legacy would expect.)
 * The dataFilename attribute in info.json can be used to specify a file whose keys can be used as schema fields without prefixing the file name.
 
 For example, if your upload bundle contains the files:
@@ -349,7 +349,7 @@ If our study defines the metadata fields "startDateTime", "endDateTime", and "ta
 }
 ```
 
-See [Health Data Metadata](health_data_metadata.html) for more details.
+See [Health Data Metadata](/articles/data/health_data_metadata.html) for more details.
 
 NOTE: For backwards-compatibility, metadata.json will continue to be parsed for normal schema fields. This is in contrast with info.json, which currently can never be used for normal schema fields.
 
@@ -381,7 +381,7 @@ Send an HTTP POST to /v3/uploads (or use your platform's SDK). Example request b
 |contentType|MIME type of the file to be uploaded. This is usually either "application/zip" or "application/octet-stream".|
 |contentMd5|Base64 encoded string of the MD5 hash of uploaded file. Note that this should be MD5 hash of the encrypted zip file, NOT the unencrypted zip file, and NOT the individual files inside the zip.<br /><br />Also note that this is the MD5 of the WHOLE file, not a concatenation of blockwise MD5 hashes of file chunks.<br /><br />You can generate the contentMD5 in your unix command line using the command:<br />`cat file \| openssl dgst -md5 -binary \| base64`|
 |encrypted|Boolean. True if the upload is encrypted. False if it is not encrypted. If not specified, defaults to true.|
-|zipped|Boolean. True if the upload is zipped. False if it is a single file. If not specified, defaults to true. FOr more information, see [Single File Uploads](single_file_uploads.html).|
+|zipped|Boolean. True if the upload is zipped. False if it is a single file. If not specified, defaults to true. FOr more information, see [Single File Uploads](/articles/data/single_file_uploads.html).|
 
 You will get a response in the form
 
