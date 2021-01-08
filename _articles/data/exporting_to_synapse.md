@@ -105,7 +105,7 @@ The Health Data Summary Table (previously called the appVersion table) includes 
 
 ### Health Data Tables
 
-In addition to common fields, health data tables also includes fields defined by [health data metadata](health_data_metadata.html) and by [schemas](schemas.html). See those pages for further information.
+In addition to common fields, health data tables also includes fields defined by [health data metadata](/articles/data/health_data_metadata.html) and by [schemas](/articles/data/schemas.html). See those pages for further information.
 
 Some fields in the health data tables are file handles (attachments). In the Synapse Web UI, these are displayed as links, which allow you to download the attached file. In the Synapse API or through the R, Python, or Java clients, these are file handle IDs, and require a separate call to Synapse to download the attached files.
 

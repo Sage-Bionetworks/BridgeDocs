@@ -7,11 +7,11 @@ layout: article
 
 You can configure metadata fields on a study, which will be automatically applied to all schemas. This is useful for fields that should be global to all schemas, such as start- and endTimes or taskRunGuids.
 
-This doc covers the configuring metadata and how metadata is exported to Synapse. For more details on how to submit metadat with your uploads, see the corresponding sections in the [Bundled Zip File Upload docs](bundled_zip_file_uploads.html#submitting-metadata) and the [Synchronous Health Data Submission docs](synchronous_health_data_submission.html#submitting-health-data).
+This doc covers the configuring metadata and how metadata is exported to Synapse. For more details on how to submit metadat with your uploads, see the corresponding sections in the [Bundled Zip File Upload docs](/articles/data/bundled_zip_file_uploads.html#submitting-metadata) and the [Synchronous Health Data Submission docs](/articles/data/synchronous_health_data_submission.html#submitting-health-data).
 
 ## Configuring Metadata
 
-Studies will have a new attribute called uploadMetadataFieldDefinitions, which are defined the same way as [schema field definitios](schemas.html#field-definitions). This can be edited either through the REST API or through the Bridge Study Manager. (Note: All metadata field definitions are implicitly optional. The "required" field in metadata field definitions is ignored.)
+Studies will have a new attribute called uploadMetadataFieldDefinitions, which are defined the same way as [schema field definitios](/articles/data/schemas.html#field-definitions). This can be edited either through the REST API or through the Bridge Study Manager. (Note: All metadata field definitions are implicitly optional. The "required" field in metadata field definitions is ignored.)
 
 **IMPORTANT NOTE:** Once created, metadata fields cannot be deleted or modified except by an Bridge admin.
 
@@ -58,4 +58,4 @@ If for whatever reason, there is already a schema field named "metadata.[fieldNa
 
 ## Limits
 
-Metadata fields cannot create more than 20 columns or 2500 bytes. Note that the size limit is for space allocated, not for how much data is actually submitted. This also does not count against the column or size limit for schema fields. For more information, including column size by field type, see [Schema Limits](schemas.html#limits)
+Metadata fields cannot create more than 20 columns or 2500 bytes. Note that the size limit is for space allocated, not for how much data is actually submitted. This also does not count against the column or size limit for schema fields. For more information, including column size by field type, see [Schema Limits](/articles/data/schemas.html#limits)

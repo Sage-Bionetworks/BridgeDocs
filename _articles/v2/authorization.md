@@ -26,7 +26,7 @@ The app-scoped roles will be phased out for external use as part of the v2 devel
 
 ## Organizations
 
-Administrative accounts in the Bridge system are scoped to an app and are members of an organization (this can be an institution, a team, or any other set of collaborators who are working together on a [study](studies.html)). Members of an organization are granted access to one or more studies through the organization‘s *sponsorship* of those studies. Partners will be added to the Bridge platform with an initial *organizational administrator* who can manage further accounts in their organization through [account](/swagger-ui/index.html#/Accounts) and [organization](/swagger-ui/index.html#/Organizations) APIs.
+Administrative accounts in the Bridge system are scoped to an app and are members of an organization (this can be an institution, a team, or any other set of collaborators who are working together on a [study](/articles/v2/studies.html)). Members of an organization are granted access to one or more studies through the organization‘s *sponsorship* of those studies. Partners will be added to the Bridge platform with an initial *organizational administrator* who can manage further accounts in their organization through [account](/swagger-ui/index.html#/Accounts) and [organization](/swagger-ui/index.html#/Organizations) APIs.
 
 <div class="ui warning message">
   <p>Initially, accounts can only be a member of one organization. This will be changed late in the v2 development roadmap to allow membership in multiple organizations. Part of that change will be the ability to assign different roles to an account within each organization. </p>

@@ -68,7 +68,7 @@ It generally corresponds one-to-one with columns in the Synapse table, although 
 
 Every field has 3 basic properties:
 
-* name - The field's unique name/identifier. Cannot be more than 256 characters. Must start and end with an alphanumeric character. Can only contain alphanumeric characters, spaces, dashes, underscores, and periods. Can't contain two or more non-alphanumeric characters in a row. For more information on how to set the correct field name, see the corresponding sections in [Bundled Zip File Uploads](bundled_zip_file_uploads.html) and [Synchronous Health Data Submission](synchronous_health_data_submission.html).
+* name - The field's unique name/identifier. Cannot be more than 256 characters. Must start and end with an alphanumeric character. Can only contain alphanumeric characters, spaces, dashes, underscores, and periods. Can't contain two or more non-alphanumeric characters in a row. For more information on how to set the correct field name, see the corresponding sections in [Bundled Zip File Uploads](/articles/data/bundled_zip_file_uploads.html) and [Synchronous Health Data Submission](/articles/data/synchronous_health_data_submission.html).
 * required - If the field is required and strict validation is turned on for the study, Bridge will validate that the field value exists and is of the correct type (eg, no strings for ints). If not specified, this defaults to true.
 * type - Field type. See details below.
 
@@ -213,7 +213,7 @@ For all other data in the participant's health data upload, you should define en
 
 ## Limits
 
-Schemas cannot create more than 100 columns or a row larger than 50000 bytes. Note that the row size is calculated by how much space has to be allocated to store the row, not how much space is actually being used by individual rows. Also note that this includes only fields defined by schema field definitions. Bridge will automatically create other columns as specified in [Exporting to Synapse](exporting_to_synapse.html) that don't count against this limit.
+Schemas cannot create more than 100 columns or a row larger than 50000 bytes. Note that the row size is calculated by how much space has to be allocated to store the row, not how much space is actually being used by individual rows. Also note that this includes only fields defined by schema field definitions. Bridge will automatically create other columns as specified in [Exporting to Synapse](/articles/data/exporting_to_synapse.html) that don't count against this limit.
 
 See the table below to determine the number of columns and bytes for each schema field type.
 
@@ -247,7 +247,7 @@ You can configure min- and maxAppVersions per OS for a given schema. This allows
 
 ### moduleId/Version
 
-Schemas can be linked to [Shared Modules](shared_modules.html). You generally don't need to specify these yourself. Rather, Bridge will automatically populate these when you import a Shared Module into your study. moduleId is the unique string identifier of the module. moduleVersion is an integer and refers to the module's version.
+Schemas can be linked to [Shared Modules](/articles/data/shared_modules.html). You generally don't need to specify these yourself. Rather, Bridge will automatically populate these when you import a Shared Module into your study. moduleId is the unique string identifier of the module. moduleVersion is an integer and refers to the module's version.
 
 ### surveyGuid/CreatedOn
 
@@ -255,4 +255,4 @@ Schemas can be linked to a Survey. You generally don't need to specify these you
 
 ## Schemaless Health Data
 
-Bridge now supports uploading health data without the use of a schema. If you submit health data without a schema ID (or if you reference a non-existent schema), Bridge will automatically export your data to the Default Health Data Record Table. This table includes all same [common fields as other tables](exporting_to_synapse.html#common-fields), as well as a rawData field including the raw submitted JSON or zip file as uploaded by the client app.
+Bridge now supports uploading health data without the use of a schema. If you submit health data without a schema ID (or if you reference a non-existent schema), Bridge will automatically export your data to the Default Health Data Record Table. This table includes all same [common fields as other tables](/articles/data/exporting_to_synapse.html#common-fields), as well as a rawData field including the raw submitted JSON or zip file as uploaded by the client app.

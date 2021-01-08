@@ -10,10 +10,10 @@ layout: article
     <dt><a href="/articles/rest.html">Bridge Services</a></dt>
 	<dd>A set of REST-based web services that allow mobile apps to receive study configuration such as surveys and task schedules, manage participant registration and consent, and securely receive participant data.  </dd>
 
-    <dt><a href="/articles/ios.html">iOS and Research Kit SDKs</a></dt> 
+    <dt><a href="/articles/ios/ios.html">iOS and Research Kit SDKs</a></dt> 
 	<dd>Open source libraries for building mobile health apps using Bridge Services and Apple's Research Kit.</dd>
 
-	<dt><a href="/articles/android.html">Android SDKs</a></dt>
+	<dt><a href="/articles/android/android.html">Android SDKs</a></dt>
 	<dd>Open source libraries for building mobile health apps using Bridge Services and the open source Research Stack framework.</dd>
 
 	<dt><a href="/articles/java.html">Java REST Client</a></dt>
