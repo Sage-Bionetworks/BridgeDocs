@@ -11,7 +11,7 @@ layout: article
 
 Study participation is scheduled for each participant relative to their entrance into a study (since different participants start at different times). To manage these relative schedules, each individual is given a timeline of sessions to perform that are triggered based on *activity events* for that user. Events are a date and time mapped to a string key. Every participant will have a map of these values against which their scheduling can occur.
 
-This map of events is available through [an API for activity events](/swagger-ui/index.html#/Activity%20Events) that includes APIs for both global and with the introduction of multi-study apps, for study-scoped events as well. The APIs also provide participants, study coordinators, and researchers a means to create new custom events to support app-specific scheduling requirements.
+This map of events is available through [an API for activity events](/swagger-ui/index.html#/Activity%20Events) that includes APIs for global events, and with the introduction of multi-study apps, for study-scoped events as well. The APIs also provide participants, study coordinators, and researchers a means to create new custom events to support app-specific scheduling requirements.
 
 The following standard events are provided by Bridge. Once an immutable event has a timestamp set, it cannot be changed. Mutable event timestamps can be updated, but only if the submitted value is later than the current timestamp value.
 
@@ -44,12 +44,11 @@ The `activityEventKeys` array must include your custom event key (this prevents 
 ```json
 {
    "eventKey":"event1",
-   "timestamp":"2018-04-04T16:43:11.357-07:00",
-   "type":"CustomActivityEventRequest"
+   "timestamp":"2018-04-04T16:43:11.357-07:00"
 }
 ```
 
-These custom events are available to the v1 and v2 scheduling APIs to schedule against. Custom events are mutable, but like other mutable events, timestamps for these events can only be advanced. Calls to decrement the milliseconds since the epoch value are ignored.
+These custom events are available to the v1 and v2 scheduling APIs to schedule against. Custom events are mutable, but like other mutable events, timestamps for these events can only be updated if they are later in time than the currently persisted value. Calls to decrement time value are ignored.
 
 ### Automatic custom events
 
@@ -58,7 +57,9 @@ In addition to submitting values through the API, an app can be configured to cr
 ```json
 { 
   "automaticCustomEvents": {
+    // thirteen weeks after the "activities_retrieved" event
     "event1": "activities_retrieved:P13W",
+    // two weeks before the "enrollment" event
     "event2": "enrollment:P-2W"
   }
   "type": "App"
@@ -71,13 +72,14 @@ When the `activities_retrieved` event is created, `event1` will also be created,
 
 Activity events initially assumed that there was one study in an app (hence, there is only one value for events like `enrollment`). The v2 activity event APIs are similar to the v1 APIs, but they are *scoped* to a specific study. If the client uses these APIs, it can ask for events related to study 1 and study 2, and receive back different values for events like `enrollment`.
 
-For backwards compatability, study-scoped `enrollment`, `activities_retrieved`, and `created_on` events will also be created as global events. However, the global events should be retired in favor of the events retrieved through study-specific APIs.
+For backwards compatability, study-scoped `enrollment`, `activities_retrieved`, and `created_on` events will also be created as global events. Since these values are immutable, they will only be created the first time any study triggers them (not necessarily the same study). For this reason, global events should be retired in favor of the events retrieved through study-specific APIs.
 
 ## Schedules
 
-TBD
-<div style="display:none">
+Schedules stand alone from other systems in Bridge, however, to apply a schedule to a study participant, you need to associate a schedule to one or more arms of a [study.](/articles/v2/studies.html)
+
 ### Sessions
 
 ### Timelines
-</div>
+
+Participants in a study view a schedule as a *timeline.*
