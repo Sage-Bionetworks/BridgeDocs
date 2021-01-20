@@ -74,6 +74,7 @@ Activity events initially assumed that there was one study in an app (hence, the
 
 For backwards compatability, study-scoped `enrollment`, `activities_retrieved`, and `created_on` events will also be created as global events. Since these values are immutable, they will only be created the first time any study triggers them (not necessarily the same study). For this reason, global events should be retired in favor of the events retrieved through study-specific APIs.
 
+<div style="display:none">
 ## Schedules
 
 Schedules stand alone from other systems in Bridge, however, to apply a schedule to a study participant, you need to associate a schedule to one or more arms of a [study.](/articles/v2/studies.html)
@@ -83,3 +84,4 @@ Schedules stand alone from other systems in Bridge, however, to apply a schedule
 ### Timelines
 
 Participants in a study view a schedule as a *timeline.*
+</div>
