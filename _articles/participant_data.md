@@ -9,7 +9,7 @@ Participant data are non-time series reports which represent data that does not 
 
 Before, we used the Participant Report API to store non time-series information about Participants, using a dummy date of 2000-12-31. For example, Demographics and Engagement survey results in mPower 2.0 are stored this way.
 
-Using Participant Report API:
+###Using Participant Report API:
 
 ```json
 {
@@ -23,7 +23,7 @@ Using Participant Report API:
 }
 ```
 
-Using Participant Data API:
+###Using Participant Data API:
 
 ```json
 {
@@ -32,9 +32,7 @@ Using Participant Data API:
 }
 ```
 
+<!--TODO is this a part of a larger migration to non-time series models?-->
 
-TODO is this a part of a larger migration to non-time series models?
-
-##API - TODO, link specifically to ParticipantData
-<dt><a href="/swagger-ui/index.html" target="_blank" rel="noopener">API Browser</a></dt>
-    <dd>Documents the URLs of the Participant Data API</dd>
+##API <!--TODO, link specifically to ParticipantData-->
+Documentation of the URLs in the Participant Data API can be found <a href="/swagger-ui/index.html" target="_blank" rel="noopener">here</a>.
