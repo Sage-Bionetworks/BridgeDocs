@@ -60,7 +60,7 @@ The data APIs have additional APIs for workers and administrators (not discussed
 
 ## Participant Files API
 
-[Storing data files for a participant](/swagger-ui/index.html#/Participant%20Data) involves the following steps:
+[Storing data files for a participant](/swagger-ui/index.html#/Participant%20Files) involves the following steps:
 
 1. Caller creates a [ParticipantFile](/model-browser.html#ParticipantFile) record through the [create participant file API.](/swagger-ui/index.html#/Participant%20Files/createParticipantFile) Please note that the mime/type for the file is required, although Bridge will currently allow you to create a file record without it;
 1. The returned ParticipantFile that is returned will have an `uploadURL` field with a presigned URL that can be used to `PUT` the file to S3 (**note** that currently a file cannot be replaced, so this call will fail if the file already exists; this will be changed to allow overwrites of files in a future update);
