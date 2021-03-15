@@ -2,7 +2,7 @@ html {
     font-size: 14px;
 }
 header, section, footer {
-    max-width: 70rem;
+    max-width: 80rem;
     margin: 0 auto;
 }
 header {
@@ -12,7 +12,7 @@ header {
     width: 100%!important;
 }
 .article {
-    max-width: 70rem!important;
+    max-width: 80rem!important;
     margin: 0 auto!important;
     padding-bottom: 4rem!important;
 }

@@ -1,0 +1,167 @@
+{
+  "ownerId":"sage-bionetworks",
+  "name":"An example schedule",
+  "guid":"YBxBQyfVdop4wmN0RMra4h7G",
+  "duration":"P4W",
+  "createdOn":"2021-03-13T22:52:30.495Z",
+  "modifiedOn":"2021-03-15T00:13:31.166Z",
+  "published":false,
+  "deleted":false,
+  "sessions":[
+    {
+      "guid":"NO9mgMI64sZnfABPm7YAyLYp",
+      "name":"Initial Survey",
+      "startEventId":"enrollment",
+      "delay":"PT2H",
+      "performanceOrder":"sequential",
+      "notifyAt":"start_of_window",
+      "remindAt":"before_window_end",
+      "reminderPeriod":"PT10M",
+      "allowSnooze":false,
+      "assessments":[
+        {
+          "guid":"S4pn_HGgn7idLkVN13ANgBqa",
+          "appId":"api",
+          "identifier":"mood-survey",
+          "title":"Mood Survey",
+          "minutesToComplete":1,
+          "type":"AssessmentReference"
+        }
+      ],
+      "timeWindows":[
+        {
+          "guid":"LoQLiF-CQa0qsq8Xl63-aEsf",
+          "startTime":"00:00",
+          "expiration":"P3D",
+          "persistent":false,
+          "type":"TimeWindow"
+        }
+      ],
+      "messages":[
+        {
+          "lang":"en",
+          "subject":"Mood Survey",
+          "message":"Please fill out our initial mood survey!",
+          "type":"NotificationMessage"
+        }
+      ],
+      "labels":[
+        
+      ],
+      "type":"Session"
+    },
+    {
+      "guid":"my7oqQBok40EhlinRYFke0k1",
+      "name":"Weekly Tapping Test",
+      "startEventId":"enrollment",
+      "delay":"P1W",
+      "interval":"P1W",
+      "performanceOrder":"sequential",
+      "notifyAt":"start_of_window",
+      "remindAt":"after_window_start",
+      "reminderPeriod":"PT15M",
+      "allowSnooze":true,
+      "assessments":[
+        {
+          "guid":"y5NqJgkHz37ge9RnEtgioraS",
+          "appId":"api",
+          "identifier":"medication-tracker",
+          "title":"Medication Tracker",
+          "minutesToComplete":1,
+          "type":"AssessmentReference"
+        },
+        {
+          "guid":"192vyvketDEuJo7I2to3IQbW",
+          "appId":"api",
+          "identifier":"tapping",
+          "title":"Tapping Test",
+          "minutesToComplete":1,
+          "type":"AssessmentReference"
+        }
+      ],
+      "timeWindows":[
+        {
+          "guid":"Z9TfvnF-Ps7NjmEJoFpKfEbd",
+          "startTime":"08:00",
+          "expiration":"PT6H",
+          "persistent":false,
+          "type":"TimeWindow"
+        },
+        {
+          "guid":"fTnghp8ybgGuof8vNWEE50vS",
+          "startTime":"14:00",
+          "expiration":"PT6H",
+          "persistent":false,
+          "type":"TimeWindow"
+        },
+        {
+          "guid":"jARfqtWbX7Kn3inzZSEKr6dq",
+          "startTime":"20:00",
+          "expiration":"PT6H",
+          "persistent":false,
+          "type":"TimeWindow"
+        }
+      ],
+      "messages":[
+        {
+          "lang":"en",
+          "subject":"Tapping Test",
+          "message":"Time for the tapping test",
+          "type":"NotificationMessage"
+        }
+      ],
+      "labels":[
+        {
+          "lang":"en",
+          "value":"Let's get tappin’!",
+          "type":"Label"
+        }
+      ],
+      "type":"Session"
+    },
+    {
+      "guid":"lUX4J2Zu7b_WsNU5QN9-AmWz",
+      "name":"End of study survey",
+      "startEventId":"enrollment",
+      "delay":"P27D",
+      "performanceOrder":"sequential",
+      "allowSnooze":false,
+      "assessments":[
+        {
+          "guid":"YES9L1seWAX1dHqYN6cJqWv-",
+          "appId":"api",
+          "identifier":"wrap-up-survey",
+          "title":"Wrap Up Survey",
+          "labels":[
+            {
+              "lang":"en",
+              "value":"Thank you!",
+              "type":"Label"
+            }
+          ],
+          "minutesToComplete":5,
+          "type":"AssessmentReference"
+        }
+      ],
+      "timeWindows":[
+        {
+          "guid":"hfOzwJWYo0g7ua7gVV3XZd37",
+          "startTime":"08:00",
+          "expiration":"P1D",
+          "persistent":false,
+          "type":"TimeWindow"
+        }
+      ],
+      "labels":[
+        {
+          "lang":"en",
+          "value":"Thank you for participating in our study!",
+          "type":"Label"
+        }
+      ],
+      "type":"Session"
+    }
+  ],
+  "version":32,
+  "type":"Schedule"
+}
