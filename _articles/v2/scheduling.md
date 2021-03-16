@@ -197,7 +197,7 @@ In the `Timeline`, one scheduled session will be created for each instance of a 
 | Field | Req? | Description |
 |-------|------|-------------|
 | startTime | Y | A local time of day for the participant, given in MM:HH 24hr format. |
-| expiration | N | The period after which the window can be removed from the UI if it has not been started. If it has been started, an app has discretion on whether or not to leave it in the UI until it is finished or deleted by the participant. If the session defines an interval, this value is required and it cannot be greater than the interval of the session. |
+| expiration | N | The period after which the window should be removed as a task from the UI. If the session defines an interval, this value is required and it cannot be greater than the interval of the session. Upon expiration, if the assessment was started, the data should be uploaded (the history record can remain in a started but not finished state). |
 | persistent | N | If set to true, the session instance should be left in the UI for the participant to finish as often as they would like, until the session expires. |
 
 #### Assessments
