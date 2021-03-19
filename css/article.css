@@ -165,6 +165,16 @@ dl.properties dt {
     dl.properties table {
         margin-bottom: 1rem!important;
     }
+figure {
+  border: 1px solid rgba(34,36,38,.15);
+  border-radius: .28rem;
+}    
+figcaption {
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
 @media (max-width: 768px) {
     header {
         margin-bottom: 0!important;
