@@ -3,9 +3,9 @@ title: Scheduling
 layout: article
 ---
 
-<div id="toc"></div>
+*This is a v2 science API. These APIs are not yet complete or ready for production.*
 
-*Note: these APIs are in active development and not all elements have been released to production.*
+<div id="toc"></div>
 
 A `Schedule` can be defined by a study designer which describes what each participant in a study should be prompted to do over the entire course of that study. That schedule is converted into a `Timeline` for client apps, which provides detailed information on how to execute the schedule, as well as the information needed to properly annotate uploaded participant data so its context is preserved. Since each participant can start a study at a different time, this schedule is not described relative to calendrical dates, but instead relative to a set of *activity events* for a given user. 
 
@@ -69,7 +69,7 @@ or
 }
 ```
 
-The first call would attempt to update the immutable system event `enrollment`, and would quietly fail; the second would succeed if an `enrollment` custom event was defined and it not immutable (or allowed future only updates and the new timestamp was in the future). Otherwise it too will fail quietly. 
+The first call would attempt to update the immutable system event `enrollment`, and would quietly fail; the second would succeed if an `enrollment` custom event was defined and it was of type `future_only` (with a later date being submitted) or `mutable`. Otherwise it too will fail quietly. 
 
 <div class="ui compact icon message">
   <i class="circle info icon"></i>
@@ -197,7 +197,7 @@ In the `Timeline`, one scheduled session will be created for each instance of a 
 | Field | Req? | Description |
 |-------|------|-------------|
 | startTime | Y | A local time of day for the participant, given in MM:HH 24hr format. |
-| expiration | N | The period after which the window should be removed as a task from the UI. If the session defines an interval, this value is required and it cannot be greater than the interval of the session. Upon expiration, if the assessment was started, the data should be uploaded (the history record can remain in a started but not finished state). |
+| expiration | N | The period after which the window should be removed as a task from the UI (whether it was started by the participant or not). If the session defines an interval, this value is required and it cannot be greater than the interval of the session. Upon expiration, if the assessment was started, the data should be uploaded (the history record can remain in a started but not finished state). |
 | persistent | N | If set to true, the session instance should be left in the UI for the participant to finish as often as they would like, until the session expires. |
 
 #### Assessments
@@ -215,7 +215,7 @@ The second set of session properties define the assessments to perform, and in w
       "identifier":"medication-tracker",
       "minutesToComplete":1,
       "colorScheme": {
-        "foreground": "#FFF",
+        "foreground": "#FFFFFF",
         "background": "#ABBCE8",
         "activated": "#ABBCE8",
         "inactivated": "#C7D0E6"
@@ -249,7 +249,8 @@ The second set of session properties define the assessments to perform, and in w
 
 Beyond the `guid` and `appId` properties, assessment references have no further required information. However, they can include display information; **that information will not be added to the client app’s `Timeline` unless it is copied to the assessment reference at the time the schedule is created.** It is expected that design-time tools will allow designers to select assessments, and then these tools will copy default information from the assessment to the assessment reference. At that point it can be edited by study designers (e.g. to translate the assessment’s presentation in the schedule into a new language).
 
-[![Assessment Configuration for Schedule UIs](/images/assessment-ui-information.svg)](/images/assessment-ui-information.svg)
+{% include image.html url="/images/assessment-ui-information.svg" 
+  description="Display information in the assessment reference" %}
 
 ##### Assessment references
 
