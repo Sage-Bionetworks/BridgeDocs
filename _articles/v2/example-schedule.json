@@ -1,167 +1,104 @@
 {
-  "ownerId":"sage-bionetworks",
-  "name":"An example schedule",
-  "guid":"YBxBQyfVdop4wmN0RMra4h7G",
-  "duration":"P4W",
-  "createdOn":"2021-03-13T22:52:30.495Z",
-  "modifiedOn":"2021-03-15T00:13:31.166Z",
-  "published":false,
-  "deleted":false,
-  "sessions":[
+  "duration": "P2W",
+  "assessments": [
     {
-      "guid":"NO9mgMI64sZnfABPm7YAyLYp",
-      "name":"Initial Survey",
-      "startEventId":"enrollment",
-      "delay":"PT2H",
-      "performanceOrder":"sequential",
-      "notifyAt":"start_of_window",
-      "remindAt":"before_window_end",
-      "reminderPeriod":"PT10M",
-      "allowSnooze":false,
-      "assessments":[
-        {
-          "guid":"S4pn_HGgn7idLkVN13ANgBqa",
-          "appId":"api",
-          "identifier":"mood-survey",
-          "title":"Mood Survey",
-          "minutesToComplete":1,
-          "type":"AssessmentReference"
-        }
-      ],
-      "timeWindows":[
-        {
-          "guid":"LoQLiF-CQa0qsq8Xl63-aEsf",
-          "startTime":"00:00",
-          "expiration":"P3D",
-          "persistent":false,
-          "type":"TimeWindow"
-        }
-      ],
-      "messages":[
-        {
-          "lang":"en",
-          "subject":"Mood Survey",
-          "message":"Please fill out our initial mood survey!",
-          "type":"NotificationMessage"
-        }
-      ],
-      "labels":[
-        
-      ],
-      "type":"Session"
+      "key": "6e56429e6e56429e",
+      "guid": "vB2sRcexlEnqIWPOrBy2ReWD",
+      "appId": "api",
+      "identifier": "test-survey",
+      "revision": 1,
+      "label": "Take the enrollment survey!",
+      "minutesToComplete": 10,
+      "colorScheme": {
+        "type": "ColorScheme"
+      },
+      "type": "AssessmentInfo"
     },
     {
-      "guid":"my7oqQBok40EhlinRYFke0k1",
-      "name":"Weekly Tapping Test",
-      "startEventId":"enrollment",
-      "delay":"P1W",
-      "interval":"P1W",
-      "performanceOrder":"sequential",
-      "notifyAt":"start_of_window",
-      "remindAt":"after_window_start",
-      "reminderPeriod":"PT15M",
-      "allowSnooze":true,
-      "assessments":[
-        {
-          "guid":"y5NqJgkHz37ge9RnEtgioraS",
-          "appId":"api",
-          "identifier":"medication-tracker",
-          "title":"Medication Tracker",
-          "minutesToComplete":1,
-          "type":"AssessmentReference"
-        },
-        {
-          "guid":"192vyvketDEuJo7I2to3IQbW",
-          "appId":"api",
-          "identifier":"tapping",
-          "title":"Tapping Test",
-          "minutesToComplete":1,
-          "type":"AssessmentReference"
-        }
-      ],
-      "timeWindows":[
-        {
-          "guid":"Z9TfvnF-Ps7NjmEJoFpKfEbd",
-          "startTime":"08:00",
-          "expiration":"PT6H",
-          "persistent":false,
-          "type":"TimeWindow"
-        },
-        {
-          "guid":"fTnghp8ybgGuof8vNWEE50vS",
-          "startTime":"14:00",
-          "expiration":"PT6H",
-          "persistent":false,
-          "type":"TimeWindow"
-        },
-        {
-          "guid":"jARfqtWbX7Kn3inzZSEKr6dq",
-          "startTime":"20:00",
-          "expiration":"PT6H",
-          "persistent":false,
-          "type":"TimeWindow"
-        }
-      ],
-      "messages":[
-        {
-          "lang":"en",
-          "subject":"Tapping Test",
-          "message":"Time for the tapping test",
-          "type":"NotificationMessage"
-        }
-      ],
-      "labels":[
-        {
-          "lang":"en",
-          "value":"Let's get tappin’!",
-          "type":"Label"
-        }
-      ],
-      "type":"Session"
-    },
-    {
-      "guid":"lUX4J2Zu7b_WsNU5QN9-AmWz",
-      "name":"End of study survey",
-      "startEventId":"enrollment",
-      "delay":"P27D",
-      "performanceOrder":"sequential",
-      "allowSnooze":false,
-      "assessments":[
-        {
-          "guid":"YES9L1seWAX1dHqYN6cJqWv-",
-          "appId":"api",
-          "identifier":"wrap-up-survey",
-          "title":"Wrap Up Survey",
-          "labels":[
-            {
-              "lang":"en",
-              "value":"Thank you!",
-              "type":"Label"
-            }
-          ],
-          "minutesToComplete":5,
-          "type":"AssessmentReference"
-        }
-      ],
-      "timeWindows":[
-        {
-          "guid":"hfOzwJWYo0g7ua7gVV3XZd37",
-          "startTime":"08:00",
-          "expiration":"P1D",
-          "persistent":false,
-          "type":"TimeWindow"
-        }
-      ],
-      "labels":[
-        {
-          "lang":"en",
-          "value":"Thank you for participating in our study!",
-          "type":"Label"
-        }
-      ],
-      "type":"Session"
+      "key": "d9831818d9831818",
+      "guid": "63UuD59NLrpJGsvbdVU2wul7",
+      "appId": "shared",
+      "identifier": "digital-jar-open",
+      "label": "Digital Jar Open",
+      "minutesToComplete": 0,
+      "type": "AssessmentInfo"
     }
   ],
-  "version":32,
-  "type":"Schedule"
+  "sessions": [
+    {
+      "guid": "LBHjyu4oragS2xmj3gtPQD_e",
+      "label": "Weekly Jar Opening Test",
+      "startEventId": "enrollment",
+      "performanceOrder": "sequential",
+      "type": "SessionInfo"
+    },
+    {
+      "guid": "dAGKM4nN39cDbyADic_bDNXs",
+      "label": "Background Survey",
+      "startEventId": "enrollment",
+      "performanceOrder": "sequential",
+      "notifyAt": "start_of_window",
+      "remindAt": "before_window_end",
+      "reminderPeriod": "PT3H",
+      "minutesToComplete": 10,
+      "message": {
+        "lang": "en",
+        "subject": "Please take the initial survey",
+        "message": "This survey is very important to us, please do it!!",
+        "type": "NotificationMessage"
+      },
+      "type": "SessionInfo"
+    }
+  ],
+  "schedule": [
+    {
+      "refGuid": "LBHjyu4oragS2xmj3gtPQD_e",
+      "instanceGuid": "B0sfyeq6wAW-YbBH5RFXbQ",
+      "startDay": 0,
+      "endDay": 0,
+      "startTime": "08:00",
+      "expiration": "PT8H",
+      "assessments": [
+        {
+          "refKey": "d9831818d9831818",
+          "instanceGuid": "1ggnxuRfxovtibAQfcZXfQ",
+          "type": "ScheduledAssessment"
+        }
+      ],
+      "type": "ScheduledSession"
+    },
+    {
+      "refGuid": "dAGKM4nN39cDbyADic_bDNXs",
+      "instanceGuid": "5m4DWgtn0oY3S8LR72QowA",
+      "startDay": 2,
+      "endDay": 8,
+      "startTime": "00:00",
+      "expiration": "P1W",
+      "assessments": [
+        {
+          "refKey": "6e56429e6e56429e",
+          "instanceGuid": "S_OM4Jv3Cov4GM3N_tAcCg",
+          "type": "ScheduledAssessment"
+        }
+      ],
+      "type": "ScheduledSession"
+    },
+    {
+      "refGuid": "LBHjyu4oragS2xmj3gtPQD_e",
+      "instanceGuid": "SNRtbbtLy5Gfiy8QP37GpQ",
+      "startDay": 7,
+      "endDay": 7,
+      "startTime": "08:00",
+      "expiration": "PT8H",
+      "assessments": [
+        {
+          "refKey": "d9831818d9831818",
+          "instanceGuid": "r7o4Vo0UqzfiYGiTejW69A",
+          "type": "ScheduledAssessment"
+        }
+      ],
+      "type": "ScheduledSession"
+    }
+  ],
+  "type": "Timeline"
 }
