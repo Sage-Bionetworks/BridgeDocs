@@ -294,6 +294,210 @@ Finally, a `Session` can define the notifications that the mobile app should sho
 | allowSnooze | N | A boolean indicating whether or not the participant may snooze the notification or reminder to be displayed at a later time (not specified by Bridge). |
 | messages | N | An array of localized messages to display to the participant as the notification.<br><br>The `lang` property is required and must be a valid ISO 639 alpha-2 or alpha-3 language code specifying the language of the label. The array cannot contain two labels with the same language code. The `subject` is a short version of the message (40 characters or less) while the `message` field is a longer version (60 characters or less).<br><br>When returning a `Timeline` to a client, the caller’s languages will be used (in order of preference) to select a `Label` in that language. If this fails, the `en` language `NotificationMessage` will be used as a default. It is required to have an `en` message if notifications are enabled. |
 
-
 ## Timelines
 
+The timeline sent to a mobile app takes the schedule and calculates all the individual tasks the participant will be asked to perform over the lifetime of the study. It includes information about the sessions and assessments so the client can render a UI without fully loading the assessments.
+
+**NOTE:** The examples in this section are generated from this [example-schedule.json](./example-schedule.json) for a short two week study.
+
+```json
+{
+  "duration": "P2W",
+  "schedule": [
+    // the schedule
+  ],
+  "sessions": [
+    // SessionInfo objects describing the sessions
+  ],
+  "assessments": [
+    // AssessmentInfo objects describing the assessments
+  ],
+  "type": "Timeline"
+}
+```
+
+### The schedule
+
+The `schedule` property of the timeline contains scheduled sessions with their scheduled activities. This is the actual timeline of what sessions and assessments should be done, and when.
+
+```json
+{
+  "schedule": [
+    {
+      "refGuid": "LBHjyu4oragS2xmj3gtPQD_e",
+      "instanceGuid": "B0sfyeq6wAW-YbBH5RFXbQ",
+      "startDay": 0,
+      "endDay": 0,
+      "startTime": "08:00",
+      "expiration": "PT8H",
+      "assessments": [
+        {
+          "refKey": "d9831818d9831818",
+          "instanceGuid": "1ggnxuRfxovtibAQfcZXfQ",
+          "type": "ScheduledAssessment"
+        }
+      ],
+      "type": "ScheduledSession"
+    },
+    {
+      "refGuid": "dAGKM4nN39cDbyADic_bDNXs",
+      "instanceGuid": "5m4DWgtn0oY3S8LR72QowA",
+      "startDay": 2,
+      "endDay": 8,
+      "startTime": "00:00",
+      "expiration": "P1W",
+      "assessments": [
+        {
+          "refKey": "6e56429e6e56429e",
+          "instanceGuid": "S_OM4Jv3Cov4GM3N_tAcCg",
+          "type": "ScheduledAssessment"
+        }
+      ],
+      "type": "ScheduledSession"
+    },
+    {
+      "refGuid": "LBHjyu4oragS2xmj3gtPQD_e",
+      "instanceGuid": "SNRtbbtLy5Gfiy8QP37GpQ",
+      "startDay": 7,
+      "endDay": 7,
+      "startTime": "08:00",
+      "expiration": "PT8H",
+      "assessments": [
+        {
+          "refKey": "d9831818d9831818",
+          "instanceGuid": "r7o4Vo0UqzfiYGiTejW69A",
+          "type": "ScheduledAssessment"
+        }
+      ],
+      "type": "ScheduledSession"
+    }
+  ],
+  "type": "Timeline"
+}
+```
+
+Each entry in this array has the following properties
+
+| Field | Req? | Description |
+|-------|------|-------------|
+| refGuid | Y | This is a reference to a `SessionInfo` entry in the top-level `sessions` property array of this timeline. That block contains all the configuration information for this session (and all the other instances of this session that were generated from the same repeating session. This GUID happens to be the GUID of the session in the schedule. |
+| instanceGuid | Y | This is a unique identifier for any study data generated and uploaded as part of this performance of a repeating session. Uploads should include the session or assessment `instanceGuid` along with the timestamp of the event that triggered this scheduled session, so the server can reconstruct the relationship of the schedule and the upload at a later time. |
+| startDay | Y | The first day on which this scheduled session should be introduced to the participant (taking account the `startTime` and `expiration` period). This value is zero-indexed. The “day since event X” is calculated from the time of an event timestamp to the participant’s current local time, as a number of days (these are *calendar* days, not 24 hour periods). The specific event to measure against is the `startEventid` in the `SessionInfo` object for this scheduled session. |
+| endDay | Y | The last day on which this scheduled session should be provided to the participant. The “day since event X” is calculated from the time of an event timestamp to the participant’s current local time, as a number of days (these are *calendar* days, not 24 hour periods). The specific event to measure against is the `startEventid` in the `SessionInfo` object for this scheduled session. If this day passes and the scheduled session is unstarted, it should be removed from the UI; if it was started, the data that was collected should be uploaded without updating the `finishedOn` timestamp of the associated history record. |
+| startTime | N | The local time of day that the scheduled session should be shown to the user. This is the beginning of the *time window* for this scheduled session, which is also used to specify notification behavior. |
+| expiration | N | If present, this is a duration from the `startTime` or `delayTime` after which the session should be removed from the UI. This value is required if the session as a whole has an `interval` value and repeats, and it must be equal to or shorter than the repeating interval. If the scheduled session was started by the user, partial data should be uploaded to the Bridge server after the scheduled session expires. |
+| delayTime | N | If there is a delay of less than a day on a scheduled session, then a `delayTime` will be provided. Depending on the local time, the client may choose to use this to delay before showing the scheduled session (e.g. if the timestamp is after the specified `startTime`). |
+| assessments | Y | This is an array of the assessments in this session. The order they should be presented or performed is given by the `performanceOrder` field of the `SessionInfo` object for this scheduled session. Each assessment will have a `refKey` to an `AssessmentInfo` entry under the top-level `assessments` property array, and an `instanceGuid` which is the unique identifier for any study data generated and uploaded by this assessment. (The `refKey` is a transient internal reference within the `Timeline` JSON to a configured assessment block in the same JSON). |
+
+The scheduled assessments have only two pieces of information:
+
+| Field | Req? | Description |
+|-------|------|-------------|
+| refGuid | Y | This is a reference to a `AssessmentInfo` entry in the top-level `assessments` property array of this timeline. That block contains all the configuration information for this assessment (since assessments can be configured differently, this is not the assessment’s GUID, it is an internal reference for this JSON object only).  |
+| instanceGuid | Y | This is a unique identifier for any study data generated and uploaded as part of this performance of a repeating assessment (within a repeating session). Uploads should include the session or assessment `instanceGuid` along with the timestamp of the event that triggered this scheduled session, so the server can reconstruct the relationship of the schedule and the upload at a later time. |
+
+In addition to this schedule, there are configurations for the highly redundant `Session` and `Assessment` information. This information is similar to the `Schedule` but 1) it merges in UI display information from the assessment and 2) it resolves language dependencies and returns the best language options for the participant retrieving the `Timeline`:
+
+```json
+{
+  "assessments": [
+    {
+      "key": "6e56429e6e56429e",
+      "guid": "vB2sRcexlEnqIWPOrBy2ReWD",
+      "appId": "api",
+      "identifier": "test-survey",
+      "revision": 1,
+      "label": "Take the enrollment survey!",
+      "minutesToComplete": 10,
+      "colorScheme": {
+        "background": "#FF00FF",
+        "type": "ColorScheme"
+      },
+      "type": "AssessmentInfo"
+    },
+    {
+      "key": "d9831818d9831818",
+      "guid": "63UuD59NLrpJGsvbdVU2wul7",
+      "appId": "shared",
+      "identifier": "digital-jar-open",
+      "label": "Digital Jar Open",
+      "minutesToComplete": 2,
+      "type": "AssessmentInfo"
+    }
+  ],
+  "sessions": [
+    {
+      "guid": "LBHjyu4oragS2xmj3gtPQD_e",
+      "label": "Weekly Jar Opening Test",
+      "minutesToComplete": 2,
+      "startEventId": "enrollment",
+      "performanceOrder": "sequential",
+      "type": "SessionInfo"
+    },
+    {
+      "guid": "dAGKM4nN39cDbyADic_bDNXs",
+      "label": "Background Survey",
+      "startEventId": "enrollment",
+      "performanceOrder": "sequential",
+      "notifyAt": "start_of_window",
+      "remindAt": "before_window_end",
+      "reminderPeriod": "PT3H",
+      "minutesToComplete": 10,
+      "message": {
+        "lang": "en",
+        "subject": "Please take the initial survey",
+        "message": "This survey is very important to us, please do it!!",
+        "type": "NotificationMessage"
+      },
+      "type": "SessionInfo"
+    }
+  ]
+}
+```
+
+The values of these fields are given in the description of the `Session` and `Assessment` objects above (most of this information is copied over from the schedule without modification). Note that both local and shared assessments may appear in the schedule. You must retrieve the configuration for these assessments through different endpoints:
+
+Local assessments:<br>
+    `https://ws.sagebridge.org/v1/assessments/{guid}/config`
+
+Shared assessments:<br>
+    `https://ws.sagebridge.org/v1/sharedassessments/{guid}/config`
+
+### Calculating the participant’s schedule
+
+Setting aside notifications for the moment, The following algorithm should be used:
+
+1) Retrieve the user’s activity event map (event IDs mapped to timestamps) and the participant’s timeline.
+
+2) For each event in the activity event map, calculate the “day since event N” for this participant, using the local time of the device. 
+
+```Java
+# Joda Time
+int daysSince = Days.daysBetween(eventTimestamp.withTimeAtStartOfDay() , 
+    now.withTimeAtStartOfDay() ).getDays()
+
+# Java 8+
+long daysSince = ChronoUnit.DAYS.between(eventTimestamp, now);
+```
+
+3) For each event ID in the map, search for scheduled events that have the same `startEventId`, where the `startDay` >= the `daysSince` value and `endDay` value is <= `daysSince`. Scheduled activities that are keyed off of events that are not in the participant’s events are ignored.
+
+4) Once you have all these scheduled sessions assembled, remove any sessions where the `startTime` and `expiration` values define a local time window that is outside of the local time;
+
+5) Now retrieve the adherence records for the remaining session instance GUIDs of these sessions. Remove any scheduled sessions from the set that have `finishedOn` timestamps.
+
+6) The remaining sessions should be shown to the user, possibly emphasizing sessions with `startedOn` timestamps.
+
+### Notifications
+
+Because sessions include information on notifications, the client will need to be proactive in retrieving and processing timeline information. 
+
+### Caching the components of the schedule system
+
+A significant portion of the scheduling system can be cached by the client for long-term local storage.
+
+| Scheduling Component | Caching Behavior |
+|----------------------|------------------|
+| event timestamps | TBD. These currently have to be requested from the server and would need to be requested prior to any recalculation of the schedule. |
+| timeline | Published schedules cannot be changed, so their timelines cannot be changed, allowing for long-term local caching of the `Timeline`. Participant-facing `Timeline` APIs accept the `If-Modified-Since` header and will return 304 if the `Timeline` has not been modified after the given modification time. |
+| adherence records | TBD. |
