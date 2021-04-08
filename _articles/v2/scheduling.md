@@ -121,8 +121,8 @@ A schedule is owned by an organization and defines the overall duration of a stu
 | Field | Req? | Description |
 |-------|------|-------------|
 | name  | Y | A name for the schedule to show study designers. Never shown to participants. |
-| duration | Y | The duration of the schedule expressed in days or weeks only (though these can be mixed). **Note:** right now this determines the length of the study where the schedule is used. |
-| ownerId | — | The ID of the organization that owns this schedule. Unless the caller is an admin, this will be the caller’s organization. It’s set by Bridge when the caller creates a new schedule. |
+| duration | Y | The duration of the sessions in the schedule, expressed in days or weeks only (though these can be mixed).<br><br>No single series of scheduled sessions can run longer than this duration. If all the sessions in a schedule start at the beginning of the study, this duration should be the calendar duration of the study as it is actually performed by participants. **However, if events can be triggered later in the study, then those time series can themselves be of the given duration.** It is up to study designers to determine if this is acceptable, or if the design needs to be adjusted to more strictly limit the actual time it will take to complete the study. |
+| ownerId | — | The ID of the organization that owns this schedule. Unless the caller is an admin (who can set any organization), this will be the caller’s organization. It’s set by Bridge when the caller creates a new schedule. |
 | published | — | If true, this schedule has been published and can no longer be updated. Schedules should be published before they are used in production. If they are not, researchers may not be able to recover information about scheduling context for participant study data.  |
 | deleted | — | Is the schedule logically deleted? It will no longer appear in lists of schedules (unless deleted items are included with a query parameter), though it can still be retrieved through the API. |
 | clientData | N | An optional JSON payload that can be used to store arbitrary information with the schedule, usually information for UI or authoring tools (the `clientData` information is not copied over to the `Timeline` that is sent to a participant). |
@@ -480,7 +480,7 @@ int daysSince = Days.daysBetween(eventTimestamp.withTimeAtStartOfDay() ,
 long daysSince = ChronoUnit.DAYS.between(eventTimestamp, now);
 ```
 
-3) For each event ID in the map, search for scheduled events that have the same `startEventId`, where the `startDay` >= the `daysSince` value and `endDay` value is <= `daysSince`. Scheduled activities that are keyed off of events that are not in the participant’s events are ignored.
+3) For each event ID in the map, search for scheduled events that have the same `startEventId`, where the `startDay` <= `daysSince` and `endDay` >= `daysSince`. Scheduled activities that are keyed off of events that are not in the participant’s events are ignored.
 
 4) Once you have all these scheduled sessions assembled, remove any sessions where the `startTime` and `expiration` values define a local time window that is outside of the local time;
 
