@@ -14,6 +14,33 @@ A Bridge app can be used to run one or more [studies](/model-browser.html#Study)
   </div>
 </div>
 
+## Study Lifecycle
+
+Studies follow a lifecycle that supports the proper performance of study research. New studies are created in the `design` phase and are manually advanced by study owners as appropriate.
+
+| Phase       | Description |
+|-------------|-------------|
+| legacy      | This study was created prior to the addition of study phases, and does not participate in any of the lifecyle constraints. |
+| design      | The study can be edited, including the associated schedule, and the schedule can be changed (assuming a non-published schedule is associated to the study). The study is not visible in public registries, and when an account is enrolled in a study in `design,` the `test_user` data group will be added to the account if it does not yet exist. The study can be logically or physically deleted by a developer, study designer, or admin. When ready, this study can be transitioned via the `recruit` endpoint. |
+| recruitment | To move to recruitment, the associated app should be available in the app store and the IRB approval for the study must be recorded as part of the study (there may be other criteria that must be met at this time).<br><br>The study metadata can be edited during recruitment, but the associated schedule cannot be changed, nor can that schedule itself be changed (an unpublished schedule associated to the study will be published in this transition). The study becomes visible in public registries, and accounts are enrolled normally (no test tag). The study cannot be logically or physically deleted. When recuitment targets have been met, this study can be transitioned via the `execute` endpoint. |
+| in_flight   | The study metadata can be edited, but the schedule remains immutable. The study should no longer be visible in public registries, and attempts to enroll an account in the study will be rejected (HTTP response code: `423`). The study cannot be logically or physically deleted. The app should still be available in app stores in case a current participant needs to reinstall the app to continue the study. When appropriate, this study can be transitioned via the `close enrollment` endpoint. **Note: the system may be able to do some checks at this time to determine all participants are finished with the study.** |
+| analysis    | The study can no longer be edited in any way. The study should no longer be visible in public registries, and attempts to enroll an account in the study will be rejected (HTTP response code: `423`). Any uploads that are attempted once the study transitions to this state will be rejected and/or not uploaded to Synapse. The study cannot be logically or physically deleted. The app can be removed from app stores if it is not used to conduct any other studies. When this analysis is done, the study can be transitioned via the `closeout` endpoint. |
+| completed   | The study can no longer be edited in any way. The study should no longer be visible in public registries, and attempts to enroll an account in the study will be rejected (HTTP response code: `423`). The study will still be available in Bridge so that final IRB reporting can occur. Once this has been done, the study can be logically deleted. |
+| withdrawn   | A study can be transitioned from any other phase than `completed` to the `withdrawn` state. At this point the study cannot be changed at all, but the study can be logically deleted. There may be additional requirements in the future. |
+
+## Information about a study for end users
+
+In addition, the study contains important information for participants that the client will want to access to render the appropriate APIs:
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| identifier | Y | |
+| name | Y | |
+| clientData | N | |
+| phase | Y | |
+| scheduleGuid | | |
+
+
 ## Enrollment
 
 A user must create an account in Bridge before they can be enrolled in a study. There are three ways to be enrolled in a study:
