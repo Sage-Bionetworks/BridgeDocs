@@ -10,7 +10,7 @@ A Bridge app can be used to run one or more [studies](/model-browser.html#Study)
 <div class="ui icon message">
   <i class="circle info icon"></i>
   <div class="content">
-  Initially, only one organization will be able to sponsor a study, and a user will hold the same roles vis-a-vis every study they can access as an organization member. This will be enhanced after the initial v2 APIs are released, as part of a larger project to unify Sage Bionetwork’s two platforms—Bridge and Synapse—into a coordinated product line.*
+  Initially, only one organization will be able to sponsor a study, and a user will hold the same roles vis-a-vis every study they can access as an organization member. This will be enhanced after the initial v2 APIs are released, as part of a larger project to unify Sage Bionetwork’s two platforms—Bridge and Synapse—into a coordinated product line.
   </div>
 </div>
 
@@ -21,25 +21,84 @@ Studies follow a lifecycle that supports the proper performance of study researc
 | Phase       | Description |
 |-------------|-------------|
 | legacy      | This study was created prior to the addition of study phases, and does not participate in any of the lifecyle constraints. |
-| design      | The study can be edited, including the associated schedule, and the schedule can be changed (assuming a non-published schedule is associated to the study). The study is not visible in public registries, and when an account is enrolled in a study in `design,` the `test_user` data group will be added to the account if it does not yet exist. The study can be logically or physically deleted by a developer, study designer, or admin. When ready, this study can be transitioned via the `recruit` endpoint. |
-| recruitment | To move to recruitment, the associated app should be available in the app store and the IRB approval for the study must be recorded as part of the study (there may be other criteria that must be met at this time).<br><br>The study metadata can be edited during recruitment, but the associated schedule cannot be changed, nor can that schedule itself be changed (an unpublished schedule associated to the study will be published in this transition). The study becomes visible in public registries, and accounts are enrolled normally (no test tag). The study cannot be logically or physically deleted. When recuitment targets have been met, this study can be transitioned via the `execute` endpoint. |
-| in_flight   | The study metadata can be edited, but the schedule remains immutable. The study should no longer be visible in public registries, and attempts to enroll an account in the study will be rejected (HTTP response code: `423`). The study cannot be logically or physically deleted. The app should still be available in app stores in case a current participant needs to reinstall the app to continue the study. When appropriate, this study can be transitioned via the `close enrollment` endpoint. **Note: the system may be able to do some checks at this time to determine all participants are finished with the study.** |
+| design      | The study can be edited, including the associated schedule, and the schedule can be changed (the new schedule can be published or unpublished, and that may or may not be modifiable despite the `design` phase of the study). The study is not visible in public registries, and when an account is enrolled in a study in `design,` the `test_user` data group will be added to the account if it does not yet exist. The study can be logically or physically deleted by a developer, study designer, or admin. When ready, this study can be transitioned via the `recruit` endpoint. |
+| recruitment | To move to recruitment, the associated app should be available in the app store and the IRB approval for the study must be recorded as part of the study (there may be other criteria that must be met at this time).<br><br>The study metadata can be edited during recruitment, but the associated schedule cannot be changed, nor can that schedule itself be changed (an unpublished schedule associated to the study will be published in this transition). The study becomes visible in public registries, and accounts are enrolled normally (no test tag is added). The study cannot be logically or physically deleted. When recruitment targets have been met, this study can be transitioned via the `closeEnrollment` endpoint. |
+| in_flight   | The study metadata can be edited, but the schedule remains immutable. The study should no longer be visible in public registries, and attempts to enroll an account in the study will be rejected (HTTP response code: `423`). The study cannot be logically or physically deleted. The app should still be available in app stores in case a current participant needs to reinstall the app to continue the study. When appropriate, this study can be transitioned via the `analyze` endpoint. **Note: the system may be able to do some checks at this time to determine all participants are finished with the study.** |
 | analysis    | The study can no longer be edited in any way. The study should no longer be visible in public registries, and attempts to enroll an account in the study will be rejected (HTTP response code: `423`). Any uploads that are attempted once the study transitions to this state will be rejected and/or not uploaded to Synapse. The study cannot be logically or physically deleted. The app can be removed from app stores if it is not used to conduct any other studies. When this analysis is done, the study can be transitioned via the `closeout` endpoint. |
-| completed   | The study can no longer be edited in any way. The study should no longer be visible in public registries, and attempts to enroll an account in the study will be rejected (HTTP response code: `423`). The study will still be available in Bridge so that final IRB reporting can occur. Once this has been done, the study can be logically deleted. |
-| withdrawn   | A study can be transitioned from any other phase than `completed` to the `withdrawn` state. At this point the study cannot be changed at all, but the study can be logically deleted. There may be additional requirements in the future. |
+| completed   | The study can no longer be edited in any way. *PHI information for all participants in the study will be deleted from the system (such as email, phone number, or name).* The study should no longer be visible in public registries, and attempts to enroll an account in the study will be rejected (HTTP response code: `423`). The study will still be available in Bridge so that final IRB reporting can occur. Once this has been done, the study can be logically deleted. |
+| withdrawn   | A study can be transitioned from any other phase than `completed` to the `withdrawn` state, using the `withdraw` endpoint. *PHI information for all participants in the study will be deleted from the system (such as email, phone number, or name).* At this point the study cannot be changed at all, but the study can be logically deleted. There may be additional requirements in the future. |
 
-## Information about a study for end users
+## Information about a study for display and oversight
 
-In addition, the study contains important information for participants that the client will want to access to render the appropriate APIs:
+In addition, the `Study` contains important information for participants that the client will want to access to render the appropriate APIs:
 
 | Field | Required | Description |
 |-------|----------|-------------|
-| identifier | Y | |
-| name | Y | |
-| clientData | N | |
-| phase | Y | |
-| scheduleGuid | | |
+| identifier | Y | A string identifier that is unique for this study in the context of the app where it is hosted (lower- or upper-case letters, numbers, dashes, and/or underscores only). |
+| name | Y | The name of the study as you would like it to appear to participants. |
+| details | N | This is a long form textual description of the study for prospective participants. It can embed rich text formatting (such as markdown) if the client will support rendering the notation. |
+| studyLogoUrl | N | If supplied, it should be an URL to download and display a vector-graphic (SVG) logo or graphic identifying this study. |
+| colorScheme | N | A set of colors that can be used to customize an app when the user is in the context of performing this study. |
+| contacts | Y | An array of `Contact` objects that describe contact information that you intend to display to participants and other end users of the study (the array can be empty; see below). |
 
+As well, the `Study` contains information for study designers and for oversight:
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| scheduleGuid | (Y) | The GUID of the schedule that will be used to generate a timeline for participants in this study. The GUID can be used to retrieve the appropriate `Timeline` through the APIs. This field is required to move into the recruitment phase. *NOTE: Bridge will implement a `Protocol` design for v2 that includes study arms with different schedules assignable to each arm of the study. Currently Bridge implicitly assumes a study with one arm, e.g. no control vs. intervention groups.* |
+| clientData | N | This is an arbitrary JSON object graph that the client can use to store extra information about a study that is not specified in the Bridge schema. |
+| institutionId | N | If the investigator or sponsoring institution have assigned this study an identifier of some kind, it should be recorded in this field. |
+| disease | N | What disease state is this study researching? Can be general (neurodegenerative disorders) or specific (progressive supranuclear palsy). This should be a comma-delimited list when appropriate. However, the value is not constrained. |
+| studyDesignType | N | What type of research design is being used in this study (intervential, observational, cohort study, cross-over, etc.). This should be a comma-delimited list when appropriate. However, the value is not constrained. |
+| phase | Y | The phase of this study (see above). |
+| irbApprovedOn | (Y) | The date that an IRB has given approval for the protocol that this study configuration will support. This field is required to move into the recruitment phase. |
+| irbApprovedUntil | (Y) | The last calendar date that the IRB’s approval is valid. This field is required to move into the recruitment phase. |
+| irbProtocolId | (Y) | If the IRB has assigned this study an identifier, the identifier should be entered in this field. This field is required to move into the recruitment phase. |
+
+A contact contains the following information:
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| name | Y | The name of the person or organization, e.g. “Dr. Tim Powers, Ph.D.” or “Sage Bionetworks”. |
+| role | Y | The purpose of the contact. The values that are supported include “irb”, “principal_investigator”, “investigator”, (fiscal) “sponsor”, “study_support” and ”technical_support”.  | Professor of Psychiatry and . |
+| position | N | The position of an individual relative to their institutional affiliation (not their role in the study, please use the role attribute for this). For example, “AssociateBioengineering.” |
+| affiliation | N | The organization an individual is affiliated with, e.g. "UC San Francisco”. This may or may not be the same as the institution sponsoring the study. |
+| address | N | The full mailing [Address](/model-browser.html#Address), if required (see below). |
+| email | N | Email address of an individual or organization. |
+| phone | N | [Phone number](/model-browser.html#Phone) of an individual or organization. |
+| jurisdiction | N | The regulatory jurisdiction of this entry. When multiple jurisdictions are involved in a study, there may be principal investigators, IRBs, and study coordinators involved from each jurisdiction. It may be useful to show a participant the people and organizations involved in their specific jurisdiction, or the primary jurisdiction and their specific jurisdiction, or all jurisdictions. |
+
+The `Address` is suitable for displaying an address to end users. Here are some examples of more unusual addresses and how they might be stored:
+
+“50 miles (80 km) West of Socorro, New Mexico, USA”
+
+    mailRouting = “50 miles (80 km) West of”
+    city = “Socorro”
+    division = “New Mexico”
+    country = “USA”
+
+“647 National Road<br>
+16 Sunlight Building<br>
+Barangay Muzon, Taytay, Rizal<br>
+Taytay CPO-PO Box# 1920 + Rizal<br>
+Philippines”
+
+    placeName = “647 National Road”
+    street = “16 Sunlight Building”
+    city = “Barangay Muzon, Taytay”
+    division = “Rizal”
+    mailRouting = “Taytay CPO-PO Box# 1920”
+    country = “Philippines”
+    
+| Field | Required | Description |
+|-------|----------|-------------|
+| placeName | N | The name of a building, or sometimes the name of the organization at the address. |
+| street | N | A street (usually a number and a name, but anything that defines the locality). |
+| mailRouting | N | Mail routing information such as a unit, P.O. box, mail stop, or other directions on where to deliver mail at the locality. |
+| city | N | City. In the example from the Philippines above, there are two municipalities specified. |
+| division | N | state, province, prefecture |
+| postalCode | N |  Zip code, post code, etc. |
+| country | N | Country. |
 
 ## Enrollment
 
@@ -85,4 +144,4 @@ Bridge recommends use of the phone number of the user’s device as an account c
 
 ## Participant APIs
 
-A more complete view of the participants’ in a study can be retrieved through the [Study participants API.](/swagger-ui/index.html#/Study%20Participants) Many additional APIs exist to work with the account, such as to resend an email verification request or to withdraw a participant from the study. 
+A more complete view of the participants’ in a study can be retrieved through the [Study participant APIs.](/swagger-ui/index.html#/Study%20Participants) Many additional APIs exist to work with an enrolled account in a study, such as to resend an email verification request or to withdraw a participant from the study. 
