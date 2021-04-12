@@ -71,7 +71,7 @@ or
 
 The first call would attempt to update the immutable system event `enrollment`, and would quietly fail; the second would succeed if an `enrollment` custom event was defined and it was of type `future_only` (with a later date being submitted) or `mutable`. Otherwise it too will fail quietly. 
 
-<div class="ui compact icon message">
+<div class="ui compact icon message" style="display: none">
   <i class="circle info icon"></i>
   <p>Why do these APIs return 201 even when the event is not updated? So clients that send requests to update a <code>forward_only</code> event do not receive errors if their requests are received out-of-order. This behavior can be changed to report 400 in the event of an error through the use of a query parameter (<code>reportFailure=true</code>).</p>
 </div>
