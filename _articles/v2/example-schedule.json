@@ -1,0 +1,104 @@
+{
+  "duration": "P2W",
+  "assessments": [
+    {
+      "key": "6e56429e6e56429e",
+      "guid": "vB2sRcexlEnqIWPOrBy2ReWD",
+      "appId": "api",
+      "identifier": "test-survey",
+      "revision": 1,
+      "label": "Take the enrollment survey!",
+      "minutesToComplete": 10,
+      "colorScheme": {
+        "type": "ColorScheme"
+      },
+      "type": "AssessmentInfo"
+    },
+    {
+      "key": "d9831818d9831818",
+      "guid": "63UuD59NLrpJGsvbdVU2wul7",
+      "appId": "shared",
+      "identifier": "digital-jar-open",
+      "label": "Digital Jar Open",
+      "minutesToComplete": 0,
+      "type": "AssessmentInfo"
+    }
+  ],
+  "sessions": [
+    {
+      "guid": "LBHjyu4oragS2xmj3gtPQD_e",
+      "label": "Weekly Jar Opening Test",
+      "startEventId": "enrollment",
+      "performanceOrder": "sequential",
+      "type": "SessionInfo"
+    },
+    {
+      "guid": "dAGKM4nN39cDbyADic_bDNXs",
+      "label": "Background Survey",
+      "startEventId": "enrollment",
+      "performanceOrder": "sequential",
+      "notifyAt": "start_of_window",
+      "remindAt": "before_window_end",
+      "reminderPeriod": "PT3H",
+      "minutesToComplete": 10,
+      "message": {
+        "lang": "en",
+        "subject": "Please take the initial survey",
+        "message": "This survey is very important to us, please do it!!",
+        "type": "NotificationMessage"
+      },
+      "type": "SessionInfo"
+    }
+  ],
+  "schedule": [
+    {
+      "refGuid": "LBHjyu4oragS2xmj3gtPQD_e",
+      "instanceGuid": "B0sfyeq6wAW-YbBH5RFXbQ",
+      "startDay": 0,
+      "endDay": 0,
+      "startTime": "08:00",
+      "expiration": "PT8H",
+      "assessments": [
+        {
+          "refKey": "d9831818d9831818",
+          "instanceGuid": "1ggnxuRfxovtibAQfcZXfQ",
+          "type": "ScheduledAssessment"
+        }
+      ],
+      "type": "ScheduledSession"
+    },
+    {
+      "refGuid": "dAGKM4nN39cDbyADic_bDNXs",
+      "instanceGuid": "5m4DWgtn0oY3S8LR72QowA",
+      "startDay": 2,
+      "endDay": 8,
+      "startTime": "00:00",
+      "expiration": "P1W",
+      "assessments": [
+        {
+          "refKey": "6e56429e6e56429e",
+          "instanceGuid": "S_OM4Jv3Cov4GM3N_tAcCg",
+          "type": "ScheduledAssessment"
+        }
+      ],
+      "type": "ScheduledSession"
+    },
+    {
+      "refGuid": "LBHjyu4oragS2xmj3gtPQD_e",
+      "instanceGuid": "SNRtbbtLy5Gfiy8QP37GpQ",
+      "startDay": 7,
+      "endDay": 7,
+      "startTime": "08:00",
+      "expiration": "PT8H",
+      "assessments": [
+        {
+          "refKey": "d9831818d9831818",
+          "instanceGuid": "r7o4Vo0UqzfiYGiTejW69A",
+          "type": "ScheduledAssessment"
+        }
+      ],
+      "type": "ScheduledSession"
+    }
+  ],
+  "type": "Timeline"
+}
