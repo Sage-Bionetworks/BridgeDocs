@@ -280,6 +280,12 @@ Finally, a `Session` can define the notifications that the mobile app should sho
       "subject":"Tapping Test",
       "message":"Time for the tapping test",
       "type":"NotificationMessage"
+    },
+    {
+      "lang":"fr",
+      "subject":"Test de taraudage",
+      "message":"L'heure du test de taraudage",
+      "type":"NotificationMessage"
     }
   ],
   "type":"Session"
@@ -291,7 +297,7 @@ Finally, a `Session` can define the notifications that the mobile app should sho
 | notifyAt | N | For any notification to be sent, this value must be set. There are three values: `start_of_window` indicates that a notification should be sent at the start of the window; `participant_choice` suggests the notification should be scheduled by the participant (the design is unspecified by Bridge); and `random` indicates that the notification should be scheduled for a random time during the time window (after it starts and before it expires). |
 | remindAt | N | For a second reminder notification, this value must be set. There are two values: `after_window_start` and `before_window_end`, that can be used with the `reminderPeriod` to set a fixed reminder. For example a reminder `before_window_end` with a `reminderPeriod` of “PT10M” should send a reminder ten minutes before a session window ends. Required if `reminderPeriod` is set. |
 | reminderPeriod | N | An ISO 8601 duration measured in minutes, hours, days, or weeks. Required if `remindAt` is set. |
-| allowSnooze | N | A boolean indicating whether or not the participant may snooze the notification or reminder to be displayed at a later time (not specified by Bridge). |
+| allowSnooze | N | A boolean indicating whether or not the participant may snooze the notification or reminder to be displayed at a later time. |
 | messages | N | An array of localized messages to display to the participant as the notification.<br><br>The `lang` property is required and must be a valid ISO 639 alpha-2 or alpha-3 language code specifying the language of the label. The array cannot contain two labels with the same language code. The `subject` is a short version of the message (40 characters or less) while the `message` field is a longer version (60 characters or less).<br><br>When returning a `Timeline` to a client, the caller’s languages will be used (in order of preference) to select a `Label` in that language. If this fails, the `en` language `NotificationMessage` will be used as a default. It is required to have an `en` message if notifications are enabled. |
 
 ## Timelines
@@ -457,7 +463,7 @@ In addition to this schedule, there are configurations for the highly redundant 
 
 The values of these fields are given in the description of the `Session` and `Assessment` objects above (most of this information is copied over from the schedule without modification). Note that both local and shared assessments may appear in the schedule. You must retrieve the configuration for these assessments through different endpoints:
 
-Local assessments:<br>
+Local assessments (any `appId` value except `shared`):<br>
     `https://ws.sagebridge.org/v1/assessments/{guid}/config`
 
 Shared assessments:<br>
@@ -472,11 +478,10 @@ Setting aside notifications for the moment, The following algorithm should be us
 2) For each event in the activity event map, calculate the “day since event N” for this participant, using the local time of the device. 
 
 ```Java
-# Joda Time
-int daysSince = Days.daysBetween(eventTimestamp.withTimeAtStartOfDay() , 
-    now.withTimeAtStartOfDay() ).getDays()
+// Joda Time
+int daysSince = Days.daysBetween(eventTimestamp, now).getDays();
 
-# Java 8+
+// Java 8+
 long daysSince = ChronoUnit.DAYS.between(eventTimestamp, now);
 ```
 
@@ -486,7 +491,7 @@ long daysSince = ChronoUnit.DAYS.between(eventTimestamp, now);
 
 5) Now retrieve the adherence records for the remaining session instance GUIDs of these sessions. Remove any scheduled sessions from the set that have `finishedOn` timestamps.
 
-6) The remaining sessions should be shown to the user, possibly emphasizing sessions with `startedOn` timestamps.
+6) The remaining sessions are the sessions that are currently available to be performed by the user, including some that have `startedOn` timestamps that have already been started (but not finished) by the participant.
 
 ### Notifications
 

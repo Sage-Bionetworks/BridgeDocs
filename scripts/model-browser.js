@@ -87,6 +87,9 @@ var templateText = multiline(function () {/*
                         </div>
                     {{/if}}
                     {{{description}}}
+                    {{#if example}}
+                        <p>Example: <code>{{example}}</code></p>
+                    {{/if}}
                 </dd>
             {{/inheritedProperties}}
             {{#properties}}
@@ -124,6 +127,9 @@ var templateText = multiline(function () {/*
                         </div>
                     {{/if}}
                     {{{description}}}
+                    {{#if example}}
+                        <p>Example: <code>{{example}}</code></p>
+                    {{/if}}
                 </dd>
             {{/properties}}
         </dl>
@@ -356,6 +362,7 @@ function processAllOfEntry(definitions, def, entryObj) {
         break;
       case 'required':
         copyRequired(def, entryObj.required); break;
+      case 'example':
       case 'description':
       case 'type':
         copyPropIfMissing(def, entryObj, propName); break;
