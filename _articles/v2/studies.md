@@ -68,27 +68,7 @@ A contact contains the following information:
 | phone | N | [Phone number](/model-browser.html#Phone) of an individual or organization. |
 | jurisdiction | N | The regulatory jurisdiction of this entry. When multiple jurisdictions are involved in a study, there may be principal investigators, IRBs, and study coordinators involved from each jurisdiction. It may be useful to show a participant the people and organizations involved in their specific jurisdiction, or the primary jurisdiction and their specific jurisdiction, or all jurisdictions. |
 
-The `Address` is suitable for displaying an address to end users. Here are some examples of more unusual addresses and how they might be stored:
-
-“50 miles (80 km) West of Socorro, New Mexico, USA”
-
-    mailRouting = “50 miles (80 km) West of”
-    city = “Socorro”
-    division = “New Mexico”
-    country = “USA”
-
-“647 National Road<br>
-16 Sunlight Building<br>
-Barangay Muzon, Taytay, Rizal<br>
-Taytay CPO-PO Box# 1920 + Rizal<br>
-Philippines”
-
-    placeName = “647 National Road”
-    street = “16 Sunlight Building”
-    city = “Barangay Muzon, Taytay”
-    division = “Rizal”
-    mailRouting = “Taytay CPO-PO Box# 1920”
-    country = “Philippines”
+The `Address` is suitable for displaying an address to end users. 
     
 | Field | Required | Description |
 |-------|----------|-------------|
@@ -99,6 +79,30 @@ Philippines”
 | division | N | state, province, prefecture |
 | postalCode | N |  Zip code, post code, etc. |
 | country | N | Country. |
+
+Here are some examples of more unusual addresses and how they might be stored:
+
+<dl>
+<dt style="font-style: italic">50 miles (80 km) West of Socorro, New Mexico, USA</dt>
+
+<dd>mailRouting = “50 miles (80 km) West of”<br>
+city = “Socorro”<br>
+division = “New Mexico”<br>
+country = “USA”</dd>
+
+<dt style="font-style: italic">647 National Road<br>
+16 Sunlight Building<br>
+Barangay Muzon, Taytay, Rizal<br>
+Taytay CPO-PO Box# 1920 + Rizal<br>
+Philippines</dt>
+
+<dd>placeName = “647 National Road”<br>
+street = “16 Sunlight Building”<br>
+city = “Barangay Muzon, Taytay”<br>
+division = “Rizal”<br>
+mailRouting = “Taytay CPO-PO Box# 1920”<br>
+country = “Philippines”</dd>
+</dl>
 
 ## Enrollment
 
