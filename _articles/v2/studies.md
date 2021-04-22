@@ -60,7 +60,7 @@ A contact contains the following information:
 | Field | Required | Description |
 |-------|----------|-------------|
 | name | Y | The name of the person or organization, e.g. “Dr. Tim Powers, Ph.D.” or “Sage Bionetworks”. |
-| role | Y | The purpose of the contact. The values that are supported include “irb”, “principal_investigator”, “investigator”, (fiscal) “sponsor”, “study_support” and ”technical_support”.  | Professor of Psychiatry and . |
+| role | Y | The purpose of the contact. The values that are supported include `irb`, `principal_investigator`, `investigator`, (fiscal) `sponsor`, `study_support` and `technical_support`.  | Professor of Psychiatry and . |
 | position | N | The position of an individual relative to their institutional affiliation (not their role in the study, please use the role attribute for this). For example, “AssociateBioengineering.” |
 | affiliation | N | The organization an individual is affiliated with, e.g. "UC San Francisco”. This may or may not be the same as the institution sponsoring the study. |
 | address | N | The full mailing [Address](/model-browser.html#Address), if required (see below). |
@@ -85,10 +85,10 @@ Here are some examples of more unusual addresses and how they might be stored:
 <dl>
 <dt style="font-style: italic">50 miles (80 km) West of Socorro, New Mexico, USA</dt>
 
-<dd>mailRouting = “50 miles (80 km) West of”<br>
-city = “Socorro”<br>
-division = “New Mexico”<br>
-country = “USA”</dd>
+<dd><code>mailRouting</code> = “50 miles (80 km) West of”<br>
+<code>city</code> = “Socorro”<br>
+<code>division</code> = “New Mexico”<br>
+<code>country</code> = “USA”</dd>
 
 <dt style="font-style: italic">647 National Road<br>
 16 Sunlight Building<br>
@@ -96,12 +96,12 @@ Barangay Muzon, Taytay, Rizal<br>
 Taytay CPO-PO Box# 1920 + Rizal<br>
 Philippines</dt>
 
-<dd>placeName = “647 National Road”<br>
-street = “16 Sunlight Building”<br>
-city = “Barangay Muzon, Taytay”<br>
-division = “Rizal”<br>
-mailRouting = “Taytay CPO-PO Box# 1920”<br>
-country = “Philippines”</dd>
+<dd><code>placeName</code> = “647 National Road”<br>
+<code>street</code> = “16 Sunlight Building”<br>
+<code>city</code> = “Barangay Muzon, Taytay”<br>
+<code>division</code> = “Rizal”<br>
+<code>mailRouting</code> = “Taytay CPO-PO Box# 1920”<br>
+<code>country</code> = “Philippines”</dd>
 </dl>
 
 ## Enrollment
