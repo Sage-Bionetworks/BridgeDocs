@@ -1,0 +1,385 @@
+{
+  "duration": "P22D",
+  "assessments": [
+    {
+      "key": "126deabd126deabd",
+      "guid": "mJsJ9XeJ-s2BECjEO-EZeRGg",
+      "appId": "api",
+      "identifier": "assessment-a",
+      "revision": 1,
+      "label": "Assessment A",
+      "minutesToComplete": 2,
+      "type": "AssessmentInfo"
+    },
+    {
+      "key": "e4a175fee4a175fe",
+      "guid": "hcbndgigtvKabIRWsEitW05J",
+      "appId": "api",
+      "identifier": "assessment-b",
+      "revision": 1,
+      "label": "Assessment B",
+      "minutesToComplete": 3,
+      "type": "AssessmentInfo"
+    }
+  ],
+  "sessions": [
+    {
+      "guid": "pUaVuWMOR3ioktr139s0o6df",
+      "label": "Session 3",
+      "startEventId": "enrollment",
+      "performanceOrder": "sequential",
+      "minutesToComplete": 3,
+      "type": "SessionInfo"
+    },
+    {
+      "guid": "oGO1ojQte74bEm_Ph8XZEA3z",
+      "label": "Session 2",
+      "startEventId": "custom:clinic_visit",
+      "performanceOrder": "sequential",
+      "minutesToComplete": 5,
+      "type": "SessionInfo"
+    },
+    {
+      "guid": "qtxrTRftMTT_zWhwRN5IuQsC",
+      "label": "Session 1",
+      "startEventId": "enrollment",
+      "performanceOrder": "sequential",
+      "minutesToComplete": 2,
+      "type": "SessionInfo"
+    }
+  ],
+  "schedule": [
+    {
+      "instanceGuid": "oCdzvkQdUgzGrQ0myhTtng",
+      "startDay": 0,
+      "endDay": 0,
+      "startTime": "08:00",
+      "expiration": "PT12H",
+      "assessments": [
+        {
+          "refKey": "126deabd126deabd",
+          "instanceGuid": "ZaG1oG-jvaQo8b0fLDxcig",
+          "type": "ScheduledAssessment"
+        },
+        {
+          "refKey": "e4a175fee4a175fe",
+          "instanceGuid": "O77mZ1B1Vmdc42h7JPZ7uw",
+          "type": "ScheduledAssessment"
+        }
+      ],
+      "refGuid": "oGO1ojQte74bEm_Ph8XZEA3z",
+      "type": "ScheduledSession"
+    },
+    {
+      "instanceGuid": "0AMokofaSTr_IilqT_5SJg",
+      "startDay": 0,
+      "endDay": 22,
+      "startTime": "00:00",
+      "persistent": true,
+      "assessments": [
+        {
+          "refKey": "e4a175fee4a175fe",
+          "instanceGuid": "kdlWvSPToABeeW8g8BU3Dw",
+          "type": "ScheduledAssessment"
+        }
+      ],
+      "refGuid": "pUaVuWMOR3ioktr139s0o6df",
+      "type": "ScheduledSession"
+    },
+    {
+      "instanceGuid": "KCZco5D5olUvU-nujLLKVg",
+      "startDay": 2,
+      "endDay": 2,
+      "startTime": "08:00",
+      "expiration": "PT6H",
+      "assessments": [
+        {
+          "refKey": "126deabd126deabd",
+          "instanceGuid": "61crvUfnuVIzT8rSFVOaqA",
+          "type": "ScheduledAssessment"
+        }
+      ],
+      "refGuid": "qtxrTRftMTT_zWhwRN5IuQsC",
+      "type": "ScheduledSession"
+    },
+    {
+      "instanceGuid": "YTgXa1ZnBjravh--lJoO6Q",
+      "startDay": 2,
+      "endDay": 2,
+      "startTime": "16:00",
+      "expiration": "PT6H",
+      "persistent": true,
+      "assessments": [
+        {
+          "refKey": "126deabd126deabd",
+          "instanceGuid": "ASoWa7hjxIkEAHcKbTSkog",
+          "type": "ScheduledAssessment"
+        }
+      ],
+      "refGuid": "qtxrTRftMTT_zWhwRN5IuQsC",
+      "type": "ScheduledSession"
+    },
+    {
+      "instanceGuid": "9xRW6yVFd-10tnN_SJVDFg",
+      "startDay": 5,
+      "endDay": 5,
+      "startTime": "08:00",
+      "expiration": "PT6H",
+      "assessments": [
+        {
+          "refKey": "126deabd126deabd",
+          "instanceGuid": "2jZAmy57oqTFV7LLvBWo6w",
+          "type": "ScheduledAssessment"
+        }
+      ],
+      "refGuid": "qtxrTRftMTT_zWhwRN5IuQsC",
+      "type": "ScheduledSession"
+    },
+    {
+      "instanceGuid": "jP62TncMAymH-xOfdjDgPw",
+      "startDay": 5,
+      "endDay": 5,
+      "startTime": "16:00",
+      "expiration": "PT6H",
+      "persistent": true,
+      "assessments": [
+        {
+          "refKey": "126deabd126deabd",
+          "instanceGuid": "1OmbW9G3YCCophysTlpOCQ",
+          "type": "ScheduledAssessment"
+        }
+      ],
+      "refGuid": "qtxrTRftMTT_zWhwRN5IuQsC",
+      "type": "ScheduledSession"
+    },
+    {
+      "instanceGuid": "2oaU6t8cmBOhyT9OggQBjg",
+      "startDay": 7,
+      "endDay": 7,
+      "startTime": "08:00",
+      "expiration": "PT12H",
+      "assessments": [
+        {
+          "refKey": "126deabd126deabd",
+          "instanceGuid": "VgY9mQlW-f7yFzAL8f9baA",
+          "type": "ScheduledAssessment"
+        },
+        {
+          "refKey": "e4a175fee4a175fe",
+          "instanceGuid": "9Y8gvfm3oIDR2x3cNQMeSg",
+          "type": "ScheduledAssessment"
+        }
+      ],
+      "refGuid": "oGO1ojQte74bEm_Ph8XZEA3z",
+      "type": "ScheduledSession"
+    },
+    {
+      "instanceGuid": "iknK80uxV7HRB4iTKZQ1KQ",
+      "startDay": 8,
+      "endDay": 8,
+      "startTime": "08:00",
+      "expiration": "PT6H",
+      "assessments": [
+        {
+          "refKey": "126deabd126deabd",
+          "instanceGuid": "kFfnXCWIiAK4lnlJlOdiWA",
+          "type": "ScheduledAssessment"
+        }
+      ],
+      "refGuid": "qtxrTRftMTT_zWhwRN5IuQsC",
+      "type": "ScheduledSession"
+    },
+    {
+      "instanceGuid": "QhrHQYcD541HfeKSUPWiyA",
+      "startDay": 8,
+      "endDay": 8,
+      "startTime": "16:00",
+      "expiration": "PT6H",
+      "persistent": true,
+      "assessments": [
+        {
+          "refKey": "126deabd126deabd",
+          "instanceGuid": "1yGk69_8FoMZl0_iHKRMOQ",
+          "type": "ScheduledAssessment"
+        }
+      ],
+      "refGuid": "qtxrTRftMTT_zWhwRN5IuQsC",
+      "type": "ScheduledSession"
+    },
+    {
+      "instanceGuid": "BFSICePRZCV3IyA1BHdVUg",
+      "startDay": 11,
+      "endDay": 11,
+      "startTime": "08:00",
+      "expiration": "PT6H",
+      "assessments": [
+        {
+          "refKey": "126deabd126deabd",
+          "instanceGuid": "HEAtiZ5gQKzBVVq-bNGoYg",
+          "type": "ScheduledAssessment"
+        }
+      ],
+      "refGuid": "qtxrTRftMTT_zWhwRN5IuQsC",
+      "type": "ScheduledSession"
+    },
+    {
+      "instanceGuid": "cTTEEUj-IWBQ4jNX8vFwJQ",
+      "startDay": 11,
+      "endDay": 11,
+      "startTime": "16:00",
+      "expiration": "PT6H",
+      "persistent": true,
+      "assessments": [
+        {
+          "refKey": "126deabd126deabd",
+          "instanceGuid": "usvT7PdsLb0b-YOAGXMFGw",
+          "type": "ScheduledAssessment"
+        }
+      ],
+      "refGuid": "qtxrTRftMTT_zWhwRN5IuQsC",
+      "type": "ScheduledSession"
+    },
+    {
+      "instanceGuid": "5M9bdmG7SqYvW5gOqBQN6w",
+      "startDay": 14,
+      "endDay": 14,
+      "startTime": "08:00",
+      "expiration": "PT6H",
+      "assessments": [
+        {
+          "refKey": "126deabd126deabd",
+          "instanceGuid": "ziQeL7SB5x45AWZ9qj9MGA",
+          "type": "ScheduledAssessment"
+        }
+      ],
+      "refGuid": "qtxrTRftMTT_zWhwRN5IuQsC",
+      "type": "ScheduledSession"
+    },
+    {
+      "instanceGuid": "gkpIcc6jVbXciXBzYA_c-A",
+      "startDay": 14,
+      "endDay": 14,
+      "startTime": "16:00",
+      "expiration": "PT6H",
+      "persistent": true,
+      "assessments": [
+        {
+          "refKey": "126deabd126deabd",
+          "instanceGuid": "aO-lnqR7Ix3INNJxcKE13A",
+          "type": "ScheduledAssessment"
+        }
+      ],
+      "refGuid": "qtxrTRftMTT_zWhwRN5IuQsC",
+      "type": "ScheduledSession"
+    },
+    {
+      "instanceGuid": "68yo2B_UyUsnnB56hq2loA",
+      "startDay": 14,
+      "endDay": 14,
+      "startTime": "08:00",
+      "expiration": "PT12H",
+      "assessments": [
+        {
+          "refKey": "126deabd126deabd",
+          "instanceGuid": "s3B9zajUuO5UdW-2ffRYCg",
+          "type": "ScheduledAssessment"
+        },
+        {
+          "refKey": "e4a175fee4a175fe",
+          "instanceGuid": "Sk-2gI8w9RNvywPvhXhyjw",
+          "type": "ScheduledAssessment"
+        }
+      ],
+      "refGuid": "oGO1ojQte74bEm_Ph8XZEA3z",
+      "type": "ScheduledSession"
+    },
+    {
+      "instanceGuid": "InQm2CmYb3AtQZf2ngH2nw",
+      "startDay": 17,
+      "endDay": 17,
+      "startTime": "08:00",
+      "expiration": "PT6H",
+      "assessments": [
+        {
+          "refKey": "126deabd126deabd",
+          "instanceGuid": "Z8R2_DcgEhlS1uFOOrDvLQ",
+          "type": "ScheduledAssessment"
+        }
+      ],
+      "refGuid": "qtxrTRftMTT_zWhwRN5IuQsC",
+      "type": "ScheduledSession"
+    },
+    {
+      "instanceGuid": "bIR6QUaq0faX3LbCrcppdg",
+      "startDay": 17,
+      "endDay": 17,
+      "startTime": "16:00",
+      "expiration": "PT6H",
+      "persistent": true,
+      "assessments": [
+        {
+          "refKey": "126deabd126deabd",
+          "instanceGuid": "o9fc_BmRpaA2iG_-AB0Dwg",
+          "type": "ScheduledAssessment"
+        }
+      ],
+      "refGuid": "qtxrTRftMTT_zWhwRN5IuQsC",
+      "type": "ScheduledSession"
+    },
+    {
+      "instanceGuid": "76lQxsLzOHy4ty44lVdW8A",
+      "startDay": 20,
+      "endDay": 20,
+      "startTime": "08:00",
+      "expiration": "PT6H",
+      "assessments": [
+        {
+          "refKey": "126deabd126deabd",
+          "instanceGuid": "N9gQt0R1pVoj0bgaONoXcg",
+          "type": "ScheduledAssessment"
+        }
+      ],
+      "refGuid": "qtxrTRftMTT_zWhwRN5IuQsC",
+      "type": "ScheduledSession"
+    },
+    {
+      "instanceGuid": "unvPS8LAki4ixmkOSOILhw",
+      "startDay": 20,
+      "endDay": 20,
+      "startTime": "16:00",
+      "expiration": "PT6H",
+      "persistent": true,
+      "assessments": [
+        {
+          "refKey": "126deabd126deabd",
+          "instanceGuid": "FFs6QibqlrQGgalS3Xgv8g",
+          "type": "ScheduledAssessment"
+        }
+      ],
+      "refGuid": "qtxrTRftMTT_zWhwRN5IuQsC",
+      "type": "ScheduledSession"
+    },
+    {
+      "instanceGuid": "5uEyWZEvqMCzwi15QuBd_g",
+      "startDay": 21,
+      "endDay": 21,
+      "startTime": "08:00",
+      "expiration": "PT12H",
+      "assessments": [
+        {
+          "refKey": "126deabd126deabd",
+          "instanceGuid": "4sVCg31-inNdBK-wtbClhg",
+          "type": "ScheduledAssessment"
+        },
+        {
+          "refKey": "e4a175fee4a175fe",
+          "instanceGuid": "MwMBx3cZnypuaZfHzCogFA",
+          "type": "ScheduledAssessment"
+        }
+      ],
+      "refGuid": "oGO1ojQte74bEm_Ph8XZEA3z",
+      "type": "ScheduledSession"
+    }
+  ],
+  "type": "Timeline"
+}
