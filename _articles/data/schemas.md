@@ -255,4 +255,4 @@ Schemas can be linked to a Survey. You generally don't need to specify these you
 
 ## Schemaless Health Data
 
-Bridge now supports uploading health data without the use of a schema. If you submit health data without a schema ID (or if you reference a non-existent schema), Bridge will automatically export your data to the Default Health Data Record Table. This table includes all same [common fields as other tables](/articles/data/exporting_to_synapse.html#common-fields), as well as a rawData field including the raw submitted JSON or zip file as uploaded by the client app.
+Bridge now supports uploading health data without the use of a schema. If you submit health data without a schema ID (or if you reference a non-existent schema), Bridge will automatically export your data to the Default Health Data Record Table. This table includes all same [common fields as other tables](/articles/data/exporting_to_synapse.html#common-fields), as well as a rawData field including the raw submitted JSON or zip file as uploaded by the client app, and the rawMetadata field including all metadata submitted by the client app.

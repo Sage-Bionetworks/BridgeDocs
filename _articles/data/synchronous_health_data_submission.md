@@ -79,7 +79,7 @@ You will get a response in the form
 
 |Attribute Name|Description|
 |---|---|
-|data|The submitted health data. This is usually the same as the "data" field in the posted HTTP request. Some fields may be canonicalized according to the field types in the schema. If you have attachment fields, the value will be replaced with the attachment ID, which is a reference to the attachment.<br /><br />**IMPORTANT NOTE:** If there are fields missing, or if data is empty, there is probably something wrong with your schema or with your health data submission.|
+|data|The submitted health data. This is usually the same as the "data" field in the posted HTTP request. Some fields may be canonicalized according to the field types in the schema. If you have attachment fields, the value will be replaced with the attachment ID, which is a reference to the attachment.<br /><br />**IMPORTANT NOTE:** If you are using schemaless health data, this field will be blank.|
 |id|Record ID. Very useful if you want to track your submission's progress through Bridge Server all the way to Synapse. Be sure to remember this as part of your QA process.|
 |schemaId|Schema ID used to process your health data. Null for Schemaless health data.|
 |schemaRevision|Schema revision of the schema used to process your health data. Null for Schemaless health data.|
