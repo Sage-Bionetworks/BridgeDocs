@@ -82,7 +82,9 @@ The first call would attempt to update the immutable system event `enrollment`, 
 
 ### Automatic custom events
 
-In addition to submitting values through the API, an app can be configured to create calculated events from other event values, through the `automaticCustomEvents` mapping. This can be helpful when scheduling gets more complex, because you can create further timestamps to schedule against. In the `App` configuration, the key is the new event ID to generate, and the value is a calculated period of time before or after another event ID. For example:
+In addition to submitting values through the API, an app can be configured to create calculated events from other event values, through the `automaticCustomEvents` mapping. This can be helpful when scheduling gets more complex, because you can create further timestamps to schedule against. The periods are given in the [ISO 8601 Date & Time Standard](https://en.wikipedia.org/wiki/ISO_8601#Durations) for *durations,* and negative durations are allowed. These events are updated when the events they depend upon are updated, and they inherit the same mutability as those events. 
+
+In the `App` configuration, the key is the new event ID to generate, and the value is a calculated period of time before or after another event ID. For example:
 
 ```json
 { 
@@ -94,7 +96,7 @@ In addition to submitting values through the API, an app can be configured to cr
 }
 ```
 
-In the example above, `event1` will be scheduled thirteen weeks after the `activities_retrieved` event, when it occurs, and `event2` will be scheduled two weeks before `enrollment` when it occurs. The periods are given in the [ISO 8601 Date & Time Standard](https://en.wikipedia.org/wiki/ISO_8601#Durations) for *durations,* and negative durations are allowed, as shown in the example above.
+In the example above, `event1` will be scheduled thirteen weeks after the `activities_retrieved` updates successfully, each time it occurs (it is a “future updates only” event), and `event2` will be scheduled two weeks before `enrollment` updates successfully, which can only occur once (it is immutable).
 
 ### Study-specific event APIs
 
@@ -644,7 +646,7 @@ Because an assessment could be included more than once in a session time window,
 
 #### By assessment IDs
 
-A query can retrieve records for an assessment type, as indicated by its ID, regardless of where those assessments were prompted for in the timeline.
+A query can retrieve records for an assessment type, as indicated by its ID, regardless of where those assessments were prompted for in the timeline. The identifier will apply to both shared and local assessments in a schedule. If you wish to differentiate between these assessments, you will need to change the assessment ID of the local (app-specific) assessment.
 
 ```json
 {
