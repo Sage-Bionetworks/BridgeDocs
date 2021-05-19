@@ -3,8 +3,6 @@ title: Submitting Health Data
 layout: article
 ---
 
-Before your study can accept health data, you will need to set up [schemas](/articles/data/schemas.html). A schema tells Bridge Server the format of your data, so it can process, validate, and export your data to [Synapse](https://www.synapse.org/).
-
 Apps can submit health data in one of three ways:
 
 1. [asynchronous zip file uploads](/articles/data/bundled_zip_file_uploads.html) - This is generally best if your data has a lot of attachments, such as accelerometer data.
