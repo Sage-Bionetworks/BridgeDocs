@@ -51,9 +51,12 @@ As well, the `Study` contains information for study designers and for oversight:
 | disease | N | What disease state is this study researching? Can be general (neurodegenerative disorders) or specific (progressive supranuclear palsy). This should be a comma-delimited list when appropriate. However, the value is not constrained. |
 | studyDesignType | N | What type of research design is being used in this study (intervential, observational, cohort study, cross-over, etc.). This should be a comma-delimited list when appropriate. However, the value is not constrained. |
 | phase | Y | The phase of this study (see above). |
-| irbApprovedOn | (Y) | The date that an IRB has given approval for the protocol that this study configuration will support. This field is required to move into the recruitment phase. |
-| irbApprovedUntil | (Y) | The last calendar date that the IRB’s approval is valid. This field is required to move into the recruitment phase. |
-| irbProtocolId | (Y) | If the IRB has assigned this study an identifier, the identifier should be entered in this field. This field is required to move into the recruitment phase. |
+| irbName | N | The name of the IRB that approved the study or decided it was exempt from human subjects research guidelines. Optional, but can be used to identify one of several IRBs if more than one is included in the study’s contact information. |
+| irbProtocolName | N | The name of the protocol as it was submitted to the IRB for approval. |
+| irbProtocolId | N | The identification number issued by the IRB for the study, if any. |
+| irbDecisionOn | (Y) | Before the study can launch, it must be reviewed by your IRB and either be approved, or considered exempt from human subjects research guidelines. Once `irbDecisionOn` is set, `irbDecisionType` and `irbExpiresOn` must also be set. |
+| irbDecisionType | (Y) | The type of decision issued by the IRB, either `approved` or `exempt`. |
+| irbExpiresOn | (Y) | The last date that the IRB’s review is considered up-to-date for this study. |
 
 A contact contains the following information:
 

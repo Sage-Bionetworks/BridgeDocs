@@ -19,10 +19,8 @@ The server provides a number of fixed events that study designers can work with 
 |------------|----------------------|----------|----------|
 | created_on | The timestamp of the moment an account is created. All accounts will have this event. | Immutable |
 | enrollment  | The timestamp of a user’s consent signature, which marks the moment the participant has joined the study by self-enrolling. This event will only be available if the study uses Bridge’s electronic consent support. | Immutable |
-| activities_retrieved  | The timestamp of the first time the client requests the scheduled activities or timeline for a study. This event will only be available if the study uses Bridge’s scheduling support (either v1 or v2 when a timeline is requested). | Immutable |
+| timeline_retrieved  | The timestamp of the first time the client requests the scheduled activities or timeline for a study. This event will only be available if the study uses Bridge’s scheduling support (either v1 or v2 when a timeline is requested). | Immutable |
 | study\_start\_date | This event is the `activities_retrieved` event for the user if it exists, or else it is the `enrollment` event if it exists for the user, or else it is the `created_on` event for the user’s account. `study_start_date` is mutable in the sense that it may change if the events it is calculated from change, but otherwise it cannot be changed. All accounts will have this event. | Immutable |
-| signed\_in\_on | The most recent time the participant has signed in to the Bridge server through any API (including reauthentication). | Future update only |
-|activity:**guid**:finished | This event records a timestamp when the client has completed a task, survey, or assessment. Further activities can be scheduled to follow-up on this activity by scheduling against this event. A participant will only have this value after they complete a specific activity, and the client uses the v1 or v2 APIs to record a `finishedOn` timestamp for the :activity or assessment (the event is named `activity` in either case). | Future update only |
 |session:**guid**:finished| This event records the most recent time that a session instance derived from this session was marked as finished by the client. A participant will only have this value after they complete the first instance of this session, recording a `finishedOn` timestamp for the session instance.| Future update only |
 |assessment:**identifier**:finished| This event records the most recent time that an assessment instance of this type was marked as finished by the client. It doesn’t matter in which session the assessment is found, so this timestamp can be updated by performing the same assessment as scheduled by different sessions. A participant will only have this value after they complete the first instance of this assessment, recording a `finishedOn` timestamp for the assessment instance.| Future update only |
 
@@ -303,6 +301,7 @@ Once a schedule has been created, it is communicated to consuming applications (
 ```json
 {
   "duration": "P2W",
+
   "schedule": [
     // the schedule
   ],
@@ -315,6 +314,14 @@ Once a schedule has been created, it is communicated to consuming applications (
   "type": "Timeline"
 }
 ```
+
+Timelines have the following top-level properties:
+
+| Field | Req? | Description |
+|-------|------|-------------|
+| duration | Y | The duration from the schedule, which is the maximum amount of time any event time stream in the study can last for a participant.  No single series of scheduled sessions can run longer than this duration. If all the sessions in a schedule start at the beginning of the study, this duration should be the calendar duration of the study as it is performed by participants. However, if events can be triggered later in the study, then those time series can themselves be of the given duration. |
+| totalMinutes | Y | The total number of minutes it will take to perform all sessions in a timeline. This value is provided to schedule designers to give them a measure of the “performance burden” of their protocol for study participants. |
+| totalNotifications | Y | The total number of notifications that will be presented to the participant by your study. This value is provided to schedule designers to give them a measure of the “burden” of the notification design for study participants. |
 
 ### Scheduled sessions
 
@@ -474,7 +481,7 @@ To determine which elements of a timeline should currently be made available to 
 2. For each event in the activity event map, calculate the “day since event N” for this participant, using the local time of the device. For example, in Java, you would use something like `ChronoUnit.DAYS.between(eventTimestamp, now)`;
 3. For each event ID in the map, search for scheduled events that have the same `startEventId`, where the `startDay` <= `daysSince` and `endDay` >= `daysSince`. **Scheduled activities that are keyed off an event that is not in the participant’s events are ignored;**
 4. Once you have all these scheduled sessions assembled, remove any sessions where the `startTime` and `expiration` values define a local time window that is outside of the local time;
-5. Now retrieve the adherence records for the remaining session instance GUIDs of these sessions. You should set `currentTimestampsOnly=true`, leave `recordType` unset, and to filter out long-running persistent assessments, you should set `startTime` and `endTime` values for the search;
+5. Now retrieve the adherence records for the remaining session instance GUIDs of these sessions. You should set `currentTimestampsOnly=true`, leave `adherenceRecordType` unset, and to filter out long-running persistent assessments, you should set `startTime` and `endTime` values for the search;
 6. Remove any scheduled sessions that have `finishedOn` timestamps, and from in-process sessions, remove any scheduled assessments with `finishedOn` timestamps;
 7. The remaining scheduled sessions and their scheduled assessments are currently available to be performed by the user, including those that have `startedOn` timestamps but that have not been finished (no `finishedOn` timestamp).
 
@@ -524,7 +531,7 @@ The adherence record API allows for a wide variety of filters to be applied to t
   "assessmentIds":[],
   "sessionGuids":[],
   "timeWindowGuids":[],
-  "recordType":"session",
+  "adherenceRecordType":"session",
   "includeRepeats":true,
   "currentTimestampsOnly":true,
   "eventTimestamps":{
@@ -545,7 +552,7 @@ The adherence record API allows for a wide variety of filters to be applied to t
 | assessmentIds | N | Return adherence records for assessments with these IDs (the assessment ID is used to define a type of assessment). This array cannot contain more than 500 items. |
 | sessionGuids | N | Return adherence records for sessions with these GUIDs (this is the session’s GUID in a schedule and not an instance GUID, and is used to define a type of session). This array cannot contain more than 500 items. |
 | timeWindowGuids | N | Return adherence records for assessments in these time windows (using the time window’s GUID in a schedule to define a type of time window). This array cannot contain more than 500 items. |
-| recordType | N | The `AdherenceRecordType` can be used to limit search results for adherence records to either `assessment` or `session` records. If not present, both records will be returned according to the criteria of the search. |
+| adherenceRecordType | N | The `AdherenceRecordType` can be used to limit search results for adherence records to either `assessment` or `session` records. If not present, both records will be returned according to the criteria of the search. |
 | includeRepeats | N | Where an assessment can be performed multiple times under an instance GUID, all records will be returned unless this flag is set to true. In this case, the first or last record only will be returned (depending on sort order). |
 | currentTimestampsOnly | N | Where a time series can be performed multiple times because a session’s trigger event is mutable, all records will be returned, unless this flag is set to true. When true, only records with recent event timestamp values will be returned. This is equivalent to sending back the user’s entire map of current event ID timestamp values via the `eventTimestamps` map in this search object. If values are also provided in the `eventTimestamps` map, each of those event IDs will override its associated event ID timestamp value, as it is provided by setting this flag to true. |
 | eventTimestamps | N | A mapping of event IDs to timestamp values to use when retrieving adherence records that are from sessions triggered by that ID. Only records with that exact timestamp value in their `eventTimestamp` field will be returned. In general, mobile clients will only want to retrieve records for current timestamp values when calculating schedules, so the `currentTimestampsOnly` flag provides an easy way to request that all current timestamps be used to limit search results. This map cannot contain more than 50 entries. |
@@ -653,7 +660,7 @@ A query can retrieve records for an assessment type, as indicated by its ID, reg
   "assessmentIds": [
     "assessment-a"
   ],
-  "recordType":"assessment",
+  "adherenceRecordType":"assessment",
   "type": "AdherenceRecordsSearch"
 }
 ```
@@ -681,14 +688,14 @@ Retrieves the following records:
 
 #### By session GUIDs, sessions only
 
-By changing the `recordType` flag you can limit these results to just the session or assessment records:
+By changing the `adherenceRecordType` flag you can limit these results to just the session or assessment records:
 
 ```json
 {
   "sessionGuids": [
     "oGO1ojQte74bEm_Ph8XZEA3z"
   ],
-  "recordType":"session",
+  "adherenceRecordType":"session",
   "type": "AdherenceRecordsSearch"
 }
 ```
@@ -728,7 +735,7 @@ To find the performance of one time window in a session, you can refere to the t
   "timeWindows": [
     "Z39tJejSi_P70vjjcBVuWk36"
   ],
-  "recordType": "assessment",
+  "adherenceRecordType": "assessment",
   "type": "AdherenceRecordsSearch"
 }
 ```
@@ -744,7 +751,7 @@ Repeat assessments can be removed with the `includeRepeats` flag:
     "Z39tJejSi_P70vjjcBVuWk36"
   ],
   "includeRepeats": false,
-  "recordType": "assessment",
+  "adherenceRecordType": "assessment",
   "type": "AdherenceRecordsSearch"
 }
 ```
@@ -761,7 +768,7 @@ Finally, queries can ask for records within a given time range (the values retur
 {
   "startTime": "2020-05-10T01:14:38.451Z",
   "endTime": "2020-05-17T16:57:01.196Z",
-  "recordType": "assessment",
+  "adherenceRecordType": "assessment",
   "type": "AdherenceRecordsSearch"
 }
 ```
