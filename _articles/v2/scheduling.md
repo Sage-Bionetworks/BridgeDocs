@@ -495,7 +495,7 @@ Published schedules cannot be changed, so their timelines cannot be changed, all
 
 The third and final part of the Bridge scheduling system, [the adherence APIs,](/swagger-ui/index.html#/Adherence%20Records) support both schedule state management for mobile clients and adherence reporting for study administrators. Once a participant’s client has a timeline, it is able to interpret the set of [AdherenceRecord](/model-browser.html#AdherenceRecord) objects available for a participant.
 
-This collection of records is *sparse;* if the participant did not do a schedules session or assessment, there will not be a record for that session or assessment in the set of records. Furthermore, these records are persisted by the client, so they will only exist if the client updates the server on the current state of timeline performance.
+This collection of records is *sparse;* if the participant did not do a scheduled session or assessment, there will not be a record for that session or assessment in the set of records. Furthermore, these records are persisted by the client, so they will only exist if the client updates the server on the current state of timeline performance.
 
 ```json
 {
@@ -520,6 +520,24 @@ This collection of records is *sparse;* if the participant did not do a schedule
 <div style="display:none">
 | uploadedOn | N | The timestamp (from the server) when we record an associated upload has been finished for this assessment or session. |
 </div>
+
+### Updating adherence records
+
+Adherence records are specific to a participant in a given study. However, persistent time windows (where a user is allowed to perform a set of assessments as many times as they want within the time window) change the behavior of adherence records in some subtle ways.
+
+The primary key for assessments scheduled through non-persistent time windows includes the `instanceGuid`  and the `eventTimestamp`. For a scheduled assessment in a given event time stream, there can be only one adherence record. The primary key for assessments scheduled through persistent time windows includes the `instanceGuid`, `eventTimestamp`, and `startedOn` value of the record, so such a scheduled assessment can produce more than one adherence record.
+
+So while all state fields in a non-persistent time window adherence record can be updated by resubmitting the record with different values, the `startedOn` field in a persistent time window adherence record, when it is changed in this manner, will simply create a new adherence record. Because changing timestamps in adherence records is mostly needed when developing and testing mobile clients, we recommend in this situation that you delete an adherence record before recreating it.
+
+Once assessment records start to be added or updated for a session, the server will update the session record’s `startedOn`, `finishedOn`, or `declined` values in the following manner:
+
+1. When any assessment in a session is started, and the session has not been started, the session will be started with the earliest `startedOn` assessment value in the session;
+1. When all assessments in a session are finished, and the session has not been finished, the session will be finished with the latest `finishedOn` assessment value in the session;
+1. If all assessments in a session are declined, and the session has not been declined, the session will be marked as declined.
+
+If a session adherence record does not exist, one will be created to record this information.
+
+To prevent overwriting user-submitted values, **once these session fields are set, the server will not update them again.** For example, if an assessment updated with an earlier `startedOn` timestamp, the session will not reflect it, or if a `finishedOn` timestamp is updated after all assessments in a session have been finished, this will not be reflected in the session. To change the session record, update the session record directly. For example, you might always submit the session record with null `startedOn`, `finishedOn` and `declined` fields if you want the server to check and update these values with every state change.
 
 ### Querying for adherence records
 
@@ -685,8 +703,6 @@ A query can retrieve all session instances of the same type by searching for the
 Retrieves the following records:
 
 {% include image.html url="/images/adherence-examples/06-query-for-session-guids-with-assessments.svg" %}
-
-#### By session GUIDs, sessions only
 
 By changing the `adherenceRecordType` flag you can limit these results to just the session or assessment records:
 
