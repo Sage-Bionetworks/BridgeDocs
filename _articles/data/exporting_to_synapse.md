@@ -109,8 +109,8 @@ In addition to common fields, health data tables also includes fields defined by
 
 Some fields in the health data tables are file handles (attachments). In the Synapse Web UI, these are displayed as links, which allow you to download the attached file. In the Synapse API or through the R, Python, or Java clients, these are file handle IDs, and require a separate call to Synapse to download the attached files.
 
-Lastly, every row in the health data tables also includes a rawData field, which includes a link to the raw JSON or zip file submitted by the client.
+Lastly, every row in the health data tables also includes a rawData field, which includes a link to the raw JSON or zip file submitted by the client, and a rawMetadata field, which includes all metadata submitted by the client app.
 
 ### Default Health Data Record Table
 
-This table also includes the same common fields, health data metadata fields, and raw data fields as health data tables. The key difference is that records in this table do not correspond to any schema (or to non-existent schemas).
+This table also includes the same common fields, health data metadata fields, raw data, and raw metadata fields as health data tables. The key difference is that records in this table do not correspond to any schema (or to non-existent schemas).

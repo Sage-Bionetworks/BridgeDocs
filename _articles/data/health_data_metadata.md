@@ -42,13 +42,15 @@ Example:
 
 ## Metadata in Synapse
 
-The Bridge Exporter will automatically create new columns in Synapse tables for each metadata field. The column will be named "metadata.[fieldName]". This name was chosen to (a) conform with Synapse column naming restrictions (b) to minimize potential conflicts with existing field names and (c) to be equally valid names for both the upload API and the synchronous API.
+The Bridge Exporter will automatically create new columns in health data tables in Synapse for each metadata field. The column will be named "metadata.[fieldName]". This name was chosen to (a) conform with Synapse column naming restrictions (b) to minimize potential conflicts with existing field names and (c) to be equally valid names for both the upload API and the synchronous API.
+
+In addition, every row will have a rawMetadata field, which is a filehandle with all submitted metadata.
 
 Our above example would be converted to the following example table fragment:
 
-|metadata.startDateTime|metadata.endDateTime|metadata.taskRunGuid|
-|---|---|---|
-|2017-09-13T15:58:52.704-0700|2017-09-13T15:59:36.265-0700|d097a0cf-689d-4459-90f5-792b910229da|
+|metadata.startDateTime|metadata.endDateTime|metadata.taskRunGuid|rawMetadata|
+|---|---|---|---|
+|2017-09-13T15:58:52.704-0700|2017-09-13T15:59:36.265-0700|d097a0cf-689d-4459-90f5-792b910229da|(link to raw metadata file)|
 
 (Note: Our example serializes the timestamp as an ISO8601 string for simplicity of the example. In actuality, Bridge exports timestamps as epoch milliseconds and timezone offset string as two separate columns.)
 

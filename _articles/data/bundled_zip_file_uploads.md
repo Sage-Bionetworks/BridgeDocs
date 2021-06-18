@@ -337,7 +337,7 @@ Then your "answers" field in the health data record would look identical to the 
 
 ## Submitting Metadata
 
-To submit metadata in the upload API, simply create a file called metadata.json in your ZIP file and write your metadata as key-value pairs.
+There are two ways to submit metadata. The first is to create a file called metadata.json in your ZIP file and write your metadata as key-value pairs.
 
 If our study defines the metadata fields "startDateTime", "endDateTime", and "taskRunGuid", then our metadata.json file contents would look like:
 
@@ -348,6 +348,8 @@ If our study defines the metadata fields "startDateTime", "endDateTime", and "ta
   "taskRunGuid":"d097a0cf-689d-4459-90f5-792b910229da"
 }
 ```
+
+The second method is include it in the call to the upload request API as an input parameter. See below for more information.
 
 See [Health Data Metadata](/articles/data/health_data_metadata.html) for more details.
 
@@ -370,7 +372,14 @@ Send an HTTP POST to /v3/uploads (or use your platform's SDK). Example request b
   "name":"json-data-encrypted",
   "contentLength":1245,
   "contentType":"application/zip",
-  "contentMd5":"Z1nJ4MVKEcHnLyD16vBEFA=="
+  "contentMd5":"Z1nJ4MVKEcHnLyD16vBEFA==",
+  "encrypted":true,
+  "metadata":{
+    "startDateTime":"2017-09-13T15:58:52.704-0700",
+    "endDateTime":"2017-09-13T15:59:36.265-0700",
+    "taskRunGuid":"d097a0cf-689d-4459-90f5-792b910229da"
+  },
+  "zipped":true
 }
 ```
 
@@ -381,6 +390,7 @@ Send an HTTP POST to /v3/uploads (or use your platform's SDK). Example request b
 |contentType|MIME type of the file to be uploaded. This is usually either "application/zip" or "application/octet-stream".|
 |contentMd5|Base64 encoded string of the MD5 hash of uploaded file. Note that this should be MD5 hash of the encrypted zip file, NOT the unencrypted zip file, and NOT the individual files inside the zip.<br /><br />Also note that this is the MD5 of the WHOLE file, not a concatenation of blockwise MD5 hashes of file chunks.<br /><br />You can generate the contentMD5 in your unix command line using the command:<br />`cat file \| openssl dgst -md5 -binary \| base64`|
 |encrypted|Boolean. True if the upload is encrypted. False if it is not encrypted. If not specified, defaults to true.|
+|metadata|Health data metadata, as key-value pairs in a JSON object. See [Health Data Metadata](/articles/data/health_data_metadata.html) for more details.|
 |zipped|Boolean. True if the upload is zipped. False if it is a single file. If not specified, defaults to true. FOr more information, see [Single File Uploads](/articles/data/single_file_uploads.html).|
 
 You will get a response in the form
@@ -459,7 +469,7 @@ After 5 to 30 seconds (depending on the size of the bundle), your bundle should 
 |messageList|List of validation messages (strings). May be empty if there are no validation warnings or errors.|
 |status|Upload validation status. Possible values are:<ul><li>requested - Upload was requested but never uploaded.</li><li>validation\_in\_progress - Bundle is still being validated.</li><li>validation\_failed - Bundle failed validation.</li><li>succeeded - Bundle successfully validated and processed.</li></ul>|
 |record|Health data record created from the uploaded bundle. Only the most pertinent fields are listed in this example. It may have additional fields not listed here.|
-|record.data|Data parsed from the uploaded bundle into the health data record. For non-attachment fields, the data is inlined in this JSON object. For attachment fields, an attachment ID is used as the value in the key-value pairs.<br /><br />**IMPORTANT NOTE:** If this JSON object is empty, or if it doesn't contain the data you expect from your bundle, there is probably something wrong with your schema or with your bundle.|
+|record.data|Data parsed from the uploaded bundle into the health data record. For non-attachment fields, the data is inlined in this JSON object. For attachment fields, an attachment ID is used as the value in the key-value pairs.<br /><br />If you are using schemaless health data, this field will be blank.|
 |record.userMetadata|Health data metadata, as submitted in the bundle.<br /><br />**NOTE:** There is a field called "metadata" in the response, which is different from "userMetadata". The "metadata" field refers to an old legacy feature and has no relation to health data metadata.|
 |record.id|Record ID. Very useful if you want to track your bundle's progress through Bridge Server all the way to Synapse. Be sure to remember this as part of your QA process.|
 |record.schemaId|Schema ID used to process your bundle. Null for Schemaless uploads.|

@@ -7,24 +7,25 @@ layout: article
 
 <div id="toc"></div>
 
-A `Schedule` can be defined by a study designer which describes what each participant in a study should be prompted to do over the entire course of that study. That schedule is converted into a `Timeline` for client apps, which provides detailed information on how to execute the schedule, as well as the information needed to properly annotate uploaded participant data so its context is preserved. Since each participant can start a study at a different time, this schedule is not described relative to calendrical dates, but instead relative to a set of *activity events* for a given user. 
+A `Schedule` can be defined by a study designer which describes what each participant in a study should be prompted to do over the entire course of that study. That schedule is converted into a `Timeline` for client apps, which provides detailed information on how to execute the schedule, as well as UI configuration and metadata to properly annotate uploaded research data so its context is preserved. Since each participant can start a study at a different time, this schedule is not described relative to calendrical dates, but instead relative to a set of *activity events* for a given user. 
 
-## Activity Events
+## Study Activity Events
 
-It is best to start with an example of what an activity event is. If a user enrolls on March 14th, 2021, and the study wishes to have the user take a test on a weekly basis, then over the course of the study, that individual will be prompted to do the test on March 14th, March 21st, March 8th, and so forth until the end of the study. If another user joins on May 1st, their activities would fall on May 1st, May 8th, May 15th, again until the end of the study. The *schedule* remains the same for both users, but it is calculated against a different date and time for each user’s `enrollment` event.
+*Activity events (v1) have been replaced with [study activity events](/swagger-ui/index.html#/Study%20Activity%20Events) in the v2 APIs. The global v1 event APIs still work and will not be deprecated, but the v2 APIs are preferred and they are required for multi-study configurations to work.*
 
-The server provides a number of fixed events that study designers can work with when building schedules. **Immutable** events cannot be updated once a value is written to the server. **Future update only** events can only be changed if the new timestamp being submitted is after the timestamp that is persisted on the server. And **mutable** events (which we will see below) have no restrictions and can be updated with any value.
+It is best to start with an example of what an activity event is. If a user enrolls on March 14th, 2021, and the study wishes to have the user take a test on a weekly basis, then over the course of the study, that individual would be prompted to do the test on March 14th, March 21st, March 8th, and so forth until the end of the study. When a different user joins on May 1st, their activities would fall on May 1st, May 8th, May 15th, again until the end of the study. The *schedule* remains the same for both users, but it is calculated against a different timestamp for each user’s `enrollment` event.
+
+The server provides a number of fixed events that study designers can work with when building schedules. **Immutable** events cannot be updated once a value is written to the server. **Future update only** events can only be changed if the new timestamp being submitted is after the timestamp that is persisted on the server. And **mutable** events have no restrictions and can be updated with any value.
 
 | Event Name | Description | Behavior
 |------------|----------------------|----------|----------|
 | created_on | The timestamp of the moment an account is created. All accounts will have this event. | Immutable |
-| enrollment  | The timestamp of a user’s consent signature, which marks the moment the participant has joined the study by self-enrolling. This event will only be available if the study uses Bridge’s electronic consent support. | Immutable |
-| timeline_retrieved  | The timestamp of the first time the client requests the scheduled activities or timeline for a study. This event will only be available if the study uses Bridge’s scheduling support (either v1 or v2 when a timeline is requested). | Immutable |
-| study\_start\_date | This event is the `activities_retrieved` event for the user if it exists, or else it is the `enrollment` event if it exists for the user, or else it is the `created_on` event for the user’s account. `study_start_date` is mutable in the sense that it may change if the events it is calculated from change, but otherwise it cannot be changed. All accounts will have this event. | Immutable |
+| enrollment  | The timestamp of a user’s consent signature, which marks the moment the participant has joined the study by self-enrolling. For backwards compatibility, the first study enrollment will also create a v1 global enrollment event. This event will only be available if the study uses Bridge’s electronic consent support. | Immutable |
+| timeline_retrieved  | The timestamp of the first time a participant mobile app requests the timeline for a participant, or the participant’s mapping of recent activity events. This event will only be available if the study uses Bridge’s v2 scheduling support. | Immutable |
 |session:**guid**:finished| This event records the most recent time that a session instance derived from this session was marked as finished by the client. A participant will only have this value after they complete the first instance of this session, recording a `finishedOn` timestamp for the session instance.| Future update only |
 |assessment:**identifier**:finished| This event records the most recent time that an assessment instance of this type was marked as finished by the client. It doesn’t matter in which session the assessment is found, so this timestamp can be updated by performing the same assessment as scheduled by different sessions. A participant will only have this value after they complete the first instance of this assessment, recording a `finishedOn` timestamp for the assessment instance.| Future update only |
 
-All of these events are available to study administrators through [an API for activity events](/swagger-ui/index.html#/Activity%20Events). Global events (now deprecated, but originally scoped to an entire app context) are accessible through the `/v3/participants` and `/v1/activityevents` APIs. Study-scoped events are available through the `/v5/studies` APIs. These are now preferred since events like enrollment date will vary between studies.
+Study coordinators can see the activity events for a participant through [an API for activity events](/swagger-ui/index.html#/Activity%20Events). 
 
 ### Custom events
 
@@ -37,10 +38,6 @@ In addition, app developers can define new *custom events* and *automatic custom
     "event2": "future_only",
     "event3": "mutable"
   },
-  "automaticCustomEvents": {
-    "event4": "activities_retrieved:P13W",
-    "event5": "enrollment:P-2W"
-  }
   "type": "App"
 }
 
@@ -52,30 +49,11 @@ Custom events can be given different behavior with respect to how they allow upd
 - **future_only** events can be set, and then after that, they can only be updated to a later date and time. If an earlier timestamp is sent, it is silently ignored;
 - **mutable** events can be set and then later they can be changed to a different value, or deleted.
 
-Once an event is defined, the client can send timestamps to be recorded on the server under the given event ID. 
+Once an event is defined, the client can send timestamps to be recorded on the server under the given event ID.  Custom events are differentiated internally with a “custom:” prefix in some contexts. Though this is sometimes returned to the client, it is not required to supply it when sending server updates (unless you must differentiate between a system event ID and a custom event ID with the same name).
 
-Custom events are differentiated internally with a `custom:` prefix so they cannot conflict with system events. You do not need to include this prefix unless you have overridden an existing event ID. For example, the payload to update an event can be either:
-
-```json
-{
-   "eventId":"enrollment",
-   "timestamp":"2018-04-04T16:43:11.357-07:00"
-}
-```
-or
-
-```json
-{
-   "eventId":"custom:enrollment",
-   "timestamp":"2018-04-04T16:43:11.357-07:00"
-}
-```
-
-The first call would attempt to update the immutable system event `enrollment`, and would quietly fail; the second would attempt to update the custom `enrollment` event, subject to its update type. 
-
-<div class="ui compact icon message" style="display: none">
+<div class="ui compact icon message">
   <i class="circle info icon"></i>
-  <p>Why do these APIs return 201 even when the event is not updated? So clients that send requests to update a <code>forward_only</code> event do not receive errors if their requests are received out-of-order. This behavior can be changed to report 400 in the event of an error through the use of a query parameter (<code>reportFailure=true</code>).</p>
+  <p>Why do these APIs return 201 even when the event is not updated? So clients that send requests to update a <code>forward_only</code> event do not receive errors if their requests are received out-of-order.</p>
 </div>
 
 ### Automatic custom events
@@ -87,20 +65,18 @@ In the `App` configuration, the key is the new event ID to generate, and the val
 ```json
 { 
   "automaticCustomEvents": {
-    "event1": "activities_retrieved:P13W",
+    "event1": "timeline_retrieved:P13W",
     "event2": "enrollment:P-2W"
   }
   "type": "App"
 }
 ```
 
-In the example above, `event1` will be scheduled thirteen weeks after the `activities_retrieved` updates successfully, each time it occurs (it is a “future updates only” event), and `event2` will be scheduled two weeks before `enrollment` updates successfully, which can only occur once (it is immutable).
+In the example above, `event1` will be scheduled thirteen weeks after the `timeline_retrieved` updates successfully, each time it occurs (it is a “future updates only” event), and `event2` will be scheduled two weeks before `enrollment` updates successfully, which can only occur once (it is immutable).
 
-### Study-specific event APIs
+### Activity event history
 
-Activity events initially assumed that there was one study in an app (hence, there is only one value for events like `enrollment`). The v2 activity event APIs (under `/v5/studies`) are similar to the v1 APIs, but they are *scoped* to a specific study. If the client uses these APIs, it can ask for events related to study 1 and study 2, and receive back different values for events like `enrollment`.
-
-For backwards compatibility, study-scoped `enrollment`, `activities_retrieved`, and `created_on` events will also be created as global events. Since these values are immutable, they will only be created the first time any study triggers them (not necessarily the same study). For this reason, global events should be retired in favor of the events retrieved through study-specific APIs.
+Finally, custom activity events that are `mutable` or `future_only` can create a history of different timestamp values that are important for understanding participant compliance with a protocol. These can be retrieved through the [study activity event history API](/swagger-ui/index.html#/Study%20Activity%20Events/getStudyParticipantStudyActivityEventHistory). Adherence records are keyed to both the instance GUIDs in a timeline, and the timestamp that was in effect when they were created (matching the activity event ID that schedules a session with the timestamp for the activity event ID at the time the adherence record was created). Thus it is possible to track adherence with scheduled session sequences that are no longer in effect for the user in the current schedule.
 
 ## Schedules
 
