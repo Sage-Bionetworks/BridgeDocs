@@ -277,6 +277,7 @@ Once a schedule has been created, it is communicated to consuming applications (
 ```json
 {
   "duration": "P2W",
+
   "schedule": [
     // the schedule
   ],
@@ -289,6 +290,14 @@ Once a schedule has been created, it is communicated to consuming applications (
   "type": "Timeline"
 }
 ```
+
+Timelines have the following top-level properties:
+
+| Field | Req? | Description |
+|-------|------|-------------|
+| duration | Y | The duration from the schedule, which is the maximum amount of time any event time stream in the study can last for a participant.  No single series of scheduled sessions can run longer than this duration. If all the sessions in a schedule start at the beginning of the study, this duration should be the calendar duration of the study as it is performed by participants. However, if events can be triggered later in the study, then those time series can themselves be of the given duration. |
+| totalMinutes | Y | The total number of minutes it will take to perform all sessions in a timeline. This value is provided to schedule designers to give them a measure of the “performance burden” of their protocol for study participants. |
+| totalNotifications | Y | The total number of notifications that will be presented to the participant by your study. This value is provided to schedule designers to give them a measure of the “burden” of the notification design for study participants. |
 
 ### Scheduled sessions
 
@@ -448,7 +457,7 @@ To determine which elements of a timeline should currently be made available to 
 2. For each event in the activity event map, calculate the “day since event N” for this participant, using the local time of the device. For example, in Java, you would use something like `ChronoUnit.DAYS.between(eventTimestamp, now)`;
 3. For each event ID in the map, search for scheduled events that have the same `startEventId`, where the `startDay` <= `daysSince` and `endDay` >= `daysSince`. **Scheduled activities that are keyed off an event that is not in the participant’s events are ignored;**
 4. Once you have all these scheduled sessions assembled, remove any sessions where the `startTime` and `expiration` values define a local time window that is outside of the local time;
-5. Now retrieve the adherence records for the remaining session instance GUIDs of these sessions. You should set `currentTimestampsOnly=true`, leave `recordType` unset, and to filter out long-running persistent assessments, you should set `startTime` and `endTime` values for the search;
+5. Now retrieve the adherence records for the remaining session instance GUIDs of these sessions. You should set `currentTimestampsOnly=true`, leave `adherenceRecordType` unset, and to filter out long-running persistent assessments, you should set `startTime` and `endTime` values for the search;
 6. Remove any scheduled sessions that have `finishedOn` timestamps, and from in-process sessions, remove any scheduled assessments with `finishedOn` timestamps;
 7. The remaining scheduled sessions and their scheduled assessments are currently available to be performed by the user, including those that have `startedOn` timestamps but that have not been finished (no `finishedOn` timestamp).
 
@@ -462,7 +471,7 @@ Published schedules cannot be changed, so their timelines cannot be changed, all
 
 The third and final part of the Bridge scheduling system, [the adherence APIs,](/swagger-ui/index.html#/Adherence%20Records) support both schedule state management for mobile clients and adherence reporting for study administrators. Once a participant’s client has a timeline, it is able to interpret the set of [AdherenceRecord](/model-browser.html#AdherenceRecord) objects available for a participant.
 
-This collection of records is *sparse;* if the participant did not do a schedules session or assessment, there will not be a record for that session or assessment in the set of records. Furthermore, these records are persisted by the client, so they will only exist if the client updates the server on the current state of timeline performance.
+This collection of records is *sparse;* if the participant did not do a scheduled session or assessment, there will not be a record for that session or assessment in the set of records. Furthermore, these records are persisted by the client, so they will only exist if the client updates the server on the current state of timeline performance.
 
 ```json
 {
@@ -488,6 +497,24 @@ This collection of records is *sparse;* if the participant did not do a schedule
 | uploadedOn | N | The timestamp (from the server) when we record an associated upload has been finished for this assessment or session. |
 </div>
 
+### Updating adherence records
+
+Adherence records are specific to a participant in a given study. However, persistent time windows (where a user is allowed to perform a set of assessments as many times as they want within the time window) change the behavior of adherence records in some subtle ways.
+
+The primary key for assessments scheduled through non-persistent time windows includes the `instanceGuid`  and the `eventTimestamp`. For a scheduled assessment in a given event time stream, there can be only one adherence record. The primary key for assessments scheduled through persistent time windows includes the `instanceGuid`, `eventTimestamp`, and `startedOn` value of the record, so such a scheduled assessment can produce more than one adherence record.
+
+So while all state fields in a non-persistent time window adherence record can be updated by resubmitting the record with different values, the `startedOn` field in a persistent time window adherence record, when it is changed in this manner, will simply create a new adherence record. Because changing timestamps in adherence records is mostly needed when developing and testing mobile clients, we recommend in this situation that you delete an adherence record before recreating it.
+
+Once assessment records start to be added or updated for a session, the server will update the session record’s `startedOn`, `finishedOn`, or `declined` values in the following manner:
+
+1. When any assessment in a session is started, and the session has not been started, the session will be started with the earliest `startedOn` assessment value in the session;
+1. When all assessments in a session are finished, and the session has not been finished, the session will be finished with the latest `finishedOn` assessment value in the session;
+1. If all assessments in a session are declined, and the session has not been declined, the session will be marked as declined.
+
+If a session adherence record does not exist, one will be created to record this information.
+
+To prevent overwriting user-submitted values, **once these session fields are set, the server will not update them again.** For example, if an assessment updated with an earlier `startedOn` timestamp, the session will not reflect it, or if a `finishedOn` timestamp is updated after all assessments in a session have been finished, this will not be reflected in the session. To change the session record, update the session record directly. For example, you might always submit the session record with null `startedOn`, `finishedOn` and `declined` fields if you want the server to check and update these values with every state change.
+
 ### Querying for adherence records
 
 The adherence record API allows for a wide variety of filters to be applied to the adherence records for a participant (records are always scoped to a participant in a particular study). Here is an example of the search object:
@@ -498,7 +525,7 @@ The adherence record API allows for a wide variety of filters to be applied to t
   "assessmentIds":[],
   "sessionGuids":[],
   "timeWindowGuids":[],
-  "recordType":"session",
+  "adherenceRecordType":"session",
   "includeRepeats":true,
   "currentTimestampsOnly":true,
   "eventTimestamps":{
@@ -519,7 +546,7 @@ The adherence record API allows for a wide variety of filters to be applied to t
 | assessmentIds | N | Return adherence records for assessments with these IDs (the assessment ID is used to define a type of assessment). This array cannot contain more than 500 items. |
 | sessionGuids | N | Return adherence records for sessions with these GUIDs (this is the session’s GUID in a schedule and not an instance GUID, and is used to define a type of session). This array cannot contain more than 500 items. |
 | timeWindowGuids | N | Return adherence records for assessments in these time windows (using the time window’s GUID in a schedule to define a type of time window). This array cannot contain more than 500 items. |
-| recordType | N | The `AdherenceRecordType` can be used to limit search results for adherence records to either `assessment` or `session` records. If not present, both records will be returned according to the criteria of the search. |
+| adherenceRecordType | N | The `AdherenceRecordType` can be used to limit search results for adherence records to either `assessment` or `session` records. If not present, both records will be returned according to the criteria of the search. |
 | includeRepeats | N | Where an assessment can be performed multiple times under an instance GUID, all records will be returned unless this flag is set to true. In this case, the first or last record only will be returned (depending on sort order). |
 | currentTimestampsOnly | N | Where a time series can be performed multiple times because a session’s trigger event is mutable, all records will be returned, unless this flag is set to true. When true, only records with recent event timestamp values will be returned. This is equivalent to sending back the user’s entire map of current event ID timestamp values via the `eventTimestamps` map in this search object. If values are also provided in the `eventTimestamps` map, each of those event IDs will override its associated event ID timestamp value, as it is provided by setting this flag to true. |
 | eventTimestamps | N | A mapping of event IDs to timestamp values to use when retrieving adherence records that are from sessions triggered by that ID. Only records with that exact timestamp value in their `eventTimestamp` field will be returned. In general, mobile clients will only want to retrieve records for current timestamp values when calculating schedules, so the `currentTimestampsOnly` flag provides an easy way to request that all current timestamps be used to limit search results. This map cannot contain more than 50 entries. |
@@ -627,7 +654,7 @@ A query can retrieve records for an assessment type, as indicated by its ID, reg
   "assessmentIds": [
     "assessment-a"
   ],
-  "recordType":"assessment",
+  "adherenceRecordType":"assessment",
   "type": "AdherenceRecordsSearch"
 }
 ```
@@ -653,16 +680,14 @@ Retrieves the following records:
 
 {% include image.html url="/images/adherence-examples/06-query-for-session-guids-with-assessments.svg" %}
 
-#### By session GUIDs, sessions only
-
-By changing the `recordType` flag you can limit these results to just the session or assessment records:
+By changing the `adherenceRecordType` flag you can limit these results to just the session or assessment records:
 
 ```json
 {
   "sessionGuids": [
     "oGO1ojQte74bEm_Ph8XZEA3z"
   ],
-  "recordType":"session",
+  "adherenceRecordType":"session",
   "type": "AdherenceRecordsSearch"
 }
 ```
@@ -702,7 +727,7 @@ To find the performance of one time window in a session, you can refere to the t
   "timeWindows": [
     "Z39tJejSi_P70vjjcBVuWk36"
   ],
-  "recordType": "assessment",
+  "adherenceRecordType": "assessment",
   "type": "AdherenceRecordsSearch"
 }
 ```
@@ -718,7 +743,7 @@ Repeat assessments can be removed with the `includeRepeats` flag:
     "Z39tJejSi_P70vjjcBVuWk36"
   ],
   "includeRepeats": false,
-  "recordType": "assessment",
+  "adherenceRecordType": "assessment",
   "type": "AdherenceRecordsSearch"
 }
 ```
@@ -735,7 +760,7 @@ Finally, queries can ask for records within a given time range (the values retur
 {
   "startTime": "2020-05-10T01:14:38.451Z",
   "endTime": "2020-05-17T16:57:01.196Z",
-  "recordType": "assessment",
+  "adherenceRecordType": "assessment",
   "type": "AdherenceRecordsSearch"
 }
 ```
