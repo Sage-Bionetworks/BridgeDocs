@@ -8,8 +8,8 @@ layout: article
 Bridge provides three sets of APIs for hosting files and JSON data for client apps:
 
 1. The [Hosted files API](/swagger-ui/index.html#/Files) provides public asset hosting for an app. The assets must be added by developers, but the assets themselves are publicly available for download by a client without further authentication;
-- The [Participant data API](/swagger-ui/index.html#/Participant%20Data) privates JSON data storage that is private to the participant who stores the data (only that participant can download the data, directly from Bridge);
-- The [Participant files API](/swagger-ui/index.html#/Participant%20Files) provides file storage that is parivate to the participant who uploads the files (only that participant can download the files, through a redirect to S3).
+- The [Participant data API](/swagger-ui/index.html#/Participant%20Data) provides JSON data storage that is private to the participant who stores the data (only that participant can download the data, directly from Bridge);
+- The [Participant files API](/swagger-ui/index.html#/Participant%20Files) provides file storage that is private to the participant who uploads the files (only that participant can download the files, through a redirect to S3).
 
 ## Hosted Files API
 
@@ -60,12 +60,43 @@ The data APIs have additional APIs for workers and administrators (not discussed
 
 ## Participant Files API
 
-[Storing data files for a participant](/swagger-ui/index.html#/Participant%20Files) involves the following steps:
+The Participant File API allows a participant to upload files to S3 that are private to the participant themselves. When uploading a file, a request is made to reserve a `fileId` and the API returns a presigned URL for uploading the file's contents. Similarly, the file can be retrieved or deleted through the API. And a list of the user's own existing files can be retrieved.
 
-1. Caller creates a [ParticipantFile](/model-browser.html#ParticipantFile) record through the [create participant file API.](/swagger-ui/index.html#/Participant%20Files/createParticipantFile) Please note that the mime/type for the file is required, although Bridge will currently allow you to create a file record without it;
-1. The returned ParticipantFile that is returned will have an `uploadURL` field with a presigned URL that can be used to `PUT` the file to S3 (**note** that currently a file cannot be replaced, so this call will fail if the file already exists; this will be changed to allow overwrites of files in a future update);
-1. Client uploads the file to S3;
-1. The caller can retrieve a [list of created file identifiers](/swagger-ui/index.html#/Participant%20Files/getParticipantFiles);
-1. The caller can retrieve a file by calling the [retrieve file API](/swagger-ui/index.html#/Participant%20Files/getParticipantFile) which returns a 302 redirecting the client with a presigned URL to retrieve the file data from S3.
+### Get a list of files
 
-Participant files can also be [deleted.](/swagger-ui/index.html#/Participant%20Files/deleteParticipantFile) They are not currently available to researchers or study coordinators. 
+The [Get Participant Files](/swagger-ui/index.html#/Participant%20Files/getParticipantFiles) API retrieves a list of [Participant Files](/model-browser.html#ParticipantFile) that can be used to find currently stored files' IDs. This includes information about the file, such as MIME type and date uploaded.
+
+### Upload a file
+
+The [Create Participant File](/swagger-ui/index.html#/Participant%20Files/createParticipantFile) API is used to reserve a `fileId` and get an S3 presigned URL to complete a file upload. The request must include the MIME type of the file in the body:
+
+```json
+{
+    "mimeType":"text/plain"
+}
+```
+
+The response includes the presigned URL in the `uploadUrl` field. This URL can subsequently be used to send the file contents to S3 through a PUT request. The presigned URL can be used until the timestamp returned in the `expiresOn` field is reached, 24 hours after the initial request.
+
+```json
+{
+    "fileId": "sample_file_id",
+    "userId": "sample_user_id",
+    "createdOn": "2021-06-18T13:39:58.965Z",
+    "mimeType": "text/plain",
+    "appId": "sample_app_id",
+    "uploadUrl": "https...",
+    "expiresOn": "2021-06-19T13:39:59.422Z",
+    "type": "ParticipantFile"
+}
+```
+
+NOTE: This API updates the [ParticipantFile](/model-browser.html#ParticipantFile) record and offers a presigned URL to update S3. If a file already exists with the requested `fileId`, the previous ParticipantFile and related S3 file will be deleted and replaced without warning.
+
+### Get a file
+
+The [Get Participant File](/swagger-ui/index.html#/Participant%20Files/getParticipantFiles) API is used to get the contents of an existing file using its `fileId`. If successful, it will respond with a 302 redirect to an S3 presigned URL for retrieving the file. The presigned URL will expire after 24 hours.
+
+### Delete a file
+
+The [Delete Participant File](/swagger-ui/index.html#/Participant%20Files/deleteParticipantFile) API deletes both the [ParticipantFile](/model-browser.html#ParticipantFile) record and the S3 storage related to the `fileId` requested.
