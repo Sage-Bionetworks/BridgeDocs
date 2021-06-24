@@ -40,7 +40,6 @@ In addition, app developers can define new *custom events* and *automatic custom
   },
   "type": "App"
 }
-
 ```
 
 Custom events can be given different behavior with respect to how they allow updates:
@@ -234,39 +233,68 @@ Beyond the `guid`, `appId`, and `identifier` properties, assessment references h
 
 ### Notification Configuration
 
-Finally, a `Session` can define the notifications that the mobile app should show to the participant.
+Finally, a `Session` can define one or more notifications that the mobile app should show to the participant. There is no limit set on these notifications other than the practical one of annoying participants. The total notification burden for the whole study is given in the `totalNotifications` value of the `Timeline`.
 
 ```json
-{
-  "notifyAt":"start_of_window",
-  "remindAt":"after_window_start",
-  "reminderPeriod":"PT15M",
-  "allowSnooze":true,
-  "messages":[
-    {
-      "lang":"en",
-      "subject":"Tapping Test",
-      "message":"Time for the tapping test",
-      "type":"NotificationMessage"
-    },
-    {
-      "lang":"fr",
-      "subject":"Test de taraudage",
-      "message":"L'heure du test de taraudage",
-      "type":"NotificationMessage"
-    }
-  ],
-  "type":"Session"
-}
+"notifications":[
+  {
+    "notifyAt":"after_window_start",
+    "offset":"PT10M",
+    "interval" "P2D",
+    "allowSnooze":true,
+    "messages":[
+      {
+        "lang":"en",
+        "subject":"Time to take the tapping test",
+        "message":"It'll only take 2 minutes!",
+        "type":"NotificationMessage"
+      }
+    ],
+    "type":"Notification"
+  },
+  {
+    "notifyAt":"before_window_end",
+    "offset":"PT10M",
+    "allowSnooze":false,
+    "messages":[
+      {
+        "lang":"en",
+        "subject":"There's still time",
+        "message":"There's still time to  do the tapping test. It is important!",
+        "type":"NotificationMessage"
+      }
+    ],
+    "type":"Notification"
+  }
+]
 ```
 
 | Field | Req? | Description |
 |-------|------|-------------|
-| notifyAt | N | For any notification to be sent, this value must be set. There are three values: `start_of_window` indicates that a notification should be sent at the start of the window; `participant_choice` suggests the notification should be scheduled by the participant (the design is unspecified by Bridge); and `random` indicates that the notification should be scheduled for a random time during the time window (after it starts and before it expires). |
-| remindAt | N | For a second reminder notification, this value must be set. There are two values: `after_window_start` and `before_window_end`, that can be used with the `reminderPeriod` to set a fixed reminder. For example a reminder `before_window_end` with a `reminderPeriod` of “PT10M” should send a reminder ten minutes before a session window ends. Required if `reminderPeriod` is set. |
-| reminderPeriod | N | An ISO 8601 duration measured in minutes, hours, days, or weeks. Required if `remindAt` is set. |
+| notifyAt | Y | If a notification is defined, this value is required. Notifications occur relative to `after_window_start` or `before_window_end`. |
+| offset | N | A period of time `after_window_start` or `before_window_end` when the notification should be shown. (Note that the value is positive, even when it is subtracting time from the end of the scheduling window.) If offset is not present, then the notification should be shown at the time the window begins or ends. |
+| interval | N | If a time window lasts for more than twenty-four hours in the session, a notification can be repeated on a daily period value (only day values are allowed, e.g. “P1D”). |
 | allowSnooze | N | A boolean indicating whether or not the participant may snooze the notification or reminder to be displayed at a later time. |
 | messages | N | An array of localized messages to display to the participant as the notification.<br><br>The `lang` property is required and must be a valid ISO 639 alpha-2 or alpha-3 language code specifying the language of the label. The array cannot contain two labels with the same language code. The `subject` is a short version of the message (40 characters or less) while the `message` field is a longer version (60 characters or less).<br><br>When returning a `Timeline` to a client, the caller’s languages will be used (in order of preference) to select a `Label` in that language. If this fails, the `en` language `NotificationMessage` will be used as a default. It is required to have an `en` message if notifications are enabled. |
+
+As an example, let’s say you have a time window that starts at 8am and lasts 7 days. You wish to notify the user at the start of the window, and then daily after that at 10am (until the assessment is done or the window expires). The configuration would look like this:
+
+```json
+"notifications": [
+  {
+    "notifyAt": "start_of_window",
+    "messages": []
+  },
+  {
+    "notifyAt": "start_of_window",
+    "offset": "PT26H",
+    "interval": "P1D",
+    "messages": []
+  }
+]
+```
+
+The second notification waits for 26 hours, which is 10am the day after the time window starts, and then repeats *from that time* every day at 10am. On the last day of the window, the window expires at 8am, so no notification is delivered on the final day.
 
 ## Timelines
 
