@@ -240,7 +240,7 @@ Finally, a `Session` can define one or more notifications that the mobile app sh
   {
     "notifyAt":"after_window_start",
     "offset":"PT10M",
-    "interval" "P2D",
+    "interval": "P2D",
     "allowSnooze":true,
     "messages":[
       {
@@ -259,7 +259,7 @@ Finally, a `Session` can define one or more notifications that the mobile app sh
     "messages":[
       {
         "lang":"en",
-        "subject":"There's still time",
+        "subject":"Please help us",
         "message":"There's still time to  do the tapping test. It is important!",
         "type":"NotificationMessage"
       }
