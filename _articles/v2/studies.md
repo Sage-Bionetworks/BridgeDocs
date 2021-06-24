@@ -59,6 +59,7 @@ As well, the `Study` contains information for study designers and for oversight:
 | irbDecisionOn | (Y) | Before the study can launch, it must be reviewed by your IRB and either be approved, or considered exempt from human subjects research guidelines. Once `irbDecisionOn` is set, `irbDecisionType` and `irbExpiresOn` must also be set. |
 | irbDecisionType | (Y) | The type of decision issued by the IRB, either `approved` or `exempt`. |
 | irbExpiresOn | (Y) | The last date that the IRB’s review is considered up-to-date for this study. |
+
 A contact contains the following information:
 
 | Field | Required | Description |
