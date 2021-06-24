@@ -48,16 +48,17 @@ As well, the `Study` contains information for study designers and for oversight:
 | scheduleGuid | (Y) | The GUID of the schedule that will be used to generate a timeline for participants in this study. The GUID can be used to retrieve the appropriate `Timeline` through the APIs. This field is required to move into the recruitment phase. *NOTE: Bridge will implement a `Protocol` design for v2 that includes study arms with different schedules assignable to each arm of the study. Currently Bridge implicitly assumes a study with one arm, e.g. no control vs. intervention groups.* |
 | clientData | N | This is an arbitrary JSON object graph that the client can use to store extra information about a study that is not specified in the Bridge schema. |
 | institutionId | N | If the investigator or sponsoring institution have assigned this study an identifier of some kind, it should be recorded in this field. |
-| disease | N | What disease state is this study researching? Can be general (neurodegenerative disorders) or specific (progressive supranuclear palsy). This should be a comma-delimited list when appropriate. However, the value is not constrained. |
-| studyDesignType | N | What type of research design is being used in this study (intervential, observational, cohort study, cross-over, etc.). This should be a comma-delimited list when appropriate. However, the value is not constrained. |
+| diseases | N | What disease state is this study researching? Can be general (neurodegenerative disorders) or specific (progressive supranuclear palsy). This is an array of values and the individual entries are not currently constrained. |
+| studyDesignTypes | N | What type of research design is being used in this study (intervential, observational, cohort study, cross-over, etc.). This is an array of values and the individual entries are not currently constrained. |
 | phase | Y | The phase of this study (see above). |
+| keywords | N | Free text keyword values to aid in searching for this study (to categorize it, please use the `diseases` and `studyDesignTypes` arrays). |
+| signInTypes | N | Participants may be enrolled with different credentials, necessitating different method of authenticating users with the Bridge server. On a per study basis, a study can indicate the optimal sign in method. A client may ask the participant for their study, then query the server for this information in order to display the appropriate sign in screen to the participant. Values should be interpreted to be in the order of their importance, if there are multiple options given. Possible values are enumerated in the <a href="/model-browser.html#SignInType">SignInTypes</a> enumeration. |
 | irbName | N | The name of the IRB that approved the study or decided it was exempt from human subjects research guidelines. Optional, but can be used to identify one of several IRBs if more than one is included in the study’s contact information. |
 | irbProtocolName | N | The name of the protocol as it was submitted to the IRB for approval. |
 | irbProtocolId | N | The identification number issued by the IRB for the study, if any. |
 | irbDecisionOn | (Y) | Before the study can launch, it must be reviewed by your IRB and either be approved, or considered exempt from human subjects research guidelines. Once `irbDecisionOn` is set, `irbDecisionType` and `irbExpiresOn` must also be set. |
 | irbDecisionType | (Y) | The type of decision issued by the IRB, either `approved` or `exempt`. |
 | irbExpiresOn | (Y) | The last date that the IRB’s review is considered up-to-date for this study. |
-
 A contact contains the following information:
 
 | Field | Required | Description |
