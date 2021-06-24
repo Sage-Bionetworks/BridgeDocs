@@ -19,7 +19,7 @@ The [Assessments API](/swagger-ui/index.html#/Assessments) has two main componen
 
 Assessments are conceptually organized into an ordered set of revisions that share a common `identifier`. The higher the `revision` number, the more recently that revision should have been created (although this isn’t strictly enforced, and the `createdOn` timestamp can be used to determine the actual temporal order of revisions). Each assessment revision can *also* be retrieved by a unique GUID, which is easier to work with than an `identifier` and `revision` value. You will need the `guid` to retrieve the assessment’s configuration, as each revision has its own configuration. Revisions logically replace one another and form a history of changes to an assessment.
 
-Bridge has a shared assessment library of validated, high-quality assessments that researchers can include in their apps. They can be directly scheduled, or imported into an app to be customized for a specific app or study.
+Assessments are owned by organizations; only members of the organization with the appropriate role (study designer) can edit or publish an assessment, its configuration, or its resources. Bridge also has a shared assessment library of validated, high-quality assessments that researchers can schedule directly in their studies, or import into their app. Once a copy has been imported, organization study designers can edit the copy for the purposes of their research.
 
 ## Using assessments
 
@@ -61,7 +61,7 @@ A shared assessment can be scheduled as part of a Bridge `Schedule`, but to modi
 
 ## Developing assessments
 
-Assessments will begin their development lifecycle in a specific app context. At this point the assessment object is sparse as developers will probably be focused on working out an appropriate configuration for the assessment. Once the software for the assessment has been tested and validated, appropriate documentation can be added through the [Assessment](/model-browser.html#Assessment) fields and its associated [ExternalResources](/model-browser.html#ExternalResource). It can then be [published to the shared assessment library](/swagger-ui/index.html#/Assessments/publishAssessment). A shared assessment's configuration will also be published; it cannot be changed or customized once it is shared. The external resources documenting the assessment [can then also be published](/swagger-ui/index.html#/Assessments/publishAssessmentResource) to the shared library.
+Assessments will begin their development lifecycle in a specific app context. At this point the assessment object is sparse as developers will probably be focused on working out an appropriate configuration for the assessment. Once the software for the assessment has been tested and validated, appropriate documentation can be added through the [Assessment](/model-browser.html#Assessment) fields and its associated [ExternalResources](/model-browser.html#ExternalResource). It can then be [published to the shared assessment library](/swagger-ui/index.html#/Assessments/publishAssessment). A shared assessment's configuration will also be published; however the configuration cannot be changed or customized once it is shared. The external resources documenting the assessment [can then also be published](/swagger-ui/index.html#/Assessments/publishAssessmentResource) to the shared library.
 
 If the assessment has never been published to the library before (its identifier is unique), it will be published at revision 1. Otherwise it will be published at the next highest revision number.
 
