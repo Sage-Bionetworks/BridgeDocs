@@ -66,6 +66,36 @@ The Participant File API allows a participant to upload files to S3 that are pri
 
 The [Get Participant Files](/swagger-ui/index.html#/Participant%20Files/getParticipantFiles) API retrieves a list of [Participant Files](/model-browser.html#ParticipantFile) that can be used to find currently stored files' IDs. This includes information about the file, such as MIME type and date uploaded.
 
+The list is in the form of a [ForwardCursorPagedResourceList](/model-browser.html#ForwardCursorPagedResourceList). The amount of results per call is set through the optional `pageSize` parameter. `pageSize` defaults to 50 and can be within 5-100.
+
+```
+.../v3/participants/self/files?pageSize=5
+```
+
+The response will include a list of [ParticipantFiles](/model-browser.html#ParticipantFile) in the `items` field. If there are more pages of results available to retrieve, the `hasNext` field will return `true` and an `offsetKey` will be included.
+
+ ```json
+    {
+    "items": [...],
+    "nextPageOffsetKey": "sample-offset-key",
+    "requestParams": {
+        "pageSize": 5,
+        "type": "RequestParams"
+    },
+    "pageSize": 5,
+    "offsetKey": "sample-offset-key",
+    "total": 5,
+    "hasNext": true,
+    "type": "ForwardCursorPagedResourceList"
+}
+ ```
+
+The `offsetKey` can be passed into the query parameters to request the next page of results.
+
+```
+.../v3/participants/self/files?pageSize=5&offsetKey=sample-offset-key
+```
+
 ### Upload a file
 
 The [Create Participant File](/swagger-ui/index.html#/Participant%20Files/createParticipantFile) API is used to reserve a `fileId` and get an S3 presigned URL to complete a file upload. The request must include the MIME type of the file in the body:
