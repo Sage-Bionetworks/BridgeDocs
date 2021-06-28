@@ -41,16 +41,16 @@ In addition, the `Study` contains important information for participants that th
 | colorScheme | N | A set of colors that can be used to customize an app when the user is in the context of performing this study. |
 | contacts | Y | An array of `Contact` objects that describe contact information that you intend to display to participants and other end users of the study (the array can be empty; see below). |
 
-There are APIs for uploading a logo image to Bridge for display in an app. The API is similar to the *hosted files* API:
+A study may also upload an icon. The API is similar to the [hosted files API](/swagger-ui/index.html#/Files):
 
-1. The developer should create a [FileRevision](/model-browser.html#FileRevision) object for the image and submit it via the [logo creation API](/swagger-ui/index.html#);
-1. The revision will be returned with a pre-signed URL to upload the content of the image to Amazon's S3 file hosting service (the URL expires in 10 minutes);
+1. The developer should create a [FileRevision](/model-browser.html#FileRevision) object for the image and submit it via the [logo creation API](/swagger-ui/index.html#/Studies/createStudyLogo);
+1. The revision will be returned with a pre-signed URL to PUT the content of the image to Amazon's S3 file hosting service (the URL expires in 10 minutes);
 1. The developer should PUT the file contents to S3;
-1. The developer should call [the API to mark the logo upload as completed](/swagger-ui/index.html#).
+1. The developer should call [the API to mark the logo upload as completed](/swagger-ui/index.html#/Studies/finishStudyLogoUpload).
 
-Once a the second call has been made to record that the upload has been finished, an URL to retrieve the logo will have been added to the `studyLogoUrl` field of the `Study` object (the updated study object is returned via the finish API). This process can be repeated to replace the logo with a different image.
+After the second call to record that the upload is finished, the study object’s `studyLogoUrl` will be updated with an HTTP link to download the logo image. The updated study object is returned from the finish API.
 
-As well, the `Study` contains information for study designers and for oversight:
+Finally, the `Study` contains information for study designers and for oversight:
 
 | Field | Required | Description |
 |-------|----------|-------------|
