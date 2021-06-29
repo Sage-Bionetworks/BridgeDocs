@@ -37,11 +37,20 @@ In addition, the `Study` contains important information for participants that th
 | identifier | Y | A string identifier that is unique for this study in the context of the app where it is hosted (lower- or upper-case letters, numbers, dashes, and/or underscores only). |
 | name | Y | The name of the study as you would like it to appear to participants. |
 | details | N | This is a long form textual description of the study for prospective participants. It can embed rich text formatting (such as markdown) if the client will support rendering the notation. |
-| studyLogoUrl | N | If supplied, it should be an URL to download and display a vector-graphic (SVG) logo or graphic identifying this study. |
+| studyLogoUrl | N | If supplied, it should be an URL to download and display a vector-graphic (SVG) logo or graphic identifying this study. See information on uploading a logo image, below. |
 | colorScheme | N | A set of colors that can be used to customize an app when the user is in the context of performing this study. |
 | contacts | Y | An array of `Contact` objects that describe contact information that you intend to display to participants and other end users of the study (the array can be empty; see below). |
 
-As well, the `Study` contains information for study designers and for oversight:
+A study may also upload an icon. The API is similar to the [hosted files API](/swagger-ui/index.html#/Files):
+
+1. The developer should create a [FileRevision](/model-browser.html#FileRevision) object for the image and submit it via the [logo creation API](/swagger-ui/index.html#/Studies/createStudyLogo);
+1. The revision will be returned with a pre-signed URL to PUT the content of the image to Amazon's S3 file hosting service (the URL expires in 10 minutes);
+1. The developer should PUT the file contents to S3;
+1. The developer should call [the API to mark the logo upload as completed](/swagger-ui/index.html#/Studies/finishStudyLogoUpload).
+
+After the second call to record that the upload is finished, the study object’s `studyLogoUrl` will be updated with an HTTP link to download the logo image. The updated study object is returned from the finish API.
+
+Finally, the `Study` contains information for study designers and for oversight:
 
 | Field | Required | Description |
 |-------|----------|-------------|
@@ -58,7 +67,7 @@ As well, the `Study` contains information for study designers and for oversight:
 | irbProtocolId | N | The identification number issued by the IRB for the study, if any. |
 | irbDecisionOn | (Y) | Before the study can launch, it must be reviewed by your IRB and either be approved, or considered exempt from human subjects research guidelines. Once `irbDecisionOn` is set, `irbDecisionType` and `irbExpiresOn` must also be set. |
 | irbDecisionType | (Y) | The type of decision issued by the IRB, either `approved` or `exempt`. |
-| irbExpiresOn | (Y) | The last date that the IRB’s review is considered up-to-date for this study. |
+| irbExpiresOn | (Y) | The last date that the IRB’s review is considered up-to-date for this study. Only required if the IRB’s decision was an approval and not an exemption. |
 
 A contact contains the following information:
 
