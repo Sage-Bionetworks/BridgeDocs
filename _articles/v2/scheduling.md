@@ -500,7 +500,18 @@ Published schedules cannot be changed, so their timelines cannot be changed, all
 
 The third and final part of the Bridge scheduling system, [the adherence APIs,](/swagger-ui/index.html#/Adherence%20Records) support both schedule state management for mobile clients and adherence reporting for study administrators. Once a participant’s client has a timeline, it is able to interpret the set of [AdherenceRecord](/model-browser.html#AdherenceRecord) objects available for a participant.
 
-This collection of records is *sparse;* if the participant did not do a scheduled session or assessment, there will not be a record for that session or assessment in the set of records. Furthermore, these records are persisted by the client, so they will only exist if the client updates the server on the current state of timeline performance.
+This collection of records is *sparse;* if the participant did not do a scheduled session or assessment, there will not be a record for that session or assessment in the set of records. Furthermore, these records are persisted by the client, so they will only exist if the client updates the server on the current state of timeline performance. 
+
+Clients are expected to update the assessment adherence records. The server will create and/or update session adherence records accordingly. The server manages the `startedOn`, `finishedOn`, and `declined` fields:
+
+- The `startedOn` timestamp will be set to the earliest `startedOn` timestamp of any assessment in that session instance once any assessment is started; 
+- The `finishedOn` timestamp will be set to the latest `finishedOn` timestamp of any assessment in that session instance, when all the assessments are finished (declining assessments will not cause the session to be reported as finished); 
+- The `declined` boolean will be set to true if all the assessments in the session instance have been declined;
+- Sessions with any number of `declined` or unstarted assessments will be left in the started but not finished state (and thus be out of compliance).
+
+Clients can also submit session adherence records in order to update fields like `clientData` and `clientTimeZone`.
+
+An assessment adherence record would look like the following:
 
 ```json
 {
