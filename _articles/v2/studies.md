@@ -28,20 +28,23 @@ Studies follow a lifecycle that supports the proper performance of study researc
 | completed   | The study can no longer be edited in any way. *PHI information for all participants in the study will be deleted from the system (such as email, phone number, or name).* The study should no longer be visible in public registries, and attempts to enroll an account in the study will be rejected (HTTP response code: `423`). The study will still be available in Bridge so that final IRB reporting can occur. Once this has been done, the study can be logically deleted. |
 | withdrawn   | A study can be transitioned from any other phase than `completed` to the `withdrawn` state, using the `withdraw` endpoint. *PHI information for all participants in the study will be deleted from the system (such as email, phone number, or name).* At this point the study cannot be changed at all, but the study can be logically deleted. There may be additional requirements in the future. |
 
-## Information about a study for display and oversight
+## Information for study display and oversight
 
-In addition, the `Study` contains important information for participants that the client will want to access to render the appropriate APIs:
+Even before a participant signs in to a Bridge app, it is possible to retrieve [StudyInfo](/model-browser.html#StudyInfo) from Bridge using a public (unauthenticated) [study info API.](/swagger-ui/index.html#/Studies/getStudyInfo) This information may be helpful for tailoring a UI. In one Bridge app for example, participants were prompted to enter their study ID, and then the app used that information to retrieve the info model and tailor the sign in screen to that specific study in the app.
+
+The fields in the `StudyInfo` object are a subset of the fields that exist in the larger `Study` model (which can be retrieved by participant apps after sign in via the [get study API](/swagger-ui/index.html#/Studies/getStudy).
 
 | Field | Required | Description |
 |-------|----------|-------------|
 | identifier | Y | A string identifier that is unique for this study in the context of the app where it is hosted (lower- or upper-case letters, numbers, dashes, and/or underscores only). |
 | name | Y | The name of the study as you would like it to appear to participants. |
 | details | N | This is a long form textual description of the study for prospective participants. It can embed rich text formatting (such as markdown) if the client will support rendering the notation. |
+| phase | Y | The phase of this study (see above). |
 | studyLogoUrl | N | If supplied, it should be an URL to download and display a vector-graphic (SVG) logo or graphic identifying this study. See information on uploading a logo image, below. |
 | colorScheme | N | A set of colors that can be used to customize an app when the user is in the context of performing this study. |
-| contacts | Y | An array of `Contact` objects that describe contact information that you intend to display to participants and other end users of the study (the array can be empty; see below). |
+| signInTypes | N | Participants may be enrolled with different credentials, necessitating different method of authenticating users with the Bridge server. On a per study basis, a study can indicate the optimal sign in method. A client may ask the participant for their study, then query the server for this information in order to display the appropriate sign in screen to the participant. Values should be interpreted to be in the order of their importance, if there are multiple options given. Possible values are enumerated in the <a href="/model-browser.html#SignInType">SignInTypes</a> enumeration. |
 
-A study may also upload an icon. The API is similar to the [hosted files API](/swagger-ui/index.html#/Files):
+Study designers can generate the study logo by entering it manually, or by calling Bridge APIs to upload a study logo/icon. The API is similar to the [hosted files API](/swagger-ui/index.html#/Files):
 
 1. The developer should create a [FileRevision](/model-browser.html#FileRevision) object for the image and submit it via the [logo creation API](/swagger-ui/index.html#/Studies/createStudyLogo);
 1. The revision will be returned with a pre-signed URL to PUT the content of the image to Amazon's S3 file hosting service (the URL expires in 10 minutes);
@@ -50,7 +53,7 @@ A study may also upload an icon. The API is similar to the [hosted files API](/s
 
 After the second call to record that the upload is finished, the study object’s `studyLogoUrl` will be updated with an HTTP link to download the logo image. The updated study object is returned from the finish API.
 
-Finally, the `Study` contains information for study designers and for oversight:
+Another set of fields on the `Study` model contain information for study designers and for oversight:
 
 | Field | Required | Description |
 |-------|----------|-------------|
@@ -59,15 +62,14 @@ Finally, the `Study` contains information for study designers and for oversight:
 | institutionId | N | If the investigator or sponsoring institution have assigned this study an identifier of some kind, it should be recorded in this field. |
 | diseases | N | What disease state is this study researching? Can be general (neurodegenerative disorders) or specific (progressive supranuclear palsy). This is an array of values and the individual entries are not currently constrained. |
 | studyDesignTypes | N | What type of research design is being used in this study (intervential, observational, cohort study, cross-over, etc.). This is an array of values and the individual entries are not currently constrained. |
-| phase | Y | The phase of this study (see above). |
 | keywords | N | Free text keyword values to aid in searching for this study (to categorize it, please use the `diseases` and `studyDesignTypes` arrays). |
-| signInTypes | N | Participants may be enrolled with different credentials, necessitating different method of authenticating users with the Bridge server. On a per study basis, a study can indicate the optimal sign in method. A client may ask the participant for their study, then query the server for this information in order to display the appropriate sign in screen to the participant. Values should be interpreted to be in the order of their importance, if there are multiple options given. Possible values are enumerated in the <a href="/model-browser.html#SignInType">SignInTypes</a> enumeration. |
 | irbName | N | The name of the IRB that approved the study or decided it was exempt from human subjects research guidelines. Optional, but can be used to identify one of several IRBs if more than one is included in the study’s contact information. |
 | irbProtocolName | N | The name of the protocol as it was submitted to the IRB for approval. |
 | irbProtocolId | N | The identification number issued by the IRB for the study, if any. |
 | irbDecisionOn | (Y) | Before the study can launch, it must be reviewed by your IRB and either be approved, or considered exempt from human subjects research guidelines. Once `irbDecisionOn` is set, `irbDecisionType` and `irbExpiresOn` must also be set. |
 | irbDecisionType | (Y) | The type of decision issued by the IRB, either `approved` or `exempt`. |
 | irbExpiresOn | (Y) | The last date that the IRB’s review is considered up-to-date for this study. Only required if the IRB’s decision was an approval and not an exemption. |
+| contacts | Y | An array of `Contact` objects that describe contact information that you intend to display to participants and other end users of the study (the array can be empty; see below). |
 
 A contact contains the following information:
 
