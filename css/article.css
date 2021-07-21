@@ -158,8 +158,12 @@ dl.properties dt {
 figure {
   border: 1px solid rgba(34,36,38,.15);
   border-radius: .28rem;
-  margin: 1rem 0!important;
-}    
+  margin: 1rem 1rem!important;
+}
+figure img {
+  margin: 0 auto!important;
+  display: block;
+}
 figcaption {
   font-weight: bold;
   text-align: center;

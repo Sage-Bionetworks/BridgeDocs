@@ -16,7 +16,10 @@ A Bridge app can be used to run one or more [studies](/model-browser.html#Study)
 
 ## Study Lifecycle
 
-Studies follow a lifecycle that supports the proper performance of study research. New studies are created in the `design` phase and are manually advanced by study owners as appropriate.
+Studies follow a lifecycle that supports the proper performance of study research. New studies are created in the `design` phase and are manually advanced by study coordinators as appropriate.
+
+{% include image.html url="/images/study-phases.svg" 
+  description="Study lifecycle flow chart" %}
 
 | Phase       | Description |
 |-------------|-------------|
@@ -25,8 +28,8 @@ Studies follow a lifecycle that supports the proper performance of study researc
 | recruitment | To move to recruitment, the associated app should be available in the app store and the IRB approval for the study must be recorded as part of the study (there may be other criteria that must be met at this time).<br><br>The study metadata can be edited during recruitment, but the associated schedule cannot be changed, nor can that schedule itself be changed (an unpublished schedule associated to the study will be published in this transition). The study becomes visible in public registries, and accounts are enrolled normally (no test tag is added). The study cannot be logically or physically deleted. When recruitment targets have been met, this study can be transitioned via the `closeEnrollment` endpoint. |
 | in_flight   | The study metadata can be edited, but the schedule remains immutable. The study should no longer be visible in public registries, and attempts to enroll an account in the study will be rejected (HTTP response code: `423`). The study cannot be logically or physically deleted. The app should still be available in app stores in case a current participant needs to reinstall the app to continue the study. When appropriate, this study can be transitioned via the `analyze` endpoint. **Note: the system may be able to do some checks at this time to determine all participants are finished with the study.** |
 | analysis    | The study can no longer be edited in any way. The study should no longer be visible in public registries, and attempts to enroll an account in the study will be rejected (HTTP response code: `423`). Any uploads that are attempted once the study transitions to this state will be rejected and/or not uploaded to Synapse. The study cannot be logically or physically deleted. The app can be removed from app stores if it is not used to conduct any other studies. When this analysis is done, the study can be transitioned via the `closeout` endpoint. |
-| completed   | The study can no longer be edited in any way. *PHI information for all participants in the study will be deleted from the system (such as email, phone number, or name).* The study should no longer be visible in public registries, and attempts to enroll an account in the study will be rejected (HTTP response code: `423`). The study will still be available in Bridge so that final IRB reporting can occur. Once this has been done, the study can be logically deleted. |
-| withdrawn   | A study can be transitioned from any other phase than `completed` to the `withdrawn` state, using the `withdraw` endpoint. *PHI information for all participants in the study will be deleted from the system (such as email, phone number, or name).* At this point the study cannot be changed at all, but the study can be logically deleted. There may be additional requirements in the future. |
+| completed   | The study can no longer be edited in any way. The study should no longer be visible in public registries, and attempts to enroll an account in the study will be rejected (HTTP response code: `423`). The study will still be available in Bridge so that final IRB reporting can occur. Once this has been done, the study can be logically deleted. |
+| withdrawn   | A study can be transitioned from any other phase than `completed` to the `withdrawn` state, using the `withdraw` endpoint. At this point the study cannot be changed at all, but the study can be logically deleted. There may be additional requirements in the future. |
 
 ## Information for study display and oversight
 
