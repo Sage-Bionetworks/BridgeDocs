@@ -115,7 +115,9 @@ Here is an example of the top-level JSON of a schedule:
 
 The schedule in turn contains a number of `Session` objects that do the real work of defining a schedule. The session JSON is large, but it can be broken into three major parts.
 
-First, each session defines a stream of activities that should be scheduled, starting with the time of a specific event (the `startEventId`). For example if the event were `enrollment` in a study, then the session would define one or more activities to perform in terms of “N days since enrollment.” If the event were a custom event named `clinic_visit`, then the activities would be defined in terms of “N days since `clinic_visit`.”
+First, each session defines a stream of activities that should be scheduled, starting with the time of one or more events known as _activity events_ (the `startEventIds` array). For example if one of the events in the array was `enrollment` in a study, then the session would define one or more activities to perform in terms of “N days since enrollment.” If the event were a custom event named `custom:clinic_visit`, then the activities would be defined in terms of “N days since `custom:clinic_visit`.” 
+
+*Each event in the list thus generates a separate stream of activities to perform.* One common scenario would be a block of activities to perform after each of three clinic visits. Each visit can be defined as a separate custom event, and then that event can be created when the visit occurs for a particular study subject. It is not necessary to create three separate but identical sessions for each visit; instead, trigger one session based on three distinct events.
 
 In this same JSON for a session, the event is `enrollment` (the time when the participant signs a consent on Bridge):
 
@@ -130,7 +132,7 @@ In this same JSON for a session, the event is `enrollment` (the time when the pa
     }
   ],
   "guid":"my7oqQBok40EhlinRYFke0k1",
-  "startEventId":"enrollment",
+  "startEventIds":["enrollment"],
   "delay":"P1W",
   "interval":"P1W",
   "timeWindows":[...time windows here...],
@@ -142,7 +144,7 @@ In this same JSON for a session, the event is `enrollment` (the time when the pa
 |-------|------|-------------|
 | name | Y | A name for the session to display in study design tools. The name will be included in a `Timeline` and will be used as the default value if no other label can be found to display to participants. |
 | labels | N | An array of Label objects. The `lang` property is required and must be a valid ISO 639 alpha-2 or alpha-3 language code specifying the language of the label. The array cannot contain two labels with the same language code. The `value` is required, and should contain the label in the given language. <br><br>When returning a `Timeline` to a client, the caller’s languages will be used (in order of preference) to select a `Label` in that language. If this fails, the `en` language `Label` will be used as a default. If that also does not exist, the session name will be used as the label. |
-| startEventId | Y | An activity event ID (described above) from which the activities in this stream will be calculated. |
+| startEventIds | Y | One or more activity event IDs (described above) from which the activities in this stream will be calculated. At least one event must be defined for each session. |
 | delay | N | If absent, the first activity of this session will occur the moment the client finds the `startEventId` value defined in the participant’s event map. If present, this is an ISO 8601 duration measured in minutes, hours, days, or weeks. |
 | interval | N | If absent, this session will be scheduled once (note that due to time windows, this does not necessarily mean the participant will have only one activity to perform; see below). If present, this is an ISO 8601 duration measured in days or weeks. Every interval period of time from the start event (plus the delay, if present), the session will be scheduled again, until the end of the study. |
 | occurrences | N | A session with an interval will generate session instances until the end of a schedule. Alternatively, the session can define a fixed number of occurrences to issue before the stream ends. If the occurrences would extend beyond the end of the schedule, they are truncated. | 
@@ -338,6 +340,7 @@ The `schedule` property of the timeline contains scheduled sessions with their s
     {
       "refGuid": "LBHjyu4oragS2xmj3gtPQD_e",
       "instanceGuid": "B0sfyeq6wAW-YbBH5RFXbQ",
+      "startEventId": "event1",
       "startDay": 0,
       "endDay": 0,
       "startTime": "08:00",
@@ -354,6 +357,7 @@ The `schedule` property of the timeline contains scheduled sessions with their s
     {
       "refGuid": "dAGKM4nN39cDbyADic_bDNXs",
       "instanceGuid": "5m4DWgtn0oY3S8LR72QowA",
+      "startEventId": "timeline_retrieved",
       "startDay": 2,
       "endDay": 8,
       "startTime": "00:00",
@@ -370,6 +374,7 @@ The `schedule` property of the timeline contains scheduled sessions with their s
     {
       "refGuid": "LBHjyu4oragS2xmj3gtPQD_e",
       "instanceGuid": "SNRtbbtLy5Gfiy8QP37GpQ",
+      "startEventId": "event1",
       "startDay": 7,
       "endDay": 7,
       "startTime": "08:00",
@@ -394,6 +399,7 @@ Each entry in this array has the following properties
 |-------|------|-------------|
 | refGuid | Y | This is a reference to a `SessionInfo` entry in the top-level `sessions` property array of this timeline. That block contains all the configuration information for this session (and all the other instances of this session that were generated from the same repeating session. This GUID happens to be the GUID of the session in the schedule. |
 | instanceGuid | Y | This is a unique identifier for any study data generated and uploaded as part of this performance of a repeating session. Uploads should include the session or assessment `instanceGuid` along with the timestamp of the event that triggered this scheduled session, so the server can reconstruct the relationship of the schedule and the upload at a later time. |
+| startEventId | Y | The event ID that triggers this activity. The day in study should be calculated against this event timestamp for the user (if it exists), to determine if this scheduled session should be presented to the participant. |
 | startDay | Y | The first day on which this scheduled session should be introduced to the participant (taking account the `startTime` and `expiration` period). This value is zero-indexed. The “day since event X” is calculated from the time of an event timestamp to the participant’s current local time, as a number of days (these are *calendar* days, not 24 hour periods). The specific event to measure against is the `startEventId` in the `SessionInfo` object for this scheduled session. |
 | endDay | Y | The last day on which this scheduled session should be provided to the participant. The “day since event X” is calculated from the time of an event timestamp to the participant’s current local time, as a number of days (these are *calendar* days, not 24 hour periods). If this session expires but was started the data that was collected should be uploaded **without updating the `finishedOn` timestamp of the associated history record.** |
 | startTime | N | The local time of day that the scheduled session should be shown to the user. This is the beginning of the *time window* for this scheduled session, which is also used to specify notification behavior. |
@@ -445,14 +451,12 @@ In addition to this schedule, there are configurations for the highly redundant 
       "guid": "LBHjyu4oragS2xmj3gtPQD_e",
       "label": "Weekly Jar Opening Test",
       "minutesToComplete": 2,
-      "startEventId": "enrollment",
       "performanceOrder": "sequential",
       "type": "SessionInfo"
     },
     {
       "guid": "dAGKM4nN39cDbyADic_bDNXs",
       "label": "Background Survey",
-      "startEventId": "enrollment",
       "performanceOrder": "sequential",
       "notifyAt": "start_of_window",
       "remindAt": "before_window_end",
@@ -529,7 +533,7 @@ An assessment adherence record would look like the following:
 | Field | Req? | Description |
 |-------|------|-------------|
 | instanceGuid | Y | The `instanceGuid` of either a session or an assessment |
-| eventTimestamp | Y | The timestamp of the event that triggered the timestream of this session or assessment. If the event is mutable, this timestamp will group separate performances of this portion of the timeline. |
+| eventTimestamp | Y | The timestamp of the event that triggered the timestream of this session or assessment. Note that for sessions triggered by multiple events, the `instanceGuid` encodes the specific event ID that triggers this scheduled instance of the session or assessment, so we do not need the event ID to be submitted as part of the adherence record, only the specific timestamp. If the event is mutable, each timestamp submitted for this event generates a separate time stream of scheduled events that could potentially be performed by the user. |
 | startedOn | Y | The timestamp (from the client) when the assessment or session was started. **Note: sometimes the client is wrong, so we might want to record a server timestamp instead or as well as this value.** |
 | finishedOn | N | The timestamp (from the client) when the assessment or session was ended by the user. Do not set this value if the assessment or session eventually expires. |
 | clientData | N | An arbitrary JSON object that the client can use to store further information about the assessment or session, its state, display information, etc. |
@@ -541,11 +545,13 @@ An assessment adherence record would look like the following:
 
 Adherence records are specific to a participant in a given study. However, persistent time windows (where a user is allowed to perform a set of assessments as many times as they want within the time window) change the behavior of adherence records in some subtle ways.
 
-The primary key for assessments scheduled through non-persistent time windows includes the `instanceGuid`  and the `eventTimestamp`. For a scheduled assessment in a given event time stream, there can be only one adherence record. The primary key for assessments scheduled through persistent time windows includes the `instanceGuid`, `eventTimestamp`, and `startedOn` value of the record, so such a scheduled assessment can produce more than one adherence record.
+The primary key for assessments scheduled through non-persistent time windows includes the `instanceGuid`  and the `eventTimestamp`. For a scheduled assessment in a given event time stream, there can be only one adherence record. The primary key for assessments scheduled through persistent time windows includes the `instanceGuid`, `eventTimestamp`, and `startedOn` value of the record, so such a scheduled assessment will produce one adherence record.
 
-So while all state fields in a non-persistent time window adherence record can be updated by resubmitting the record with different values, the `startedOn` field in a persistent time window adherence record, when it is changed in this manner, will simply create a new adherence record. Because changing timestamps in adherence records is mostly needed when developing and testing mobile clients, we recommend in this situation that you delete an adherence record before recreating it.
+For a persistent time window, however, the `startedOn` field is not part of the record key and multiple adherence records can be submitted for a specific scheduled assessment (which aligns with the meaning of a persistent scheduled assessment—it can be done over and over as often as the participant wishes). 
 
-Once assessment records start to be added or updated for a session, the server will update the session record’s `startedOn`, `finishedOn`, or `declined` values in the following manner:
+Because changing timestamps in adherence records is mostly needed when developing and testing mobile clients, we recommend in this situation (testing persistent time windows) that you delete an adherence record before recreating it.
+
+The state of a scheduled session adherence record depends on the state of its scheduled assessments (it is updated automatically on the server):
 
 1. When any assessment in a session is started, and the session has not been started, the session will be started with the earliest `startedOn` assessment value in the session;
 1. When all assessments in a session are finished, and the session has not been finished, the session will be finished with the latest `finishedOn` assessment value in the session;
@@ -553,7 +559,7 @@ Once assessment records start to be added or updated for a session, the server w
 
 If a session adherence record does not exist, one will be created to record this information.
 
-To prevent overwriting user-submitted values, **once these session fields are set, the server will not update them again.** For example, if an assessment updated with an earlier `startedOn` timestamp, the session will not reflect it, or if a `finishedOn` timestamp is updated after all assessments in a session have been finished, this will not be reflected in the session. To change the session record, update the session record directly. For example, you might always submit the session record with null `startedOn`, `finishedOn` and `declined` fields if you want the server to check and update these values with every state change.
+Additional fields in the session adherence record such as `clientData` and `clientTimeZone` can be updated by the client using the adherence records API.
 
 ### Querying for adherence records
 
