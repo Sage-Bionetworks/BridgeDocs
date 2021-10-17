@@ -41,7 +41,7 @@ While these APIs will continue to be available, we intend to replace them with n
 | Surveys and Upload Schemas | `/v3/surveys`, `/v3/uploadschemas`, `/v4/uploadschemas` | These will be replaced by assessments, and will include configuration specific to each assessment. This should pull some config out of the more generic app configs, into a model that can be better supported by tooling. |
 | Consent | `/v3/consents`, `/v3/subpopulations`, `/v3/itp` | Consent will continue to exist, but they will be directly associated with a study (each study will include details about enrollment and consent requirements). |
 | Shared Modules | `/v3/sharedmodules` | These were not adopted, and will be replaced with a shared assessment library. |
-| Substudies | `/v3/substudies` | Substudies will be replaced with `Organizations` and organizational membership. This will be separate from enrollment in a study as a participant. |
+| Substudies | `/v3/substudies` | Substudies will be replaced with `Studies` that are accessible through organizational membership. This will be separate from enrollment in a study as a participant. |
 | External IDs | `/v3/externalids`, `/v4/externalids` | External IDs will continue to be used, but they will associate users to specific studies in an app (not just an organization). |
 
 ## The Mobile Development Domain
