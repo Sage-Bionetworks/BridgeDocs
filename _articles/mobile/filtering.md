@@ -20,7 +20,7 @@ Each object includes a [Criteria](/#Criteria) property that matches the followin
 * The language of the requesting user (as specified in the `Accept-Language` header);
 * The minimum or maximum version of the app making the call on a specific platform (as specified in the `User-Agent` header using a Bridge-specific format);
 * Data groups that the user is required or prohibited from having (authenticated requests only);
-* Substudies that the user is required or prohibited from being a member of (authenticated requests only);
+* Studies that the user is enrolled in or prohibited from being enrolled in (authenticated requests only);
 
 **Filtering is opt-in**: if a request doesn't include filtering information, all objects will be considered to be relevant for that user.
 
@@ -47,8 +47,8 @@ For example, if `allOfGroups` is an empty array, the participant can be assigned
 |maxAppVersions|Object|This object maps operating system names to a maximum app version. For example, "iPhone OS" may be set to version 2, while "Android" might be set to version 10. Any operating system names can be used, but these two strings are expected for these two common mobile operating systems. The object associated with these criteria should be returned to participants only if the User-Agent header specifies an application version that is equal to or less than the version given for that operating system. Minimum and maximum values, when both specified, indicate a range of valid application version numbers. If no value for the operating system, there is no maximum required version.|
 |allofGroups|String[]|The object associated with these criteria should be returned to participants only if the user making the request has been assigned *ALL* of the data groups contained in this set (duplicate values in the array are removed). If the set is empty, there are no required data groups. Data groups must be defined as part of the [Study](/#Study) object before they can be included in this set or assigned to participants, and the same data group cannot be in the allOfGroups and noneOfGroups sets at the same time|
 |noneOfGroups|String[]|The object associated with these criteria should be returned to participants only if the user making the request has been assigned *NONE* of the data groups contained in this set (duplicate values in the array are removed). If the set is empty, there are no prohibited data groups. Data groups must be defined as part of the [Study](/#Study) object before they can be included in this set or assigned to participants, and the same data group cannot be in the allOfGroups and noneOfGroups sets at the same time.|
-|allOfSubstudyIds|String[]|The object associated with these criteria should be returned to participants only if the user making the request has been assigned to *ALL* of the substudies in this set (duplicate values of the array are removed). If the set is empty, there are no required substudy memberships. The same substudy IDs cannot be in the allOfSubstudyIds and noneOfSubstudyIds sets at the same time.|
-|noneOfSubstudyIds|String[]|The object associated with these criteria should be returned to participants only if the user making the request has been assigned *NONE* of the substudies contained in this set (duplicate values in the array are removed). If the set is empty, there are no prohibited substudy memberships. The same substudy ID cannot be in the allOfGroups and noneOfGroups sets at the same time.|
+|allOfStudyIds|String[]|The object associated with these criteria should be returned to participants only if the user making the request has been enrolled in *ALL* of the studies in this set (duplicate values of the array are removed). If the set is empty, there are no required study memberships. The same study IDs cannot be in the allOfStudyIds and noneOfStudyIds sets at the same time.|
+|noneOfStudyIds|String[]|The object associated with these criteria should be returned to participants only if the user making the request has been enrolled in *NONE* of the studies contained in this set (duplicate values in the array are removed). If the set is empty, there are no prohibited study memberships. The same study ID cannot be in the allOfStudyIds and noneOfStudyIds sets at the same time.|
 
 ### Example
 
@@ -66,15 +66,15 @@ For example, if `allOfGroups` is an empty array, the participant can be assigned
         },
         "allOfGroups":["b","a"],
         "noneOfGroups":["c","d"],
-        "allOfSubstudyIds":[],
-        "noneOfSubstudyIds":["sage"],
+        "allOfStudyIds":[],
+        "noneOfStudyIds":["sage"],
         "type": "Criteria"
     },
     "type": "SomeFilterableObject"
 }
 ```
 
-In this example the iOS application would only see the object if it was a version between 3-22, while an Android application would see the object if it was version 10 or greater (no upper limit). The user would have to have data groups "a" and "b", and could not have data groups "c" and "d". Finally, the user would need to declare English as an accepted language, and they cannot be in the Sage Bionetworks (`sage`) substudy.
+In this example the iOS application would only see the object if it was a version between 3-22, while an Android application would see the object if it was version 10 or greater (no upper limit). The user would have to have data groups "a" and "b", and could not have data groups "c" and "d". Finally, the user would need to declare English as an accepted language, and they cannot be enrolled in the Sage Bionetworks (`sage`) study.
 
 ## From the client
 
@@ -119,7 +119,3 @@ The participant record stores language preferences as an ordered list of two-let
 Data groups are string "tags" that are assigned to a participant's record using the participant record APIs. The server will also filter content based on the data groups of the participant making a request. They do not have to be sent with the request (the server knows them already). They can really represent anything about a group of users that you need to track through the Bridge server, for filtering or any other purpose. 
 
 To prevent abuse of data groups, all possible data group strings must be defined beforehand as part of the [Study](/#Study) object.
-
-### Substudies
-
-Finally, users can be assigned to substudies, usually by signing up with an external ID (which is associated to a specific substudy), or by matching and consenting to a specific consent group. Content can be filtered to include or exclude users based on their substudy memberships.
