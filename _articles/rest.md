@@ -4,17 +4,15 @@ layout: article
 ---
 
 <div class="ui message">
-<p>The REST API has been specified as a <a href="/rest-api/{{site.data.versions.java_sdk}}/rest-api/swagger.json">Swagger specification 
-file</a>, which can be used to generate a simple Bridge REST client in a wide 
-variety of languages. See <a href="http://swagger.io/">Swagger</a> for more 
-information.</p>
+<p>The REST API has been specified as a <a href="/rest-api/{{site.data.versions.java_sdk}}/rest-api/swagger.json">Swagger specification file</a>, which can be used to generate a simple Bridge REST client in a wide variety of languages. The Bridge platform team maintains <a href="java.html">a Java client</a> that layers authentication support on top of these basic API files. See <a href="http://swagger.io/">Swagger</a> for more 
+information on producing clients in other languages.</p>
 
 <dl>
     <dt><a href="/swagger-ui/index.html" target="_blank" rel="noopener">API Browser</a></dt>
-    <dd>Documents the URLs of the API</dd>
+    <dd>Documents the REST API</dd>
 
     <dt><a href="/model-browser.html">Model Browser</a></dt>
-    <dd>Documents the JSON payloads sent back and forth in the API</dd>
+    <dd>Documents the JSON payloads sent back and forth in the API in an alternative format to the Swagger documentation browser above</dd>
 </dl>
 </div>
 

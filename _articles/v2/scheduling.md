@@ -530,9 +530,10 @@ An assessment adherence record would look like the following:
 |-------|------|-------------|
 | instanceGuid | Y | The `instanceGuid` of either a session or an assessment |
 | eventTimestamp | Y | The timestamp of the event that triggered the timestream of this session or assessment. If the event is mutable, this timestamp will group separate performances of this portion of the timeline. |
-| startedOn | Y | The timestamp (from the client) when the assessment or session was started. **Note: sometimes the client is wrong, so we might want to record a server timestamp instead or as well as this value.** |
-| finishedOn | N | The timestamp (from the client) when the assessment or session was ended by the user. Do not set this value if the assessment or session eventually expires. |
+| startedOn | Y | The timestamp reported from the client when the assessment or session was started. |
+| finishedOn | N | The timestamp reported from the client when the assessment or session was ended by the user. _Do not set this value if the assessment or session eventually expires without being finished by the user._ |
 | clientData | N | An arbitrary JSON object that the client can use to store further information about the assessment or session, its state, display information, etc. |
+| clientTimeZone | N | The time zone in which the assessment was performed (behavior is not specified if the time zone changes between the start and end of an assessment, but the field can be updated after it is set). |
 <div style="display:none">
 | uploadedOn | N | The timestamp (from the server) when we record an associated upload has been finished for this assessment or session. |
 </div>
