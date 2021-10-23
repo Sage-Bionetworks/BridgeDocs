@@ -3,7 +3,7 @@ title: Assessments
 layout: article
 ---
 
-*This is a v2 science API. These APIs are not yet complete or ready for production.*
+{% include v2.html %}
 
 <div id="toc"></div>
 

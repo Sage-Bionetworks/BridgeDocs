@@ -3,6 +3,8 @@ title: Studies
 layout: article
 ---
 
+{% include v2.html %}
+
 <div id="toc"></div>
 
 A Bridge app can be used to run one or more [studies](/model-browser.html#Study), which may have participants who have enrolled in more than one of these studies. Each study is sponsored by an [organization,](/articles/v2/authorization.html#organizations) which grants permission to the members of that organization to access the study (according to their assigned roles). 

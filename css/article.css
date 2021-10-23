@@ -92,7 +92,8 @@ table td, table th {
 
 /* Navigation */
 #acc {
-    opacity: 0;
+    /* TODO */
+    /*opacity: 0;*/
 }
 .accordion .ui.secondary.vertical.menu .item {
     padding: .5rem 1rem;
