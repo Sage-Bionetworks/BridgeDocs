@@ -25,7 +25,7 @@ Most study coordinators come into this process wishing to enroll a user without 
 
 ### Public sign up
 
-For studies that allow it, users may directly download and sign up for an account within an app itself. The app must support this through our [sign up APIs](TODO). Different apps will require different forms of sign up, to support different forms of authentication (see [Bridge Authentication](/articles/mobile/authentication.html)). 
+For studies that allow it, users may directly download and sign up for an account within an app itself. The app must support this through our [sign up API](/swagger-ui/index.html#/Authentication/signUp). Different apps will require different forms of sign up, to support different forms of authentication (see [Bridge Authentication](/articles/mobile/authentication.html)). 
 
 As an example, a minimal sign up for an app that uses a telephone number to authenticate a user might include the following:
 
