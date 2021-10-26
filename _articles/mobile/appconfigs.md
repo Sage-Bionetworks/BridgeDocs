@@ -38,14 +38,8 @@ Config references link to a specific config element by its revision.
 
 <div class="ui compact icon message">
   <i class="circle info icon"></i>
-  <p style="margin:0"><b>Why app config elements?</b> Our principle use of these separate objects is to separate out configuration for external partners to manage. They can create new revisions of their configuration, and our developers can review and include the new revisions in the top-level app configs.</p>
+  <p style="margin:0"><b>Why app config elements?</b> Our principle use of these elements is to separate out configuration for external partners to manage. They can create new revisions of their configuration, and our developers can review and include the new revisions in the top-level app configs.</p>
 </div>
-
-### Versioning in scheduled activities
-
-When scheduled activities are created and returned to users, we also currently resolve the specific upload schema revision or survey version to use for the activity. In the scheduling UI, you will notice that we do not ask for revision information. The scheduler uses the most recently published survey or the most recent schema revision, and includes that version information in the scheduled activities that are returned to the client.
-
-This versioning information is now deprecated. It proved to be neither maintainable or flexible enough. Using app config objects to provide the versioning for all objects in your study is both versionable, and easier to manage. **The older version information is deprecated and will eventually be removed from the scheduling system.**
 
 ## App & Universal Links
 
@@ -53,7 +47,7 @@ To create links that are intercepted by your app (“App Links” on Android, �
 
 <div class="ui compact warning icon message">
   <i class="exclamation triangle icon"></i>
-  <p style="margin:0">It is desirable to set up this functionality on an external domain that is associated with your research study. However, if you do not have access to an external web server, or just need this functionality to test until your site is up, Bridge will also provide support for link interception. </p>
+  <p style="margin:0">It is desirable to set up this functionality on an external domain that is associated with your research study. However, if you do not have access to an external web server, or just need this functionality to test until your site is up, Bridge can provide support for link interception. </p>
 </div>
 
 Your links must point to the host and path https://ws.sagebridge.org/&lt;your study id&gt;. 
@@ -73,9 +67,3 @@ For the [intent to participate](/articles/consent.html#scenario-3-consent-before
 You can provide separate links for iOS and Android and the API will use the submitted `osName` (`iOS` or `Android`) to select a link for inclusion in the the message template (see below). If you wish to do content negotiation and forward the user from an intermediate web site, you can provide one `Universal` link. The system will look first for the OS-specific link, then fallback to the universal link if it is defined.
 
 This install link will be embedded in the "App Install Link" email or SMS template, depending on what identifying credential was submitted to the [Intent To Participate API](/swagger-ui/index.html#/Intent%20To%20Participate/submitIntentToParticipate). If you are using the universal link, you can also just include it directly in the templates, since it will never change.
-
-## Hosted Files
-
-Developers can upload [hosted files](/articles/mobile/hosted_files.html) to Bridge that can be referenced in your app config files. Once a file revision has been uploaded through the Bridge Study Manager, the app config JSON includes a "files" property that can include an array of [FileReference](/model-browser.html#FileReference) objects. These include an "href" property with an URL that can be used to download the file. 
-
-Referencing key files (even other configuration files) in your app config file will allow you to issue updates or fixes to your installed app base, as long as your apps periodically retrieve and check the app config file. This will need to be balanced with the performance cost of downloading files, using the phone's network and your user's cellular data plan.

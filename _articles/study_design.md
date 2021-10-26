@@ -38,11 +38,11 @@ In the study manager, you can see the identifiers listed along with information 
 
 <div class="ui warning message">
     <div class="ui header">Note</div>
-    <p>It is important to understand how Bridge supports external patient identifiers through a public API.
+    <p>It is important to understand how Bridge supports external patient identifiers through a public API.</p>
 
-    <p>For each external account identifier imported into Bridge, a matching set of credentials needs to be generated (a fake email address and password). The application will use these credentials to authenticate and start a session with the Bridge server. For example, if your email support address is <code>support@yourorganization.com</code>, and the account identifier is <code>ASDF</code>, the fake credentials will be <code>support+ASDF@yourorganization.com</code> using the password <code>ASDF</code>.
+    <p>For each external account identifier imported into Bridge, a matching set of credentials needs to be generated (a fake email address and password). The application will use these credentials to authenticate and start a session with the Bridge server. For example, if your email support address is <code>support@yourorganization.com</code>, and the account identifier is <code>ASDF</code>, the fake credentials will be <code>support+ASDF@yourorganization.com</code> using the password <code>ASDF</code>.</p>
 
-    <p>We must do this because the Bridge API is public and without authentication, anyone could submit data to your study. <b>It is important that your identifiers be as secure as a reasonably secure password.</b> A site like <a href="https://howsecureismypassword.net/">How Secure Is My Password?</a> can help choose a format for your codes.
+    <p>We must do this because the Bridge API is public and without authentication, anyone could submit data to your study. <b>It is important that your identifiers be as secure as a reasonably secure password.</b> A site like <a href="https://howsecureismypassword.net/">How Secure Is My Password?</a> can help choose a format for your codes.</p>
 </div>
 
 ## Content for your study

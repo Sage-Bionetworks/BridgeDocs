@@ -3,14 +3,16 @@ title: Studies
 layout: article
 ---
 
+{% include v2.html %}
+
 <div id="toc"></div>
 
-A Bridge app can be used to run one or more [studies](/model-browser.html#Study), which may have participants who have enrolled in more than one of these studies. Each study is sponsored by an [organization,](/articles/v2/authorization.html#organizations) which grants permission to the members of that organization to access the study (according to their assigned roles). 
+A Bridge app can be used to run one or more [studies](/model-browser.html#Study), with participants who can enroll in one or more of these studies. Each study is sponsored by an [organization,](/articles/v2/authorization.html#organizations) which grants permission to the members of that organization to access the study (according to their assigned roles). 
 
 <div class="ui icon message">
   <i class="circle info icon"></i>
   <div class="content">
-  Initially, only one organization will be able to sponsor a study, and a user will hold the same roles vis-a-vis every study they can access as an organization member. This will be enhanced after the initial v2 APIs are released, as part of a larger project to unify Sage Bionetwork’s two platforms—Bridge and Synapse—into a coordinated product line.
+  While multiple organizations can sponsor a study, a user is only able to be a member of one organization at this time. This organization gives them the same roles vis-a-vis all the studies the organization sponsors. This will be enhanced after the initial v2 APIs are released.
   </div>
 </div>
 
@@ -24,8 +26,8 @@ Studies follow a lifecycle that supports the proper performance of study researc
 | Phase       | Description |
 |-------------|-------------|
 | legacy      | This study was created prior to the addition of study phases, and does not participate in any of the lifecyle constraints. To move this study into the lifecycle, this study can be transitioned via the [design endpoint.](/swagger-ui/index.html#/Studies/transitionStudyToDesign) |
-| design      | The study can be edited, including the associated schedule, and the schedule can be changed (the new schedule can be published or unpublished, and that may or may not be modifiable despite the `design` phase of the study). The study is not visible in public registries, and when an account is enrolled in a study in `design,` the `test_user` data group will be added to the account if it does not yet exist. The study can be logically or physically deleted by a developer, study designer, or admin. When ready, this study can be transitioned via the [recruit endpoint.](/swagger-ui/index.html#/Studies/transitionStudyToRecruitment) |
-| recruitment | To move to recruitment, the associated app should be available in the app store and the IRB approval for the study must be recorded as part of the study (there may be other criteria that must be met at this time).<br><br>The study metadata can be edited during recruitment, but the associated schedule and custom events cannot be changed, nor can the study be switched to another schedule. The study becomes visible in public registries, and accounts are enrolled normally (no test tag is added). The study cannot be logically or physically deleted. When recruitment targets have been met, this study can be transitioned via the [conduct endpoint.](/swagger-ui/index.html#/Studies/transitionStudyToInFlight) |
+| design      | The study can be edited, including the associated schedule, and the schedule can be changed. The study is not visible in public registries, and when an account is enrolled in a study in the `design` phase, the `test_user` data group will be added to the account if it does not yet exist. The study can be logically or physically deleted by a developer, study designer, or admin. When ready, this study can be transitioned via the [recruit endpoint.](/swagger-ui/index.html#/Studies/transitionStudyToRecruitment) |
+| recruitment | To move to recruitment, the associated app should be available in the app store and the IRB approval for the study must be recorded as part of the study.<br><br>The study metadata can be edited during recruitment, but the associated schedule and custom events cannot be changed, nor can the study be switched to another schedule. The study becomes visible in public registries, and accounts are enrolled normally (no test tag is added). The study cannot be logically or physically deleted. When recruitment targets have been met, this study can be transitioned via the [conduct endpoint.](/swagger-ui/index.html#/Studies/transitionStudyToInFlight) |
 | in_flight   | The study metadata can be edited, but the schedule remains immutable. The study should no longer be visible in public registries, and attempts to enroll an account in the study will be rejected (HTTP response code: `423`). The study cannot be logically or physically deleted. The app should still be available in app stores in case a current participant needs to reinstall the app to continue the study. When appropriate, this study can be transitioned via the [analyze endpoint.](/swagger-ui/index.html#/Studies/transitionStudyToAnalysis) **Note: the system may be able to do some checks at this time to determine all participants are finished with the study.** |
 | analysis    | The study can no longer be edited in any way. The study should no longer be visible in public registries, and attempts to enroll an account in the study will be rejected (HTTP response code: `423`). Any uploads that are attempted once the study transitions to this state will be rejected and/or not uploaded to Synapse. The study cannot be logically or physically deleted. The app can be removed from app stores if it is not used to conduct any other studies. When this analysis is done, the study can be transitioned via the [complete endpoint.](/swagger-ui/index.html#/Studies/transitionStudyToCompleted) |
 | completed   | The study can no longer be edited in any way. The study should no longer be visible in public registries, and attempts to enroll an account in the study will be rejected (HTTP response code: `423`). The study will still be available in Bridge so that final IRB reporting can occur. Once this has been done, the study can be logically deleted. |
@@ -33,9 +35,9 @@ Studies follow a lifecycle that supports the proper performance of study researc
 
 ## Information for study display and oversight
 
-Even before a participant signs in to a Bridge app, it is possible to retrieve [StudyInfo](/model-browser.html#StudyInfo) from Bridge using a public (unauthenticated) [study info API.](/swagger-ui/index.html#/Studies/getStudyInfo) This information may be helpful for tailoring a UI. In one Bridge app for example, participants were prompted to enter their study ID, and then the app used that information to retrieve the info model and tailor the sign in screen to that specific study in the app.
+Even before a participant signs in to a Bridge app, it is possible to retrieve [StudyInfo](/model-browser.html#StudyInfo) from Bridge using a public (unauthenticated) [study info API.](/swagger-ui/index.html#/Studies/getStudyInfo) This information may be helpful for tailoring a UI. In one Bridge app for example, participants were prompted to enter their study ID, and then the app used that information to tailor the sign in screen to that specific study in the app.
 
-The fields in the `StudyInfo` object are a subset of the fields that exist in the larger `Study` model (which can be retrieved by participant apps after sign in via the [get study API](/swagger-ui/index.html#/Studies/getStudy).
+The fields in the `StudyInfo` object are a subset of the fields that exist in the larger `Study` model (which can be retrieved by participant apps after sign in, via the [get study API](/swagger-ui/index.html#/Studies/getStudy).
 
 | Field | Required | Description |
 |-------|----------|-------------|
@@ -47,7 +49,7 @@ The fields in the `StudyInfo` object are a subset of the fields that exist in th
 | colorScheme | N | A set of colors that can be used to customize an app when the user is in the context of performing this study. |
 | signInTypes | N | Participants may be enrolled with different credentials, necessitating different method of authenticating users with the Bridge server. On a per study basis, a study can indicate the optimal sign in method. A client may ask the participant for their study, then query the server for this information in order to display the appropriate sign in screen to the participant. Values should be interpreted to be in the order of their importance, if there are multiple options given. Possible values are enumerated in the <a href="/model-browser.html#SignInType">SignInTypes</a> enumeration. |
 
-Study designers can generate the study logo by entering it manually, or by calling Bridge APIs to upload a study logo/icon. The API is similar to the [hosted files API](/swagger-ui/index.html#/Files):
+Study designers can upload a study logo. The API is similar to the [hosted files API](/swagger-ui/index.html#/Files):
 
 1. The developer should create a [FileRevision](/model-browser.html#FileRevision) object for the image and submit it via the [logo creation API](/swagger-ui/index.html#/Studies/createStudyLogo);
 1. The revision will be returned with a pre-signed URL to PUT the content of the image to Amazon's S3 file hosting service (the URL expires in 10 minutes);
@@ -122,48 +124,6 @@ Philippines</dt>
 <code>mailRouting</code> = “Taytay CPO-PO Box# 1920”<br>
 <code>country</code> = “Philippines”</dd>
 </dl>
-
-## Enrollment
-
-A user must create an account in Bridge before they can be enrolled in a study. There are three ways to be enrolled in a study:
-
-### Self-enrollment
-
-**The user creates an account,** using the [SignUp](/swagger-ui/index.html#/Authentication/signUp) API, verifies their email or phone number, and then attempts to sign in. Upon detection that the user is not consented to participate in research (the user receives a 412 exception), the user is presented with the ability to consent using Bridge’s electronic consent APIs. When the user signs the consent for a study, they are enrolled in that study. Note that the user no longer receives a 412 after being enrolled in at least one study, so the [UserSession](/model-browser.html#UserSession) may need to be examined to determine if the user is in a particular study.
-
-### Manual enrollment by study administrator
-
-**An administrator [manually enrolls an existing participant,](/swagger-ui/index.html#/Studies/enrollParticipant)** optionally providing an external ID to identify the participant in the study. Only the `userId` is required in the `Enrollment` payload for this call.
-
-**An administrator creates an account directly enrolled in a study.** This last option is necessary to create accounts that have only an external identifier as an authentication credential (you cannot add an external identifier to an account after it is created, if it is the only means of identifying the account other than the user's record ID).
-
-In the latter two cases where an administrator is enrolling a user on their behalf, external partners are responsible for ensuring they meet their IRB’s requirements for informed consent of the participant.
-
-Enrollments can be [enumerated](/swagger-ui/index.html#/Studies/getEnrollees) for a study (including the number of participants who have withdrawn from the study). Users can [withdraw from a study](/swagger-ui/index.html#/Studies/withdrawParticipant) or [withdraw from all studies in an app.](/swagger-ui/index.html#/Consents/withdrawFromApp)
-
-In the user’s session, enrollments are given with the following JSON through two read-only properties, `studyIds` and `externalIds`:
-
-```json
-{
-  "studyIds": ["study1", "study2"],
-  "externalIds": {
-    "study1": "externalId1",
-    "study2": "externalId2"
-  },
-  "type": "UserSessionInfo"
-}
-```
-
-## External IDs
-
-An *external ID* is an identifier that is created and managed outside of Bridge, but associated to a user’s account so researchers can re-identify users at a later time (if they hold a mapping for these identifiers). The [External  identifiers APIs](/swagger-ui/index.html#/External%20Identifiers) allow you to [create](/swagger-ui/index.html#/External%20Identifiers/createExternalId) and [enumerate](/swagger-ui/index.html#/External%20Identifiers/getExternalIds) accounts using only an [ExternalIdentifier](/model-browser.html#ExternalIdentifier) object. 
-
-You may wish to create accounts that are *only* identifiable by an external ID. ***Sage Bionetworks does not recommend this practice for two reasons:***
-
-1. The only way we can authenticate such an account is by using the external ID as a credential (instead of an email or phone number), but by its nature, it cannot be too difficult for participants to enter, so it is usually not complex enough to evade brute force attacks;
-1. If the account does not have a phone number or email address, we cannot trigger a “reset password” worfklow for the user. You will either need to create the account with a password and communicate that to the user, or  we have seen implementers hard-code the password for an app, **which is not secure.**
-
-Bridge recommends use of the phone number of the user’s device as an account credential, as it provides a balance of security and anonymity for the account holder, with a fallback to email address for those devices that do not have a phone number.
 
 ## Participant APIs
 

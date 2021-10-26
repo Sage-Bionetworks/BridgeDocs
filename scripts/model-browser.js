@@ -422,6 +422,7 @@ function loadModel() {
       currentItem.classList.remove("active");
     }
     item.classList.add("active");
+    item.scrollIntoView({behavior: 'smooth'});
     renderDetail(defName);
     currentItem = item;
   }

@@ -3,19 +3,19 @@ title: Scheduling
 layout: article
 ---
 
-*This is a v2 science API. These APIs are not yet complete or ready for production.*
+{% include v2.html %}
 
 <div id="toc"></div>
 
-A `Schedule` can be defined by a study designer which describes what each participant in a study should be prompted to do over the entire course of that study. That schedule is converted into a `Timeline` for client apps, which provides detailed information on how to execute the schedule, as well as UI configuration and metadata to properly annotate uploaded research data so its context is preserved. Since each participant can start a study at a different time, this schedule is not described relative to calendrical dates, but instead relative to a set of *activity events* for a given user. 
+A `Schedule` can be defined by a study designer which describes what each participant in a study should be prompted to do over the entire course of that study. That schedule is converted into a `Timeline` for client apps, which provides detailed information on how to execute the schedule, as well as UI configuration to display tasks to the user, and metadata to annotate uploaded research data so its context is preserved. Since each participant can start a study at a different time, this schedule is not described relative to calendrical dates, but instead relative to a set of events that are specific to each participant. 
 
 ## Study Activity Events
 
-*Activity events (v1) have been replaced with [study activity events](/swagger-ui/index.html#/Study%20Activity%20Events) in the v2 APIs. The global v1 event APIs still work and will not be deprecated, but the v2 APIs are preferred and they are required for multi-study configurations to work.*
+*Activity events (v1) have been replaced with [study activity events](/swagger-ui/index.html#/Study%20Activity%20Events) in the v2 APIs. The global v1 event APIs still work, but are ignored by the v2 scheduling system.* 
 
-It is best to start with an example of what an activity event is. If a user enrolls on March 14th, 2021, and the study wishes to have the user take a test on a weekly basis, then over the course of the study, that individual would be prompted to do the test on March 14th, March 21st, March 8th, and so forth until the end of the study. When a different user joins on May 1st, their activities would fall on May 1st, May 8th, May 15th, again until the end of the study. The *schedule* remains the same for both users, but it is calculated against a different timestamp for each user’s `enrollment` event.
+It is best to start with an example of what an activity event is. If a user enrolls on March 14th, 2021, and the study wishes to have the user take a test on a weekly basis, then over the course of the study, that individual would be prompted to do the test on March 14th, March 21st, March 28th, and so forth until the end of the study. When a different user joins on May 1st, their activities would fall on May 1st, May 8th, May 15th, again until the end of the study. The *schedule* remains the same for both users, but it is calculated against a different timestamp for each user’s `enrollment` event in that study.
 
-The server provides a number of fixed events that study designers can work with when building schedules. **Immutable** events cannot be updated once a value is written to the server. **Future update only** events can only be changed if the new timestamp being submitted is after the timestamp that is persisted on the server. And **mutable** events have no restrictions and can be updated with any value.
+The server provides a number of system events that study designers can work with when building schedules (e.g. `timeline_retrieved` and `created_on`). Study designers can define additional events specific to their study and protocol, known as *custom* events. 
 
 | Event Name | Description | Behavior
 |------------|----------------------|----------|----------|
@@ -26,20 +26,22 @@ The server provides a number of fixed events that study designers can work with 
 |assessment:**identifier**:finished| This event records the most recent time that an assessment instance of this type was marked as finished by the client. It doesn’t matter in which session the assessment is found, so this timestamp can be updated by performing the same assessment as scheduled by different sessions. A participant will only have this value after they complete the first instance of this assessment, recording a `finishedOn` timestamp for the assessment instance.| Future update only |
 | sent\_install\_link | This event records when a study coordinator or researcher sends an “install app link” message to a participant (via an email message or an SMS message, depending on the configuration of the account). If the message is sent again at a later time, this event will be updated. This can be used to track when follow-up is necessary during onboarding. | Future update only |
 
+**Immutable** events cannot be updated once a value is written to the server. **Future update only** events can only be changed if the new timestamp being submitted is after the timestamp that is persisted on the server. And **mutable** events have no restrictions and can be updated with any value. No system events are mutable, but custom events can be.
+
 Study coordinators can see the activity events for a participant through [an API for activity events](/swagger-ui/index.html#/Activity%20Events). 
 
 ### Custom events
 
-In addition, app developers can define new *custom events* and *automatic custom events* for use by your application. These events are defined as part of the `App` configuration:
+In addition, app developers can define new *custom events* for use by a study’s schedule. These events are defined as part of a `Study` object’s configuration:
 
 ```json
 { 
-  "customEvents": {
-    "event1": "immutable",
-    "event2": "future_only",
-    "event3": "mutable"
-  },
-  "type": "App"
+  "customEvents": [
+    {"eventId": "event1", "updateType": "immutable", "type": "CustomEvent"},
+    {"eventId": "event2", "updateType": "future_only", "type": "CustomEvent"},
+    {"eventId": "event3", "updateType": "mutable", "type": "CustomEvent"},
+  ],
+  "type": "Study"
 }
 ```
 
@@ -49,38 +51,27 @@ Custom events can be given different behavior with respect to how they allow upd
 - **future_only** events can be set, and then after that, they can only be updated to a later date and time. If an earlier timestamp is sent, it is silently ignored;
 - **mutable** events can be set and then later they can be changed to a different value, or deleted.
 
-Once an event is defined, the client can send timestamps to be recorded on the server under the given event ID.  Custom events are differentiated internally with a “custom:” prefix in some contexts. Though this is sometimes returned to the client, it is not required to supply it when sending server updates (unless you must differentiate between a system event ID and a custom event ID with the same name).
+Once an event is defined, the client can send timestamps to be recorded on the server under the given event ID. **Custom events are differentiated with a “custom:” prefix** (that is, if you define an event `event1`, it should be given as `custom:event1` when submitted through the API—the API has some tolerance for differentiating custom events from system events, but this convention ensures no ambiguity is possible). 
 
 <div class="ui compact icon message">
   <i class="circle info icon"></i>
-  <p>Why do these APIs return 201 even when the event is not updated? So clients that send requests to update a <code>forward_only</code> event do not receive errors if their requests are received out-of-order.</p>
+  <p>Why do these APIs return 201 even when the event will not be updated due to its update type? So clients that send requests to update a <code>forward_only</code> event do not receive errors if their requests are received out-of-order.</p>
 </div>
-
-### Automatic custom events
-
-In addition to submitting values through the API, an app can be configured to create calculated events from other event values, through the `automaticCustomEvents` mapping. This can be helpful when scheduling gets more complex, because you can create further timestamps to schedule against. The periods are given in the [ISO 8601 Date & Time Standard](https://en.wikipedia.org/wiki/ISO_8601#Durations) for *durations,* and negative durations are allowed. These events are updated when the events they depend upon are updated, and they inherit the same mutability as those events. 
-
-In the `App` configuration, the key is the new event ID to generate, and the value is a calculated period of time before or after another event ID. For example:
-
-```json
-{ 
-  "automaticCustomEvents": {
-    "event1": "timeline_retrieved:P13W",
-    "event2": "enrollment:P-2W"
-  }
-  "type": "App"
-}
-```
-
-In the example above, `event1` will be scheduled thirteen weeks after the `timeline_retrieved` updates successfully, each time it occurs (it is a “future updates only” event), and `event2` will be scheduled two weeks before `enrollment` updates successfully, which can only occur once (it is immutable).
 
 ### Activity event history
 
-Finally, custom activity events that are `mutable` or `future_only` can create a history of different timestamp values that are important for understanding participant compliance with a protocol. These can be retrieved through the [study activity event history API](/swagger-ui/index.html#/Study%20Activity%20Events/getStudyParticipantStudyActivityEventHistory). Adherence records are keyed to both the instance GUIDs in a timeline, and the timestamp that was in effect when they were created (matching the activity event ID that schedules a session with the timestamp for the activity event ID at the time the adherence record was created). Thus it is possible to track adherence with scheduled session sequences that are no longer in effect for the user in the current schedule.
+Events that are `mutable` or `future_only` can create a history of different timestamp values that are important for maintaining the context of participant compliance with a protocol. These can be retrieved through the [study activity event history API](/swagger-ui/index.html#/Study%20Activity%20Events/getStudyParticipantStudyActivityEventHistory). For each activity requested of a participant in a timeline, there can be an adherence record for that activity that is identified by the instance GUID of that activity *and the timestamp of the triggering event that was in effect when the participant performed that activity.*
+
+For example, if a scheduled entry occurs on the 3rd day after event X, and X can be changed, then the specification to perform a task 3 days after an event could mean:
+
+- “day 3 since event X<sub>1</sub>”; and 
+- ”day 3 since event X<sub>2</sub>” 
+
+So having the timestamp of an event as well as the instance GUID is crucial to retaining *when* the assessment was completed by the participant. Recurring events can create one form of scheduling repetition.
 
 ## Schedules
 
-A schedule is owned by an organization and defines the overall duration of a study protocol (in days or weeks expressed as an [ISO 8601 Duration](https://en.wikipedia.org/wiki/ISO_8601#Durations)). Note that this duration is applied to each element of the schedule, known as a [Session,](/model-browser.html#Session) and these sessions do not necessarily all start at the beginning of a study. So the schedule duration may not be the absolute number of days that a study will run for any given participant.
+A schedule defines the overall duration of a study protocol and the activities that participants will be asked to perform (currently all participants in a study receive the same schedule, but this will change with the introduction of *study arms*).
 
 Here is an example of the top-level JSON of a schedule:
 
@@ -94,6 +85,7 @@ Here is an example of the top-level JSON of a schedule:
   "modifiedOn":"2021-03-15T00:13:31.166Z",
   "published":false,
   "deleted":false,
+  "studyBursts":[...study bursts here...],
   "sessions":[...sessions here...],
   "version":32,
   "type":"Schedule"
@@ -103,12 +95,13 @@ Here is an example of the top-level JSON of a schedule:
 | Field | Req? | Description |
 |-------|------|-------------|
 | name  | Y | A name for the schedule to show study designers. Never shown to participants. |
-| duration | Y | The duration of the sessions in the schedule, expressed in days or weeks only (though these can be mixed).<br><br>No single series of scheduled sessions can run longer than this duration. If all the sessions in a schedule start at the beginning of the study, this duration should be the calendar duration of the study as it is actually performed by participants. **However, if events can be triggered later in the study, then those time series can themselves be of the given duration.** It is up to study designers to determine if this is acceptable, or if the design needs to be adjusted to more strictly limit the actual time it will take to complete the study. |
+| duration | Y | The duration of the sessions in the schedule, expressed as an [ISO 8601 Duration](https://en.wikipedia.org/wiki/ISO_8601#Durations) of days or weeks (though these can be mixed).<br><br>No single series of scheduled sessions can run longer than this duration. If all the sessions in a schedule start at the beginning of the study, this duration should be the calendar duration of the study as it is actually performed by participants. **However, if events can be triggered later in the study, then those time series can themselves be of the given duration.** It is up to study designers to determine if this is acceptable, or if the design needs to be adjusted to more strictly limit the actual time it will take to complete the study. |
 | ownerId | — | The ID of the organization that owns this schedule. Unless the caller is an admin (who can set any organization), this will be the caller’s organization. It’s set by Bridge when the caller creates a new schedule. |
-| published | — | If true, this schedule has been published and can no longer be updated. Schedules should be published before they are used in production. If they are not, researchers may not be able to recover information about scheduling context for participant study data.  |
+| published | — | If true, this schedule has been published and can no longer be updated. Schedules will be published when the studies they are used in are moved out of the `DRAFT` state, so they cannot be changed once a study has started. |
 | deleted | — | Is the schedule logically deleted? It will no longer appear in lists of schedules (unless deleted items are included with a query parameter), though it can still be retrieved through the API. |
 | clientData | N | An optional JSON payload that can be used to store arbitrary information with the schedule, usually information for UI or authoring tools (the `clientData` information is not copied over to the `Timeline` that is sent to a participant). |
-| sessions | N | Described below (a schedule must contain at least one session). |
+| sessions | N | <a href="#sessions">Described below</a> (not required, but a schedule must contain at least one session to be useful). |
+| studyBursts| N | <a href="#study-bursts">Described below</a> after sessions (study bursts are optional).
 | version | Y | An optimistic lock for this schedule. When updating an existing schedule, this value must be returned as part of the schedule. If it has been modified since retrieval, the server will return a 409 (Conflict) response and the schedule will not be updated. |
 
 ### Sessions
@@ -132,7 +125,8 @@ In this same JSON for a session, the event is `enrollment` (the time when the pa
     }
   ],
   "guid":"my7oqQBok40EhlinRYFke0k1",
-  "startEventIds":["enrollment"],
+  "startEventIds": ["enrollment"],
+  "studyBurstIds": [], // see study bursts below
   "delay":"P1W",
   "interval":"P1W",
   "timeWindows":[...time windows here...],
@@ -144,13 +138,14 @@ In this same JSON for a session, the event is `enrollment` (the time when the pa
 |-------|------|-------------|
 | name | Y | A name for the session to display in study design tools. The name will be included in a `Timeline` and will be used as the default value if no other label can be found to display to participants. |
 | labels | N | An array of Label objects. The `lang` property is required and must be a valid ISO 639 alpha-2 or alpha-3 language code specifying the language of the label. The array cannot contain two labels with the same language code. The `value` is required, and should contain the label in the given language. <br><br>When returning a `Timeline` to a client, the caller’s languages will be used (in order of preference) to select a `Label` in that language. If this fails, the `en` language `Label` will be used as a default. If that also does not exist, the session name will be used as the label. |
-| startEventIds | Y | One or more activity event IDs (described above) from which the activities in this stream will be calculated. At least one event must be defined for each session. |
-| delay | N | If absent, the first activity of this session will occur the moment the client finds the `startEventId` value defined in the participant’s event map. If present, this is an ISO 8601 duration measured in minutes, hours, days, or weeks. |
+| startEventIds | Y | One or more event IDs (described above) from which the activities in this stream will be calculated. At least one `startEventId` or one `studyBurstId` needs to be present in the session. |
+| studyBurstIds | Y | One or more study burst IDs that will trigger this session for the user if the originating event occrs for them. At least one `startEventId` or one `studyBurstId` needs to be present in the session.  |
+| delay | N | If absent, the first activity of this session will occur the moment the client finds the event ID value defined in the participant’s event map. If present, this is an ISO 8601 duration measured in minutes, hours, days, or weeks. |
 | interval | N | If absent, this session will be scheduled once (note that due to time windows, this does not necessarily mean the participant will have only one activity to perform; see below). If present, this is an ISO 8601 duration measured in days or weeks. Every interval period of time from the start event (plus the delay, if present), the session will be scheduled again, until the end of the study. |
 | occurrences | N | A session with an interval will generate session instances until the end of a schedule. Alternatively, the session can define a fixed number of occurrences to issue before the stream ends. If the occurrences would extend beyond the end of the schedule, they are truncated. | 
 | timeWindows | Y | The time windows are an array of `TimeWindow` objects. These are described below. |
 
-### Time Windows
+#### Time Windows
 
 A session can contain one or more `TimeWindow` objects. Each of these windows effectively defines a separate (if closely related) *scheduled session* in the `Timeline` object that is returned to the participant. In general, time windows are used to schedule multiple performances of session in a single day (if a session has a time window that extends beyond a single day, it is harder to think of a scenario where having multiple time windows makes sense).
 
@@ -170,7 +165,7 @@ A session can contain one or more `TimeWindow` objects. Each of these windows ef
 | expiration | N | The period after which the window should be removed as a task from the UI (whether it was started by the participant or not). If the session defines an interval, this value is required and it cannot be greater than the interval of the session. Upon expiration, if the assessment was started, the data should be uploaded. |
 | persistent | N | If set to true, the session instance should be left in the UI for the participant to finish as often as they would like, until the session expires. |
 
-### Assessments
+#### Assessments
 
 The second set of session properties is the list of the assessments to perform, and in what order:
 
@@ -222,7 +217,7 @@ Beyond the `guid`, `appId`, and `identifier` properties, assessment references h
 {% include image.html url="/images/assessment-ui-information.svg" 
   description="Display information in the assessment reference" %}
 
-### Assessment references
+#### Assessment references
 
 | Field | Req? | Description |
 |-------|------|-------------|
@@ -234,7 +229,7 @@ Beyond the `guid`, `appId`, and `identifier` properties, assessment references h
 | colorScheme | N | A color scheme for the display of this assessment. This is an object with four properties defining up to four colors in hex triplet format (e.g. #FFF or #FFFFF). The four color properties are `background`, `foreground`, `activated`, and `inactivated`. <br><br>In UIs where a session is displayed (and not individual assessments), the design of the first assessment in the session can be used to render the session.|
 | minutesToComplete | N | The minutes it takes to complete the assessment. |
 
-### Notification Configuration
+#### Notification Configuration
 
 Finally, a `Session` can define one or more notifications that the mobile app should show to the participant. There is no limit set on these notifications other than the practical one of annoying participants. The total notification burden for the whole study is given in the `totalNotifications` value of the `Timeline`.
 
@@ -299,11 +294,83 @@ As an example, let’s say you have a time window that starts at 8am and lasts 7
 
 The second notification waits for 26 hours, which is 10am the day after the time window starts, and then repeats *from that time* every day at 10am. On the last day of the window, the window expires at 8am, so no notification is delivered on the final day.
 
+### Study Bursts
+
+Study bursts group one or more sessions and repeat them at an interval from some originating event. They offer a means to repeat sets of sessions, much like an individual session can be repeated. Some protocols ask participants to do activities near each other in time, some number of times over the duration of a longer study. We refer to these kinds of protocols as utilizing a “study burst” design.
+
+<div class="ui warning message">
+    <div class="ui header">Note</div>
+    <p>You can repeat sessions and then include them in study bursts, causing activities to “stack” over each other in a protocol. This is usually a very poor experience for users, but Bridge does not currently try and detect and prevent this. You will need to keep this in mind when designing study bursts</p>
+    <p>A simple rule of thumb is to ensure that all the sessions in a study burst either occur once, or repeat a fixed number of times that is clearly less time than the interval of the study burst. </p>
+</div>
+
+A schedule can define a study burst alongside the sessions of the schedule:
+
+```json
+{
+  "studyBursts": [
+    {
+      "originEventId": "custom:clinic_visit", 
+      "identifier": "clinic_follow_up", 
+      "interval": "P1W", 
+      "occurrences": 4, 
+      "updateType": "mutable", 
+      "type": :StudyBurst"
+    }
+  ],
+  "type": "Schedule"
+}
+```
+
+Each entry in this `studyBursts` array contains the following information:
+
+| Field | Req? | Description |
+|-------|------|-------------|
+| originEventId | Y | The event that triggers this study burst. When this event is published in a participant’s activity event table, the study burst’s follow-on events will be calculated and added to the table. |
+| identifier | Y | The identifier used for the study burst IDs. It must be unique for study bursts in this schedule. |
+| occurrences | Y | The number of follow-on events that will be produced by this study burst. While sessions can be repeated until they reach the duration of the study, study bursts can currently only be repeated a fixed number of times. |
+| updateType | Y | How these study burst events can be modified after creation. |
+
+In JSON example above, when the event `custom:clinic_visit` is created for a participant, four follow-on events will be created at one week intervals. Here is one example of what this might look like for a user:
+
+| Event ID | Timestamp |
+|----------|-----------|
+| clinic_visit| 2021-10-22T19:32:54.820Z |
+| study\_burst:clinic\_follow_up:01 | 2021-10-29T19:32:54.820Z |
+| study\_burst:clinic\_follow_up:02 | 2021-11-05T19:32:54.820Z |
+| study\_burst:clinic\_follow_up:03 | 2021-10-12T19:32:54.820Z |
+| study\_burst:clinic\_follow_up:04 | 2021-10-19T19:32:54.820Z |
+
+The study burst thus schedules events into the future. For the configuration example above, these events are *mutable,* so they can be re-scheduled through the Bridge APIs for any user that has these events.
+
+The mutability of these events, based on their relative update types, are as follows (the future only update type is a special kind of mutability):
+
+| Event     | Study Burst  | Result |
+|-----------|--------------|--------|
+| Immutable | Immutable | Neither the event nor the study burst events can be changed once created. |
+| Immutable | Mutable   | The event cannot be changed, but the study burst events can be rescheduled individually.  |
+| Mutable   | Immutable | Event can be changed, but this will not change the study burst events, which cannot be changed individually either. |
+| Mutable   | Mutable   | Event can be changed, *causing the study burst events to be adjusted as well.* In addition, the study burst events can be rescheduled individually. |
+
+There is currently no way to allow an original event to be mutable, and the study burst events to be mutable, without the former updating the latter.
+
+The second part of a study burst is the specification of which sessions in the schedule should be repeated by the study burst. Each session can define one or more `studyBurstIds` that they will be included in:
+
+```json
+{
+  "startEventIds": [],
+  "studyBurstIds": ["clinic_follow_up"],
+  "type": "Session"
+}
+```
+
+At least one `startEventId` or one `studyBurstId` is required in a session.
+
 ## Timelines
 
-Once a schedule has been created, it is communicated to consuming applications (such as mobile apps created for participants to execute research) through a partially resolved format known as a `Timeline`. The timeline spells out all the individual tasks the participant will be asked to perform over the lifetime of the study. It also includes information about the sessions and assessments so the client can render a UI without fully loading the assessments.
+Once a schedule has been created, it is communicated to participant-facing apps through a partially resolved format known as a `Timeline`. The timeline spells out all the individual tasks the participant will be asked to perform over the lifetime of the study. It also includes information about the sessions and assessments so the client can render a UI before fully loading the assessments.
 
-**NOTE:** The examples in this section are taken from this [example-timeline.json](./example-timeline.json) for a short two week study.
+**NOTE:** The examples in this section are taken from this [example-timeline.json](./example-timeline.json) for a short two week study. Unfortunately it does not include an example of a study burst.
 
 ```json
 {
@@ -340,7 +407,11 @@ The `schedule` property of the timeline contains scheduled sessions with their s
     {
       "refGuid": "LBHjyu4oragS2xmj3gtPQD_e",
       "instanceGuid": "B0sfyeq6wAW-YbBH5RFXbQ",
+<<<<<<< HEAD
+      "startEventId": "enrollment",
+=======
       "startEventId": "event1",
+>>>>>>> 6d17cd050797dd41386a2393d472e8046e72cf91
       "startDay": 0,
       "endDay": 0,
       "startTime": "08:00",
@@ -357,7 +428,7 @@ The `schedule` property of the timeline contains scheduled sessions with their s
     {
       "refGuid": "dAGKM4nN39cDbyADic_bDNXs",
       "instanceGuid": "5m4DWgtn0oY3S8LR72QowA",
-      "startEventId": "timeline_retrieved",
+      "startEventId": "enrollment",
       "startDay": 2,
       "endDay": 8,
       "startTime": "00:00",
@@ -374,7 +445,7 @@ The `schedule` property of the timeline contains scheduled sessions with their s
     {
       "refGuid": "LBHjyu4oragS2xmj3gtPQD_e",
       "instanceGuid": "SNRtbbtLy5Gfiy8QP37GpQ",
-      "startEventId": "event1",
+      "startEventId": "enrollment",
       "startDay": 7,
       "endDay": 7,
       "startTime": "08:00",
@@ -399,7 +470,7 @@ Each entry in this array has the following properties
 |-------|------|-------------|
 | refGuid | Y | This is a reference to a `SessionInfo` entry in the top-level `sessions` property array of this timeline. That block contains all the configuration information for this session (and all the other instances of this session that were generated from the same repeating session. This GUID happens to be the GUID of the session in the schedule. |
 | instanceGuid | Y | This is a unique identifier for any study data generated and uploaded as part of this performance of a repeating session. Uploads should include the session or assessment `instanceGuid` along with the timestamp of the event that triggered this scheduled session, so the server can reconstruct the relationship of the schedule and the upload at a later time. |
-| startEventId | Y | The event ID that triggers this activity. The day in study should be calculated against this event timestamp for the user (if it exists), to determine if this scheduled session should be presented to the participant. |
+| startEventId | Y | The event in the user’s event map that should trigger a calculation of this session’s time stream to determine if any of its tasks should currently be presented to the participant for completion. Note that this can be directly specified in a schedule, or it can be an event calculated to represent a study burst (e.g. `study_burst:clinic_follow_up:04`). This should not matter to clients as the scheduled assessment should be treated the same way. |
 | startDay | Y | The first day on which this scheduled session should be introduced to the participant (taking account the `startTime` and `expiration` period). This value is zero-indexed. The “day since event X” is calculated from the time of an event timestamp to the participant’s current local time, as a number of days (these are *calendar* days, not 24 hour periods). The specific event to measure against is the `startEventId` in the `SessionInfo` object for this scheduled session. |
 | endDay | Y | The last day on which this scheduled session should be provided to the participant. The “day since event X” is calculated from the time of an event timestamp to the participant’s current local time, as a number of days (these are *calendar* days, not 24 hour periods). If this session expires but was started the data that was collected should be uploaded **without updating the `finishedOn` timestamp of the associated history record.** |
 | startTime | N | The local time of day that the scheduled session should be shown to the user. This is the beginning of the *time window* for this scheduled session, which is also used to specify notification behavior. |
@@ -434,6 +505,7 @@ In addition to this schedule, there are configurations for the highly redundant 
         "background": "#FF00FF",
         "type": "ColorScheme"
       },
+      "configUrl": "https://ws.sagebridge.org/v1/assessments/vB2sRcexlEnqIWPOrBy2ReWD/config",
       "type": "AssessmentInfo"
     },
     {
@@ -441,8 +513,10 @@ In addition to this schedule, there are configurations for the highly redundant 
       "guid": "63UuD59NLrpJGsvbdVU2wul7",
       "appId": "shared",
       "identifier": "digital-jar-open",
+      "revision": 2,
       "label": "Digital Jar Open",
       "minutesToComplete": 2,
+      "configUrl": "https://ws.sagebridge.org/v1/sharedassessments/63UuD59NLrpJGsvbdVU2wul7/config",
       "type": "AssessmentInfo"
     }
   ],
@@ -450,37 +524,41 @@ In addition to this schedule, there are configurations for the highly redundant 
     {
       "guid": "LBHjyu4oragS2xmj3gtPQD_e",
       "label": "Weekly Jar Opening Test",
+      "symbol": "⭐",
       "minutesToComplete": 2,
       "performanceOrder": "sequential",
+      "timeWindowGuids": ["bDNXs_9cDbyADicdAGKM4nN3"],
       "type": "SessionInfo"
     },
     {
       "guid": "dAGKM4nN39cDbyADic_bDNXs",
       "label": "Background Survey",
-      "performanceOrder": "sequential",
-      "notifyAt": "start_of_window",
-      "remindAt": "before_window_end",
-      "reminderPeriod": "PT3H",
+      "symbol": "✔️",
       "minutesToComplete": 10,
-      "message": {
-        "lang": "en",
-        "subject": "Please take the initial survey",
-        "message": "This survey is very important to us, please do it!!",
-        "type": "NotificationMessage"
-      },
+      "performanceOrder": "sequential",
+      "timeWindowGuids": ["uD6rp3U59NLJdVGul7svbU2w"],
+      "notifications": [
+        {
+          "notifyAt": "after_window_start",
+          "offset": "PT10M",
+          "interval": "P1D",
+          "allowSnooze": true,
+          "message": {
+            "lang": "en",
+            "subject": "Please take the initial survey",
+            "message": "This survey is very important to us, please do it!!",
+            "type": "NotificationMessage"
+          },
+          "type": "NotificationInfo"
+        }
+      ],
       "type": "SessionInfo"
     }
   ]
 }
 ```
 
-The values of these fields are given in the description of the `Session` and `Assessment` objects above (most of this information is copied over from the schedule without modification). Note that both local and shared assessments may appear in the schedule. You must retrieve the configuration for these assessments through different endpoints:
-
-Local assessments (any `appId` value except `shared`):<br>
-    `https://ws.sagebridge.org/v1/assessments/{guid}/config`
-
-Shared assessments:<br>
-    `https://ws.sagebridge.org/v1/sharedassessments/{guid}/config`
+The values of these fields are given in the description of the `Session` and `Assessment` objects above (most of this information is copied over from the schedule without modification, although labels and notification messages are localized for the language of the caller). Note that both local and shared assessments may appear in the schedule. You must retrieve the configuration for these assessments through different endpoints, so they provide a `configUrl` property for this purpose.
 
 ### Calculating the participant’s schedule
 
@@ -499,316 +577,3 @@ Because sessions include information on notifications, the client will need to b
 ### Caching a timeline
 
 Published schedules cannot be changed, so their timelines cannot be changed, allowing for long-term local caching of `Timeline` data. Participant-facing `Timeline` APIs accept the `If-Modified-Since` header and will return 304 if the `Timeline` has not been modified after the given modification time. In the Java SDK, the date value for the `If-Modified-Since` header can be passed to the method call.
-
-## The Adherence API
-
-The third and final part of the Bridge scheduling system, [the adherence APIs,](/swagger-ui/index.html#/Adherence%20Records) support both schedule state management for mobile clients and adherence reporting for study administrators. Once a participant’s client has a timeline, it is able to interpret the set of [AdherenceRecord](/model-browser.html#AdherenceRecord) objects available for a participant.
-
-This collection of records is *sparse;* if the participant did not do a scheduled session or assessment, there will not be a record for that session or assessment in the set of records. Furthermore, these records are persisted by the client, so they will only exist if the client updates the server on the current state of timeline performance. 
-
-Clients are expected to update the assessment adherence records. The server will create and/or update session adherence records accordingly. The server manages the `startedOn`, `finishedOn`, and `declined` fields:
-
-- The `startedOn` timestamp will be set to the earliest `startedOn` timestamp of any assessment in that session instance once any assessment is started; 
-- The `finishedOn` timestamp will be set to the latest `finishedOn` timestamp of any assessment in that session instance, when all the assessments are finished (declining assessments will not cause the session to be reported as finished); 
-- The `declined` boolean will be set to true if all the assessments in the session instance have been declined;
-- Sessions with any number of `declined` or unstarted assessments will be left in the started but not finished state (and thus be out of compliance).
-
-Clients can also submit session adherence records in order to update fields like `clientData` and `clientTimeZone`.
-
-An assessment adherence record would look like the following:
-
-```json
-{
-  "instanceGuid":"7PVMTOm6ga4w3mGYudQFCg",
-  "startedOn":"2020-05-10T10:32:12.937Z",
-  "finishedOn":"2020-05-10T10:38:39.192Z",
-  "eventTimestamp":"2020-05-09T16:43:33.431Z",
-  "clientData": {
-    "testResult": 100.23
-  },
-  "type":"AdherenceRecord"
-}
-```
-
-| Field | Req? | Description |
-|-------|------|-------------|
-| instanceGuid | Y | The `instanceGuid` of either a session or an assessment |
-| eventTimestamp | Y | The timestamp of the event that triggered the timestream of this session or assessment. Note that for sessions triggered by multiple events, the `instanceGuid` encodes the specific event ID that triggers this scheduled instance of the session or assessment, so we do not need the event ID to be submitted as part of the adherence record, only the specific timestamp. If the event is mutable, each timestamp submitted for this event generates a separate time stream of scheduled events that could potentially be performed by the user. |
-| startedOn | Y | The timestamp (from the client) when the assessment or session was started. **Note: sometimes the client is wrong, so we might want to record a server timestamp instead or as well as this value.** |
-| finishedOn | N | The timestamp (from the client) when the assessment or session was ended by the user. Do not set this value if the assessment or session eventually expires. |
-| clientData | N | An arbitrary JSON object that the client can use to store further information about the assessment or session, its state, display information, etc. |
-<div style="display:none">
-| uploadedOn | N | The timestamp (from the server) when we record an associated upload has been finished for this assessment or session. |
-</div>
-
-### Updating adherence records
-
-Adherence records are specific to a participant in a given study. However, persistent time windows (where a user is allowed to perform a set of assessments as many times as they want within the time window) change the behavior of adherence records in some subtle ways.
-
-The primary key for assessments scheduled through non-persistent time windows includes the `instanceGuid`  and the `eventTimestamp`. For a scheduled assessment in a given event time stream, there can be only one adherence record. The primary key for assessments scheduled through persistent time windows includes the `instanceGuid`, `eventTimestamp`, and `startedOn` value of the record, so such a scheduled assessment will produce one adherence record.
-
-For a persistent time window, however, the `startedOn` field is not part of the record key and multiple adherence records can be submitted for a specific scheduled assessment (which aligns with the meaning of a persistent scheduled assessment—it can be done over and over as often as the participant wishes). 
-
-Because changing timestamps in adherence records is mostly needed when developing and testing mobile clients, we recommend in this situation (testing persistent time windows) that you delete an adherence record before recreating it.
-
-The state of a scheduled session adherence record depends on the state of its scheduled assessments (it is updated automatically on the server):
-
-1. When any assessment in a session is started, and the session has not been started, the session will be started with the earliest `startedOn` assessment value in the session;
-1. When all assessments in a session are finished, and the session has not been finished, the session will be finished with the latest `finishedOn` assessment value in the session;
-1. If all assessments in a session are declined, and the session has not been declined, the session will be marked as declined.
-
-If a session adherence record does not exist, one will be created to record this information.
-
-Additional fields in the session adherence record such as `clientData` and `clientTimeZone` can be updated by the client using the adherence records API.
-
-### Querying for adherence records
-
-The adherence record API allows for a wide variety of filters to be applied to the adherence records for a participant (records are always scoped to a participant in a particular study). Here is an example of the search object:
-
-```json
-{
-  "instanceGuids":["dAGKM4nN39cDbyADic_bDNXs"],
-  "assessmentIds":[],
-  "sessionGuids":[],
-  "timeWindowGuids":[],
-  "adherenceRecordType":"session",
-  "includeRepeats":true,
-  "currentTimestampsOnly":true,
-  "eventTimestamps":{
-    "clinic_visit":"2015-01-26T23:38:32.486Z"
-  },
-  "startTime":"2015-01-26T23:38:32.486Z",
-  "endTime":"2015-01-27T01:38:32.486Z",
-  "offsetBy":0,
-  "pageSize":100,
-  "sortOrder":"asc",
-  "type":"AdherenceRecordsSearch"
-}
-```
-
-| Field | Req? | Description |
-|-------|------|-------------|
-| instanceGuids | N | Session or assessment instance GUIDs. Any records that exist with these GUIDs will be returned (scoped to a specific participant in a specific study). If the assessment is a persistent assessment, all adherence records for that assessment will be returned unless includeRepeats is false. This array cannot contain more than 500 items. |
-| assessmentIds | N | Return adherence records for assessments with these IDs (the assessment ID is used to define a type of assessment). This array cannot contain more than 500 items. |
-| sessionGuids | N | Return adherence records for sessions with these GUIDs (this is the session’s GUID in a schedule and not an instance GUID, and is used to define a type of session). This array cannot contain more than 500 items. |
-| timeWindowGuids | N | Return adherence records for assessments in these time windows (using the time window’s GUID in a schedule to define a type of time window). This array cannot contain more than 500 items. |
-| adherenceRecordType | N | The `AdherenceRecordType` can be used to limit search results for adherence records to either `assessment` or `session` records. If not present, both records will be returned according to the criteria of the search. |
-| includeRepeats | N | Where an assessment can be performed multiple times under an instance GUID, all records will be returned unless this flag is set to true. In this case, the first or last record only will be returned (depending on sort order). |
-| currentTimestampsOnly | N | Where a time series can be performed multiple times because a session’s trigger event is mutable, all records will be returned, unless this flag is set to true. When true, only records with recent event timestamp values will be returned. This is equivalent to sending back the user’s entire map of current event ID timestamp values via the `eventTimestamps` map in this search object. If values are also provided in the `eventTimestamps` map, each of those event IDs will override its associated event ID timestamp value, as it is provided by setting this flag to true. |
-| eventTimestamps | N | A mapping of event IDs to timestamp values to use when retrieving adherence records that are from sessions triggered by that ID. Only records with that exact timestamp value in their `eventTimestamp` field will be returned. In general, mobile clients will only want to retrieve records for current timestamp values when calculating schedules, so the `currentTimestampsOnly` flag provides an easy way to request that all current timestamps be used to limit search results. This map cannot contain more than 50 entries. |
-| startTime | N | Limit search results to records with `startedOn` values that are equal to or later than this start time (no earlier than January 1st, 2020). |
-| endTime | N | Limit search results to records with `startedOn` values that are equal to or earlier than this end time (no later than January 1st, 2120). |
-| offsetBy | N | The next page start offset for pagination.  |
-| pageSize | N | The maximum number of records in each returned page. Range can be from 1-500 records. |
-| sortOrder | N | Either `asc` (sort so that the earliest startedOn time is the first record in the returned list) orLimit search results to records with `startedOn` values that are equal to or earlier than this end time (no later than January 1st, 2120).  `desc` (sort so that the most recent startedOn time is the first record in the returned list). |
-
-If none of these search values are set, all records will be returned.
-
-To see how these search options can be used to retrieve different useful subsets of the adherence data, it helps to look at a concrete example of some data as it could be collected from a sample schedule. In the following examples, we will work with data that was collected as a result of the following [example-timeline.json](./example-timeline.json):
-
-{% include image.html url="/images/adherence-examples/01-timeline.svg" 
-  description="An example timeline" %}
-
-**Session 1** starts with enrollment, and has two time windows which create two session instances every 3 days (after a 2 day delay). Both sessions include only Assessment A, but the afternoon session is *persistent,* so the user can perform the assessment as many times as they want in the session’s window.
-
-**Session 2** is triggered by an event (the client or some other API consumer creates or updates the `custom:trigger` event). Each time this event timestamp is added or updated on the server, the app will ask for Assessment A and then Assessment B on a weekly schedule. This time series can occur more than once, because `custom:trigger` is a mutable event, and will then go for the duration of the study, which is four weeks. So these timelines can extend beyond the end of the earliest timestamp (such as enrollment). Each sequence can be differentiated from the others because the instances will be grouped by the same `eventTimestamp` value.
-
-**Session 3** creates one time window that never expires, with an assessment that is persistent. In effect, the participant can do Assessment B whenever they like.
-
-Given this timeline, here is one potential set of data that could be collected for a user who was very diligent in completing their scheduled sessions:
-
-{% include image.html url="/images/adherence-examples/02-adherence-data.svg" 
-  description="Adherence data from the the demonstration timeline" %}
-
-There are a few things of note in this data set:
-
-1. On May 18th and May 27th, the participant did their afternoon Session #1 assessment more than once;
-2. On May 18th, the `trigger` event started Session #2 and a sequence of four sessions. Then on September 3rd, the event timestamp was updated, and the participant was prompted to complete the four sessions of Session #2 again, under a different event timestamp;
-3. The participant did Assessment B as part of Session #3 a total of five times. These differ only in their `createdOn` timestamps.
-
-<div class="ui compact warning icon message">
-  <i class="exclamation triangle icon"></i>
-  <p style="margin:0">Note that Session #2 is started on September 3rd, which is well after 21 days after the <code>enrollment</code> timestamp. Because Bridge has no notion of a definitive end date for a study for a given participant, the system does not currently prevent this. If the participant’s event timestamps are updated, this will trigger scheduling behavior. The example above is also useful for illustrating the search and filtering API for adherence records.</p>
-</div>
-
-Given this data set, let’s look at the options for how to retrieve these records through the adherence APIs.
-
-#### By instance GUIDs
-
-Querying by instance GUID is possible, but not as useful as it might appear since instance GUIDs can be repeated in some circumstances.
-
-```json
-{
-  "instanceGuids":[
-    "pKUAWjp3Lt6MSQCotkHaeg",
-    "PFLNzqgiSLiM1pVQLihG5A",
-    "JX0ClGqZ-_KVz10x3LLFbA",
-    "KUt0q5qvK5zfl1SwMBe-cA",
-    "F-kbi5VXYqKIw7BdrQGRgQ",
-    "Ca353c2ZH7d4Dlrs4LvLBw",
-    "tZNpSCQhD18wy0UricUOBA"
-  ],
-  "type": "AdherenceRecordsSearch"
-}
-```
-
-Would retrieve the following records:
-
-{% include image.html url="/images/adherence-examples/03-query-for-sessions-and-assessments-by-instance-ids.svg" %}
-
-These results might not be entirely satisfactory since the consumer may have wished to address specific records in specific time streams, or specific records in a stream of persistent assessments. In this case, search criteria can be refined, or the client can use a more specific format for addressing record instances that incorporates the `startedOn` value of the record into the instance GUIDs:
-
-```json
-{
-  "instanceGuids":[
-    "pKUAWjp3Lt6MSQCotkHaeg@2020-05-12T10:13:38.345Z",
-    "PFLNzqgiSLiM1pVQLihG5A@2020-05-18T18:45:02.569Z",
-    "JX0ClGqZ-_KVz10x3LLFbA@2020-05-27T08:10:32.931Z",
-    "KUt0q5qvK5zfl1SwMBe-cA@2020-05-25T13:01:23.456Z",
-    "F-kbi5VXYqKIw7BdrQGRgQ@2020-06-01T13:16:28.982Z",
-    "Ca353c2ZH7d4Dlrs4LvLBw@2020-09-24T20:34:12.673Z",
-    "tZNpSCQhD18wy0UricUOBA@2020-05-20T18:12:03.915Z"
-  ],
-  "type": "AdherenceRecordsSearch"
-}
-```
-
-This pulls up more specific records, but at the cost of needing to know the `startedOn` values of these records:
-
-{% include image.html url="/images/adherence-examples/03a-targeting-instances-by-startedOn.svg" %}
-
-<div style="display:none">
-Finally, instance identifiers can be created by the client that the Bridge system will recognize and instance GUIDs.
-
-For session instances, the format is:
-
-“*scheduleGuid*`:`*sessionGuid*`:`*startDay*`:`*windowGuid*”
-
-For assessment instances, the format is:
-
-“*scheduleGuid*`:`*sessionGuid*`:`*startDay*`:`*windowGuid*`:`*assessmentGuid*`:`*assessmentPositionNumber*”
-
-Because an assessment could be included more than once in a session time window, the “assessmentPositionNumber” is the number of the occurrence of an assessment in the window, beginning at 1 (outside of the edge case of repeating a specific assessment, this is just “1”).
-</div>
-
-#### By assessment IDs
-
-A query can retrieve records for an assessment type, as indicated by its ID, regardless of where those assessments were prompted for in the timeline. The identifier will apply to both shared and local assessments in a schedule. If you wish to differentiate between these assessments, you will need to change the assessment ID of the local (app-specific) assessment.
-
-```json
-{
-  "assessmentIds": [
-    "assessment-a"
-  ],
-  "adherenceRecordType":"assessment",
-  "type": "AdherenceRecordsSearch"
-}
-```
-
-Retrieves the following records:
-
-{% include image.html url="/images/adherence-examples/04-query-for-assessments-by-id.svg" %}
-
-#### By session GUIDs
-
-A query can retrieve all session instances of the same type by searching for the GUID of the session they were created from:
-
-```json
-{
-  "sessionGuids": [
-    "oGO1ojQte74bEm_Ph8XZEA3z"
-  ],
-  "type": "AdherenceRecordsSearch"
-}
-```
-
-Retrieves the following records:
-
-{% include image.html url="/images/adherence-examples/06-query-for-session-guids-with-assessments.svg" %}
-
-By changing the `adherenceRecordType` flag you can limit these results to just the session or assessment records:
-
-```json
-{
-  "sessionGuids": [
-    "oGO1ojQte74bEm_Ph8XZEA3z"
-  ],
-  "adherenceRecordType":"session",
-  "type": "AdherenceRecordsSearch"
-}
-```
-
-Retrieves the following records:
-
-{% include image.html url="/images/adherence-examples/05-query-for-session-guids.svg" %}
-
-#### Get latest records only
-
-Sessions with mutable events present a challenge for mobile clients. Once the time series has been performed by a participant, the timestamp can be updated, but the client will still receive the adherence records for the older time series, making it appear that the participant has completed the session. To prevent this, the client can send the current event timestamps to the server, and only records that were tied to that event timestamp will be returned:
-
-```json
-{
-  "sessionGuids": [
-    "oGO1ojQte74bEm_Ph8XZEA3z"
-  ],
-  "eventTimestamps": {
-    "trigger": "2020-09-03T14:23:32.452Z"
-  },
-  "type": "AdherenceRecordsSearch"
-}
-```
-
-This returns only the most recent set of records. If there are no records returned for the given timestamp, the client knows the session series should be performed again.
-
-{% include image.html url="/images/adherence-examples/07-query-for-sessions-and-assessments-most-recent-timestream-only.svg" %}
-
-**To make this query simpler, the client can also set the `currentTimestampsOnly` flag to true,** which will use all the current event timestamp values that are known to the server to filter this query. The only issue with using this flag over the explicit timestamps would be a case where the client and the server are not in sync with one another.
-
-#### By time window
-
-To find the performance of one time window in a session, you can refere to the time window’s GUID (note: this is not currently in the `Timeline`, only the `Schedule`, but it will be added):
-
-```json
-{
-  "timeWindows": [
-    "Z39tJejSi_P70vjjcBVuWk36"
-  ],
-  "adherenceRecordType": "assessment",
-  "type": "AdherenceRecordsSearch"
-}
-```
-Retrieves the following records:
-
-{% include image.html url="/images/adherence-examples/08-query-for-assessments-by-timewindow.svg" %}
-
-Repeat assessments can be removed with the `includeRepeats` flag:
-
-```json
-{
-  "timeWindows": [
-    "Z39tJejSi_P70vjjcBVuWk36"
-  ],
-  "includeRepeats": false,
-  "adherenceRecordType": "assessment",
-  "type": "AdherenceRecordsSearch"
-}
-```
-
-Retrieves the following records:
-
-{% include image.html url="/images/adherence-examples/09-query-for-assessments-by-timewindow-no-repeats.svg" %}
-
-#### By time range
-
-Finally, queries can ask for records within a given time range (the values returned are based on the `startedOn` value of the records):
-
-```json
-{
-  "startTime": "2020-05-10T01:14:38.451Z",
-  "endTime": "2020-05-17T16:57:01.196Z",
-  "adherenceRecordType": "assessment",
-  "type": "AdherenceRecordsSearch"
-}
-```
-
-{% include image.html url="/images/adherence-examples/10-query-for-assessments-by-time-may-10-17.svg" %}
