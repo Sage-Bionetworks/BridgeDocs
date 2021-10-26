@@ -15,21 +15,17 @@ This document describes these changes at a high level because the concepts and A
 
 ## The Science Domain
 
-[![Bridge Science Domain Diagram](/images/BridgeScienceDomain.png)](/images/BridgeScienceDomain.png)
+[![Bridge Science Domain Diagram](/images/BridgeScienceDomain.svg)](/images/BridgeScienceDomain.svg)
 
-The most significant change to the Bridge system will be a recognition that a single mobile app is often used in multiple scientific studies. The top-level  “tenant” of the Bridge system will be an **app context,** rather than a **study.** Instead, an app will be able to contain multiple studies, being run by different organizations, using different or related **study protocols.**
+The most significant change to the Bridge system will be a recognition that a single mobile app is often used in multiple scientific studies. The top-level  “tenant” of the Bridge system will be an **app context,** rather than a **study.** Instead, an app will be able to contain multiple studies, being run by different organizations, using different or related **schedules** which can vary by **study arm.** (Observational studies may only have one study arm.) 
 
-Study designs will be associated with a richer **enrollment model** that codifies best practices for e-consent, and captures more information about users, earlier in the process, as part of our improved support for understanding recruitment challenges.
+Study designs will be associated with a richer **enrollment model** that codifies best practices for e-consent, and captures more information about users, earlier in the process, as part of our improved support for understanding recruitment challenges. The system will be able to allocate participants using standard mechanisms such as *stratified random allocation,* or researchers can use an **external ID** to enroll a user in a specific study and study arm.
 
-Scheduling will be revamped so that it derives from the allocation of study participants into the **study arms** of a **protocol.** (Observational studies may only have one study arm.) The system will be able to allocate participants using standard mechanisms such as *stratified random allocation,* or researchers can use an **external ID** to enroll a user in a specific study and study arm. Study arms can be worked with using pseudonyms to maintain the double blinding of the study.
-
-Each arm of a study can define a schedule for the performance of **assessments** that are grouped together into **sessions.** 
+Schedules define the performance of **assessments** that are grouped together into **sessions** and **study bursts,** triggered from **study activity events** that are meaningful waypoints in a person’s participant in the study.
 
 Assessments will provide us with a more sophisticated and flexible set of objects to model surveys and other tasks. Our goal is to improve tooling support so that study designers can select and customize assessments that have been validated and documented by the research community.
 
-Sessions give us a more convenient scheduling construct, but they will also be augmented over time to support “ecological momentary assessment” (EMA) study designs, where participants are asked to perform tasks in “bursts” that are easier to comply with in mobile studies where the duration of the studies tends to be longer.
-
-Finally, this richer design will be associated to the data that is uploaded from a study, so researchers can analyze their data in simpler and more powerful ways. One step in that process will be the collection of **baseline characteristics** before a participant is allocated to a study arm, to simplify later data analysis. Study designers can define these characteristics based on their research or recruitment interests.
+This richer design will be associated to the data that is uploaded from a study, so researchers can analyze their data in simpler and more powerful ways. One step in that process will be the collection of **baseline characteristics** before a participant is allocated to a study arm, to simplify later data analysis. Study designers can define these characteristics based on their research or recruitment interests. We will also provide much more visibility into **participant adherence** so study coordinators can work with participants to ensure they successfully engage with the study.
 
 ### Changes to the science APIs
 
