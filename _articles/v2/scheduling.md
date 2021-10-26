@@ -108,7 +108,9 @@ Here is an example of the top-level JSON of a schedule:
 
 The schedule in turn contains a number of `Session` objects that do the real work of defining a schedule. The session JSON is large, but it can be broken into three major parts.
 
-First, each session defines a stream of activities that should be scheduled, starting with the time of a specific event (the `startEventId`). For example if the event were `enrollment` in a study, then the session would define one or more activities to perform in terms of “N days since enrollment.” If the event were a custom event named `clinic_visit`, then the activities would be defined in terms of “N days since `clinic_visit`.”
+First, each session defines a stream of activities that should be scheduled, starting with the time of one or more events known as _activity events_ (the `startEventIds` array). For example if one of the events in the array was `enrollment` in a study, then the session would define one or more activities to perform in terms of “N days since enrollment.” If the event were a custom event named `custom:clinic_visit`, then the activities would be defined in terms of “N days since `custom:clinic_visit`.” 
+
+*Each event in the list thus generates a separate stream of activities to perform.* One common scenario would be a block of activities to perform after each of three clinic visits. Each visit can be defined as a separate custom event, and then that event can be created when the visit occurs for a particular study subject. It is not necessary to create three separate but identical sessions for each visit; instead, trigger one session based on three distinct events.
 
 In this same JSON for a session, the event is `enrollment` (the time when the participant signs a consent on Bridge):
 
@@ -405,7 +407,11 @@ The `schedule` property of the timeline contains scheduled sessions with their s
     {
       "refGuid": "LBHjyu4oragS2xmj3gtPQD_e",
       "instanceGuid": "B0sfyeq6wAW-YbBH5RFXbQ",
+<<<<<<< HEAD
       "startEventId": "enrollment",
+=======
+      "startEventId": "event1",
+>>>>>>> 6d17cd050797dd41386a2393d472e8046e72cf91
       "startDay": 0,
       "endDay": 0,
       "startTime": "08:00",
