@@ -294,11 +294,15 @@ The second notification waits for 26 hours, which is 10am the day after the time
 
 ### Study Bursts
 
-Understanding all this about sessions, which are a fundamental building block in schedules, it is possible to understand study bursts. Study bursts trigger at the occurrence (recording) of an event, and create a series of new events that can be used to schedule a session.
+Study bursts group one or more sessions and repeat them at an interval from some originating event. They offer a means to repeat sets of sessions, much like an individual session can be repeated. Some protocols ask participants to do activities near each other in time, some number of times over the duration of a longer study. We refer to these kinds of protocols as utilizing a “study burst” design.
 
-As a concrete example, let’s assume a study wants to start a weekly assessment of a participant *after* that participant makes an initial clinic visit (a custom event defined in the study as `clinic_visit`).
+<div class="ui warning message">
+    <div class="ui header">Note</div>
+    <p>You can repeat sessions and then include them in study bursts, causing activities to “stack” over each other in a protocol. This is usually a very poor experience for users, but Bridge does not currently try and detect and prevent this. You will need to keep this in mind when designing study bursts</p>
+    <p>A simple rule of thumb is to ensure that all the sessions in a study burst either occur once, or repeat a fixed number of times that is clearly less time than the interval of the study burst. </p>
+</div>
 
-When a study administrator records a timestamp for `clinic_visit`, the study will look in the user’s assigned schedule for any study bursts like the following
+A schedule can define a study burst alongside the sessions of the schedule:
 
 ```json
 {
@@ -316,17 +320,39 @@ When a study administrator records a timestamp for `clinic_visit`, the study wil
 }
 ```
 
-Because this study burst is triggered by the `client_visit` event, Bridge will create four more activity events for this user (as specified by the `occurrences` property of the study burst). In total, all of the following events would be generated if the `clinic_visit` event was submitted for a user of this schedule:
+Each entry in this `studyBursts` array contains the following information:
+
+| Field | Req? | Description |
+|-------|------|-------------|
+| originEventId | Y | The event that triggers this study burst. When this event is published in a participant’s activity event table, the study burst’s follow-on events will be calculated and added to the table. |
+| identifier | Y | The identifier used for the study burst IDs. It must be unique for study bursts in this schedule. |
+| occurrences | Y | The number of follow-on events that will be produced by this study burst. While sessions can be repeated until they reach the duration of the study, study bursts can currently only be repeated a fixed number of times. |
+| updateType | Y | How these study burst events can be modified after creation. |
+
+In JSON example above, when the event `custom:clinic_visit` is created for a participant, four follow-on events will be created at one week intervals. Here is one example of what this might look like for a user:
 
 | Event ID | Timestamp |
 |----------|-----------|
 | clinic_visit| 2021-10-22T19:32:54.820Z |
-| study_burst:clinic_follow_up:01 | 2021-10-29T19:32:54.820Z |
-| study_burst:clinic_follow_up:02 | 2021-11-05T19:32:54.820Z |
-| study_burst:clinic_follow_up:03 | 2021-10-12T19:32:54.820Z |
-| study_burst:clinic_follow_up:04 | 2021-10-19T19:32:54.820Z |
+| study\_burst:clinic\_follow_up:01 | 2021-10-29T19:32:54.820Z |
+| study\_burst:clinic\_follow_up:02 | 2021-11-05T19:32:54.820Z |
+| study\_burst:clinic\_follow_up:03 | 2021-10-12T19:32:54.820Z |
+| study\_burst:clinic\_follow_up:04 | 2021-10-19T19:32:54.820Z |
 
-If a session is configured to occur when the study burst `clinic_follow_up` occurs, than all four of these new events will trigger that session, that is, they will be present in the user’s activity event map and will be specified as `startEventId`s in the timeline. In effect these events are scheduled into the future for the participant. Here is an example of using the study burst:
+The study burst thus schedules events into the future. For the configuration example above, these events are *mutable,* so they can be re-scheduled through the Bridge APIs for any user that has these events.
+
+The mutability of these events, based on their relative update types, are as follows (the future only update type is a special kind of mutability):
+
+| Event     | Study Burst  | Result |
+|-----------|--------------|--------|
+| Immutable | Immutable | Neither the event nor the study burst events can be changed once created. |
+| Immutable | Mutable   | The event cannot be changed, but the study burst events can be rescheduled individually.  |
+| Mutable   | Immutable | Event can be changed, but this will not change the study burst events, which cannot be changed individually either. |
+| Mutable   | Mutable   | Event can be changed, *causing the study burst events to be adjusted as well.* In addition, the study burst events can be rescheduled individually. |
+
+There is currently no way to allow an original event to be mutable, and the study burst events to be mutable, without the former updating the latter.
+
+The second part of a study burst is the specification of which sessions in the schedule should be repeated by the study burst. Each session can define one or more `studyBurstIds` that they will be included in:
 
 ```json
 {
@@ -336,25 +362,11 @@ If a session is configured to occur when the study burst `clinic_follow_up` occu
 }
 ```
 
-Why is this useful? A couple of use cases have come up so far:
-
-1. The study burst events can be communicated to participants and (if the burst is mutable) they can be rescheduled by study administrators;
-2. It can be easier to plan a small set of repetitious activities in several sessions, which are then grouped by a study burst to be occur periodically over a longer period of time.
-
-The mutability of these events, based on their relative update types, are as follows (FO = future only):
-
-| Event        | Study Burst  | Result |
-|--------------|--------------|--------|
-| Immutable    | Immutable    | Neither the event nor the study burst events can be changed once created |
-| Immutable    | Mutable / FO | The event cannot be changed, but the study burst events can be individually rescheduled  |
-| Mutable      | Immutable    | Event can be changed, but the study burst events cannot be changed. |
-| Mutable / FO | Mutable / FO | Event can be changed, *causing the study burst events to be adjusted as well.* |
-
-There is currently no way to allow an original event to be mutable, and the study burst events to be mutable, without the former updating the latter.
+At least one `startEventId` or one `studyBurstId` is required in a session.
 
 ## Timelines
 
-Once a schedule has been created, it is communicated to consuming applications (such as mobile apps created for participants to execute research) through a partially resolved format known as a `Timeline`. The timeline spells out all the individual tasks the participant will be asked to perform over the lifetime of the study. It also includes information about the sessions and assessments so the client can render a UI without fully loading the assessments.
+Once a schedule has been created, it is communicated to participant-facing apps through a partially resolved format known as a `Timeline`. The timeline spells out all the individual tasks the participant will be asked to perform over the lifetime of the study. It also includes information about the sessions and assessments so the client can render a UI before fully loading the assessments.
 
 **NOTE:** The examples in this section are taken from this [example-timeline.json](./example-timeline.json) for a short two week study. Unfortunately it does not include an example of a study burst.
 
@@ -452,7 +464,7 @@ Each entry in this array has the following properties
 |-------|------|-------------|
 | refGuid | Y | This is a reference to a `SessionInfo` entry in the top-level `sessions` property array of this timeline. That block contains all the configuration information for this session (and all the other instances of this session that were generated from the same repeating session. This GUID happens to be the GUID of the session in the schedule. |
 | instanceGuid | Y | This is a unique identifier for any study data generated and uploaded as part of this performance of a repeating session. Uploads should include the session or assessment `instanceGuid` along with the timestamp of the event that triggered this scheduled session, so the server can reconstruct the relationship of the schedule and the upload at a later time. |
-| startEventId | Y | The event in the user’s event map that should trigger a calculation of this session’s time stream to determine if any of its tasks should currently be presented to the participant for completion. Note that this can be directly specified in a schedule, or it can be an event calculated to represent a study burst (e.g. `study_burst:clinic_follow_up:04`). This should not matter to clients. as this scheduled assessment is treated the same way. |
+| startEventId | Y | The event in the user’s event map that should trigger a calculation of this session’s time stream to determine if any of its tasks should currently be presented to the participant for completion. Note that this can be directly specified in a schedule, or it can be an event calculated to represent a study burst (e.g. `study_burst:clinic_follow_up:04`). This should not matter to clients as the scheduled assessment should be treated the same way. |
 | startDay | Y | The first day on which this scheduled session should be introduced to the participant (taking account the `startTime` and `expiration` period). This value is zero-indexed. The “day since event X” is calculated from the time of an event timestamp to the participant’s current local time, as a number of days (these are *calendar* days, not 24 hour periods). The specific event to measure against is the `startEventId` in the `SessionInfo` object for this scheduled session. |
 | endDay | Y | The last day on which this scheduled session should be provided to the participant. The “day since event X” is calculated from the time of an event timestamp to the participant’s current local time, as a number of days (these are *calendar* days, not 24 hour periods). If this session expires but was started the data that was collected should be uploaded **without updating the `finishedOn` timestamp of the associated history record.** |
 | startTime | N | The local time of day that the scheduled session should be shown to the user. This is the beginning of the *time window* for this scheduled session, which is also used to specify notification behavior. |

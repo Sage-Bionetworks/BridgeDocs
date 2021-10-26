@@ -11,7 +11,7 @@ Bridge provides three APIs for hosting files, JSON data, and time series reports
 1. The [Participant files API](/swagger-ui/index.html#/Participant%20Files) provides file storage that is private to the participant who uploads the files (only that participant can download the files, through a redirect to S3).
 1. The [Participant reports API](TODO)
 
-## Participant Data API
+## JSON data files
 
 Arbitrary JSON data for a participant can be [stored under an identifying key](/swagger-ui/index.html#/Participant%20Data/saveDataForSelf) through the Participant Data APIs. [A list of file identifiers can be retrieved,](/swagger-ui/index.html#/Participant%20Data/getAllDataForSelf) and these can then be used to [retrieve JSON under that key.](/swagger-ui/index.html#/Participant%20Data/getDataByIdentifierForSelf) Participants can also [delete their own files.](/swagger-ui/index.html#/Participant%20Data/deleteDataByIdentifier) 
 
@@ -21,7 +21,7 @@ This API can be contrasted to the [participant reports API](/swagger-ui/index.ht
 
 The data APIs have additional APIs for workers and administrators (not discussed here). The data is not available to researchers or study coordinators. 
 
-## Participant Files API
+## Binary files
 
 The Participant File API allows a participant to upload files to S3 that are private to the participant themselves. When uploading a file, a request is made to reserve a `fileId` and the API returns a presigned URL for uploading the file's contents. Similarly, the file can be retrieved or deleted through the API. And a list of the user's own existing files can be retrieved.
 
@@ -66,6 +66,6 @@ The [Get Participant File](/swagger-ui/index.html#/Participant%20Files/getPartic
 
 The [Delete Participant File](/swagger-ui/index.html#/Participant%20Files/deleteParticipantFile) API deletes both the [ParticipantFile](/model-browser.html#ParticipantFile) record and the S3 storage related to the `fileId` requested.
 
-## Participant Reports API
+## Participant reports (time series data)
 
 TODO

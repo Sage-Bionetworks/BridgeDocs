@@ -50,7 +50,7 @@ JSON objects returned from the Bridge server will contain a `type` property with
 
 Many endpoints will return a 403 HTTP response (Forbidden) unless the caller is in [the appropriate administrative roles.](/articles/v2/authorization.html) 
 
-Study developers and researchers can access most of the study management functionality through the [Bridge Study Manager](https://research.sagebridge.org/).
+Administrators (developers and researchers) can access most of the study management functionality through the [Bridge Study Manager](https://research.sagebridge.org/).
 
 ## Application versioning
 

@@ -12,13 +12,13 @@ For backend system accounts and some studies, users can sign up with an email ad
 
 In the past, apps have cached user passwords to sign the user back into the server on session expiration. We discourage this pratice. The [reauthentication token](#reauthentication) in the session can now be used to renew the session without user intervention. (Reauthentication must be enabled for your study to use this API and typically is for new studies.)
 
-### Email/Password Sign-Up
+### Sign-Up
 On sign up for the study, the following steps must be executed:
 
 1. The user signs up for an account, entering an email address and password as part of the [SignUp](/#SignUp) payload and the [sign-up API](/swagger-ui/index.html#/Authentication/signUp). *Your app should verify a password has been entered, otherwise the server will assume this account will be authenticated using the email-only pathway;*
 2. The server will send an email with a link to verify the email address. This link does **not** need to be intercepted by the app, and the link can be opened in any web browser on any device. The link will open a web browser where the page fetched will verify control of the email address.
 
-### Email/Password Sign-In
+### Sign-In
 After verifying their email address, the user must manually sign in to the application. They can sign in using their email and password using the [SignIn](/#SignIn) payload and the [sign-in API](/swagger-ui/index.html#/Authentication/signIn). This request, when successful, returns a session. The status code will either be 200 or 412 (Precondition Required) if the user must consent to research in order to use the API.
 
 See [reauthentication](#reauthentication) below for how to refresh a session once it expires, without user intervention.
@@ -29,13 +29,13 @@ See [reauthentication](#reauthentication) below for how to refresh a session onc
 
 Users can authenticate using only their email address. The steps for this form of authentication are as follows:
 
-### Email-Only Sign-Up
+### Sign-Up
 On sign up for the study, the following steps must be executed:
 
 1. Disable "Verify email as part of sign up" through the [Bridge Study Manager.](https://research.sagebridge.org/) (`Study > Email Templates > Verify Email`). This step will not be needed;
 2. The user signs up for an account, entering an email address (but no password) as part of the [SignUp](/#SignUp) payload using the [sign-up API](/swagger-ui/index.html#/Authentication/signUp).
 
-### Email-Only Sign-In
+### Sign-In
 
 1. The app requests an email to be sent to the user to sign in, using the [EmailSignInRequest](/#EmailSignInRequest) via the [request email sign in API](/swagger-ui/index.html#/Authentication/requestEmailSignIn);
 2. The server will send an email with a link to sign in to the application;
@@ -54,13 +54,13 @@ See [reauthentication](#reauthentication) below for how to refresh a session onc
 
 Users can authenticate using only their phone number. The steps for this form of authentication are as follows:
 
-### Phone-Only Sign-Up
+### Sign-Up
 On sign up for the study, the following steps must be executed:
 
 1. Disable "Verify a phone number as part of sign up" through the [Bridge Study Manager.](https://research.sagebridge.org/) (`Study > Text Message Templates > Verify Phone`). This step will not be needed;
 2. The user signs up for an account, entering a telephone number (but no password) as part of the [SignUp](/#SignUp) payload using the [sign-up API](/swagger-ui/index.html#/Authentication/signUp).
 
-### Phone-Only Sign-In
+### Sign-In
 
 1. The app requests an SMS message to be sent to the user to sign in, using the [PhoneSignInRequest](/#PhoneSignInRequest) via the [request phone sign in API](/swagger-ui/index.html#/Authentication/requestPhoneSignIn)
 2. The server will send an SMS message with a link to sign in to the application;
@@ -106,6 +106,12 @@ Additional credentials can be added using the [IdentifierUpdate](/#IdentifierUpd
 
 When the [sign out API](/swagger-ui/index.html#/Authentication/signOut) is called, the client should include the `Bridge-Session` token with the current session token. This will delete the session and invalidate any outstanding reauthentication tokens.
 
-## A Note on Sign Up Behavior
+## Email and phone number verification
 
-On signing up for an account with Bridge, if the user provides an email address and email verification is enabled (`emailVerificationEnabled`), an email will be sent to the address with a link that will verify and activate the account. If your application exclusively uses phone- or email-based sign in, you may wish to disable this verification email since authenticating via either of these channels will automatically enable the account.
+In all cases after sign up, the system will attempt to validate identifiers that uniquely identify the account:
+
+For email addresses and phone numbers, the identifier can be verified immediately with a verification email message or SMS message. The account will be `unverified` (and sign ins will not be acknowledged) until this occurs.
+
+For apps that send an email message or SMS text with a link to sign in, this verification step can be turned since the act of signing in will verify the validity of the identifier and activate the account. On the App object, `emailVerificationEnabled` should be set to false and/or `autoVerificationPhoneSuppressed` should be set to true, and `verifyChannelOnSignInEnabled` should be set to true.
+
+

@@ -1,15 +1,9 @@
 ---
-title: File & Resource Hosting
+title: Hosted Files
 layout: article
 ---
 
-<div id="toc"></div>
-
-
-
-## Hosted Files API
-
-The [Hosted files API](/swagger-ui/index.html#/Files) provides public asset hosting for an app. The assets must be added by developers, but the assets themselves are publicly available for download by a client without further authentication;
+The [Hosted files API](/swagger-ui/index.html#/Files) provides public asset hosting for an app (for example, it is the basis for storing a custom logo for each study). The assets must be added by developers, but the assets themselves are publicly available for download by a client without further authentication.
 
 [Hosting a file on the Bridge server](/swagger-ui/index.html#/Files) involves several steps:
 
@@ -46,3 +40,11 @@ String downloadURL = RestUtils.uploadHostedFileToS3(filesApi, meta.getGuid(), fi
 
 This includes the upload of the file's contents to S3, so the downloadURL that is returned is the URL to retrieve the file via HTTP.
 
+<div hidden>
+TODO
+## Hosted Files
+
+Developers can upload [hosted files](/articles/mobile/hosted_files.html) to Bridge that can be referenced in your app config files. Once a file revision has been uploaded through the Bridge Study Manager, the app config JSON includes a "files" property that can include an array of [FileReference](/model-browser.html#FileReference) objects. These include an "href" property with an URL that can be used to download the file. 
+
+Referencing key files (even other configuration files) in your app config file will allow you to issue updates or fixes to your installed app base, as long as your apps periodically retrieve and check the app config file. This will need to be balanced with the performance cost of downloading files, using the phone's network and your user's cellular data plan.
+</div>

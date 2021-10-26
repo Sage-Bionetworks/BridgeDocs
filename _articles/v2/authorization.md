@@ -27,7 +27,7 @@ In Bridge v2, where an app can support multiple studies, new roles have been int
 | ---------- | ----- | ------------ |
 | Organization Administrator  | Organization | An organization administrator can create, edit, and delete other administrative accounts within their organization. However, only app-scoped admins can change the studies that an organization sponsors. |
 | Study Coordinator | Study | A study coordinator can see participants in the studies that are sponsored by their organization, **and see their personally-identifying information.** They can create, enroll and withdraw participants. |
-| Study Developer | Study | A study developer can change the configuration of any study in Bridge that is sponsored by their organization. This includes elements such as the consent, study protocol, and scheduling for the study. |
+| Study Designer | Study | A study designer can change the configuration of any study in Bridge that is sponsored by their organization. This includes elements such as the consent, study protocol, and scheduling for the study. |
 
 ## Organizations
 
@@ -43,4 +43,4 @@ However if an account already exists, it can be associated to an organization th
 
 All of these APIs are tagged as a group of APIs that are available to organization administrators in our [Swagger API definition.](/swagger-ui/index.html#/_For%20Org%20Admins)
 
-There is an API to [list an organization’s sponsored studies,](/swagger-ui/index.html#/Organizations/getSponsoredStudies) and study developers can create new studies that are sponsored by their organization. Only app-scoped admins can change the study sponsorships of an organization through APIs to [sponsor the study](/swagger-ui/index.html#/Organizations/addStudySponsorship) or to [stop sponsoring the study.](/swagger-ui/index.html#/Organizations/removeStudySponsorship)
+There is an API to [list an organization’s sponsored studies,](/swagger-ui/index.html#/Organizations/getSponsoredStudies) and s can create new studies that are sponsored by their organization. Only app-scoped admins can change the study sponsorships of an organization through APIs to [sponsor the study](/swagger-ui/index.html#/Organizations/addStudySponsorship) or to [stop sponsoring the study.](/swagger-ui/index.html#/Organizations/removeStudySponsorship)
