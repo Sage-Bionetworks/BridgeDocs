@@ -1,6 +1,6 @@
 var container = document.querySelector("#toc");
 if (container) {
-    var headers = document.querySelectorAll("h2, h3, h4, h5, h6");
+    var headers = document.querySelectorAll("h2, h3, h4, h5");
     for (var i=0; i < headers.length; i++) {
         var header = headers[i];
         var level = parseInt(header.nodeName.substring(1), 10) - 2; 
