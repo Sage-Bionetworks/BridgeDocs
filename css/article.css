@@ -16,11 +16,17 @@ header {
     margin: 0 auto!important;
     padding-bottom: 4rem!important;
 }
-h1, h2, h3, h4, h5, h6, .ui.message .ui.header {
-    font-family: 'Dosis', 'Helvetica Neue', Arial, sans-serif !important;
-    font-weight: 300;
+h1, h2, h3, h4, h5, .ui.message .ui.header {
     color: black;
 }
+h6 {
+  font-family: 'Dosis', 'Helvetica Neue', Arial, sans-serif !important;
+  font-weight: 300;
+  margin-bottom: 0;
+  text-align: right;
+}
+
+
 h1 {
     font-size: 2.25rem;
 }
