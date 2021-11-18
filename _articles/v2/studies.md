@@ -23,6 +23,7 @@ Studies follow a lifecycle that supports the proper performance of study researc
 {% include image.html url="/images/study-phases.svg" 
   description="Study lifecycle flow chart" %}
 
+###### Study lifecycle phases
 | Phase       | Description |
 |-------------|-------------|
 | legacy      | This study was created prior to the addition of study phases, and does not participate in any of the lifecyle constraints. To move this study into the lifecycle, this study can be transitioned via the [design endpoint.](/swagger-ui/index.html#/Studies/transitionStudyToDesign) |
@@ -35,9 +36,9 @@ Studies follow a lifecycle that supports the proper performance of study researc
 
 ## Information for study display and oversight
 
-Even before a participant signs in to a Bridge app, it is possible to retrieve [StudyInfo](/model-browser.html#StudyInfo) from Bridge using a public (unauthenticated) [study info API.](/swagger-ui/index.html#/Studies/getStudyInfo) This information may be helpful for tailoring a UI. In one Bridge app for example, participants were prompted to enter their study ID, and then the app used that information to tailor the sign in screen to that specific study in the app.
+Even before a participant signs in to a Bridge app, it is possible to retrieve [`StudyInfo`](/model-browser.html#StudyInfo) from Bridge using a public (unauthenticated) [study info API.](/swagger-ui/index.html#/Studies/getStudyInfo) This information may be helpful for tailoring a UI. In one Bridge app for example, participants were prompted to enter their study ID, and then the app used that information to tailor the sign in screen to that specific study in the app.
 
-The fields in the `StudyInfo` object are a subset of the fields that exist in the larger `Study` model (which can be retrieved by participant apps after sign in, via the [get study API](/swagger-ui/index.html#/Studies/getStudy).
+The fields in the [`StudyInfo`](/model-browser.html#StudyInfo) object are a subset of the fields that exist in the larger `Study` model (which can be retrieved by participant apps after sign in, via the [get study API](/swagger-ui/index.html#/Studies/getStudy).
 
 | Field | Required | Description |
 |-------|----------|-------------|
