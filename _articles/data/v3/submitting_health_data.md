@@ -72,6 +72,7 @@ To query health data with participant information, you can create a File View of
 The Participant Versions table includes the following fields:
 
 |Field|Description|
+|---|---|
 |healthCode|De-identified code, which uniquely represents an individual participant in this study.|
 |participantVersion|Version of the participant.|
 |createdOn|When the participant's account was first created in Bridge, ie when the original participant version was created. This is displayed in the Synapse Web UI in your local time zone, but is stored externally as epoch milliseconds and does not contain any inherent time zone information.|
