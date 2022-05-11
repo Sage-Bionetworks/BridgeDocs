@@ -20,6 +20,8 @@ layout: article
 </dl>
 </div>
 
+<div id="toc"></div>
+
 ## BridgeSDK
 
 The BridgeSDK framework is written in Objective-C, and provides robust and secure access to the [Bridge REST API](https://developer.sagebridge.org/articles/rest.html) for your iOS apps under the BSD license. It supports caching of Bridge objects where appropriate, NSURLSession background uploads of data, and accessing much of the REST API via background downloads so your app can continue to work when no Internet connection is available.

@@ -9,9 +9,9 @@ Your study can be configured to automatically export health data to [Synapse](ht
 
 ## Prerequisites
 
-If your study is already configured to export to Synapse, you can skip to [Exporting Your Data](#exporting-your-data). To determine if your study is configured, go to the [Bridge Study Manager](https://research.sagebridge.org/), navigate to Upload &amp; Export, subsection Export Settings. If Synapse Project ID and Synapse Access Team ID are filled out, you're good to go.
+If your study is already configured to export to Synapse, you can skip to [Exporting Your Data](#exporting-your-data). To determine if your study is configured, use the [get Bridge App API](/swagger-ui/index.html#/Apps/getUsersApp) to retrieve your app configuration. If the `synapseDataAccessTeamId` and `synapseProjectId` fields are set, you're good to go.
 
-If these aren't filled out, you'll need to create a Project and a Team in Synapse. You will need to give [BridgeExporter](https://www.synapse.org/#!Profile:3325672) administator permissions, so that this account can create tables and manage their permissions. To do this:
+If these aren't filled out, you'll need to create a Project and a Team in Synapse. You will need to give [BridgeExporter](https://www.synapse.org/#!Profile:3325672) administrator permissions, so that this account can create tables and manage their permissions. To do this:
 
 1. Browse to the home page of your Synapse project.
 2. Click "Share".
@@ -46,14 +46,11 @@ Note the Synapse ID from the Project you created in the previous step. This can 
 
 Also note the Team ID from the Team you created in the previous step. This can be found in the Team's URL. For example, if the URL is `https://www.synapse.org/#!Team:3335336`, the Team ID is 3335336.
 
-In the [Bridge Study Manager](https://research.sagebridge.org/), navigate to Upload &amp; Export, subsection Export Settings. There are two fields and two checkboxes:
+Now update the fields in the App (`synapseProjectId` and `synapseDataAccessTeamId` fields) and use the [App update API](/swagger-ui/index.html#/Apps/updateUsersApp) to update your app's configuration.
 
-* **Synapse Project ID** - Fill in the noted Project ID. When you fill this in, a link will be generated and allow you to verify you have the correct Project ID.
-* **Synapse Access Team ID** - Fill in the noted Team ID. This will also generate a link.
-* **This study has a custom export schedule set up for it** - This is an advanced feature not covered in this doc. In most cases, you should leave this unchecked.
-* **Disable Export** - If for whatever reason, you need to pause exports to Synapse, check this checkbox.
+If you need to disable exports to Synapse, you can set the App's `disableExport` field to `true` and update the app.
 
-Once you've filled in the settings, click "Save". Your study should now be configured to export its data to Synapse.
+Once saved to the server, your study should now be configured to export its data to Synapse.
 
 ## Exporting Your Data
 
@@ -61,9 +58,9 @@ Bridge automatically exports your study's data to Synapse every night. This expo
 
 For example, on October 11th at 3am PDT, Bridge will export data from October 10 12am PDT to October 11 12am PDT to Synapse.
 
-In addition, if you need faster turnaround (either for lab work, or for app development and QA), you can trigger an On-Demand Export through the [Bridge Study Manager](https://research.sagebridge.org/). Navigate to Upload &amp; Export, subsection Export Settings, and click on "Export Now to Synapse" in the top right. This will kick off an On-Demand Export. After about a minute or so, your data should appear in Synapse. (Note that because of clock skew and asynchronous processing, if you submit health data, and then immediately press the Export Now button, the Export may begin before the health data is processed.)
+In addition, if you need faster turnaround (either for lab work, or for app development and QA), you can trigger an On-Demand Export (not currently documented through our Swagger file). (Note that because of clock skew and asynchronous processing, if you submit health data, and then immediately press the Export Now button, the Export may begin before the health data is processed.)
 
-The Export Now feature remembers the last time data was exported for this study (either a nightly export or the On-Demand Export) and only exports data that has been submitted since then. As such, you don't have to worry about double-exporting anything with the Export Now feature.
+The On-Demand Export feature remembers the last time data was exported for this study (either a nightly export or the On-Demand Export) and only exports data that has been submitted since then. As such, you don't have to worry about double-exporting anything with the Export Now feature.
 
 ## Understanding Your Data
 

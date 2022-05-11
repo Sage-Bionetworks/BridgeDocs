@@ -12,6 +12,8 @@ to step you through the more convoluted parts of initial setup.  This guide is a
 and will be updated as functionality is added by the Bridge team to support shared tasks and 
 activities.
 
+<div id="toc"></div>
+
 ## Github Project Setup
 
 ### 1. Create the repo on github 
@@ -222,11 +224,7 @@ class AppDelegate: SBAAppDelegate {
 
 ### 4. Download CMS Public Key
 
-Login to the [Sage Researcher UI](https://research.sagebridge.org "Researcher UI") for your study. Navigate to 
-"Settings -> General" and tap the button "Download CMS Public Key..." in the upper right corner next to the 
-"Save" button. In the div, tap the "Download" button. Save the pem file to a private folder accessible from 
-your Xcode project that is *not* part of the github repo (if this is an open source repo). Add the file to 
-your Xcode project.
+Authenticate with Bridge, then use the [CMS Public Key API](/swagger-ui/index.html#/Apps/getAppPublicCsmKey) to retrieve your CMS pem file. Save the pem file you have retrieved to a private folder accessible from your Xcode project that is *not* part of the github repo (if this is an open source repo). Add the file to your Xcode project.
 
 ### 5. Add `BridgeInfo.plist` (required) and `BridgeInfo-private.plist` (optional)
 
@@ -235,9 +233,8 @@ your project support files. Remove or edit the keys in this file to include thos
 application. If your project is intended to be open source, you will want to include a file 
 `BridgeInfo-private.plist` that points to those fields that should be kept private. The private 
 plist will override any fields included in the open source version of the file. `BridgeAppExample`
-does not include a private plist so that it can be run from the simulator. The info included in this
-file is used defined the mapping to the [Sage Researcher UI](https://research.sagebridge.org "Researcher UI").
-For detailed usage, see code file `BridgeSDK/SBBBridgeInfo.m`
+does not include a private plist so that it can be run from the simulator. For detailed usage, see 
+code file `BridgeSDK/SBBBridgeInfo.m`
 
 |Key|Private|Optional|Description|
 |---|---|---|---|
@@ -256,24 +253,19 @@ We recommend that you structure your app using a "module" structure for the acti
 
 To set up and use Bridge schedules and upload schemas, your view controllers will need to use a `SBAScheduleManager` instance or a `SBAReportManager` instance as the data source. See `TaskBrowserViewController` in the mPower2 project for an example.
 
-## Bridge Survey Setup
+Bridge currently supports several basic survey question types. To create and schedule a standard survey, you will need to do the following.
 
-The [Sage Researcher UI](https://research.sagebridge.org "Researcher UI") currently supports several basic survey question types. To create and schedule a standard survey, you will need to do the following.
-
-### 1. Open the [Sage Researcher UI](https://research.sagebridge.org "Researcher UI")
+### 1. Authenticate with the Bridge server.
 
 #### a. Create the Survey
 
-Navigate to the "Surveys" menu item using the left menu in the Researcher UI. Tap the "New Survey" button 
-in the upper right corner. Give your survey a name and identifier and then add at least one question. 
-Because there is no auto-save of a survey that you are currently editing, you should tap the "Save" button 
-to save your progress after each step that you add to the survey.
+Bridge provides [Survey APIs](/swagger-ui/index.html#/Surveys) to create one or more surveys.
 
 #### b. Save and Publish
 
-Tap the "Save" button to ensure that your progress has been saved. Then navigate to the "History & Publication" tab and tap the "Publish" button. Without this step, your survey will not be displayed in the scheduling interface. For a long survey, you should publish the survey intermittently so as to have a record of your changes.
+Once you have saved a final survey to the server, you should must call the [Publish Survey API](/swagger-ui/index.html#/Surveys/publishSurvey) to make the survey available for use by your app. For a long survey, you should publish the survey intermittently so as to have a record of your changes.
 
-#### c. Add a `Schedule`
+#### c. Add a Schedule
 
 Navigate to the "Scheduling" menu item. Tap the "New Schedule Plan" button in the upper right. Assign a label for
 the schedule, and include one or more activities. In this case, you will need to set "Take Survey" drop-down 
@@ -293,18 +285,15 @@ To add a custom active task, you will need to set up JSON files defining the tas
 
 The following example instructions use the "Tapping" test as an example.
 
-### 1. Open the [Sage Researcher UI](https://research.sagebridge.org "Researcher UI")
+### 1. Authenticate with the Bridge server
 
 #### a. Add a `Task Identifier`
 
-Navigate to the "Task Identifiers" menu item using the left menu of the Bridge Study Manager UI. Enter "Tapping" 
-and tap the "Add" button. Then save by tapping the "Save" button. **Use only alphanumeric characters in your identifiers!**
+Task identifiers can be added to the `taskIdentifiers` property of the `App` object defined for your study, using the [Apps APIs](/swagger-ui/index.html#/Apps). **Use only alphanumeric characters in your identifiers!**
 
 #### b. Add a `Upload Schema`
 
-Navigate to the "Upload Schemas" menu item using the left menu. Tap on the "New Schema" button. Enter "Tapping" as
-both the `Name` and `Identifier` for the task schema. Then add the fields that map to the results for this schema. 
-Be sure to tap the "Save" button to save your schema before navigating away from this tab.
+Upload schemas can be added via Bridge’s [Upload Schema APIs](/swagger-ui/index.html#/Upload%20Schemas). Add the fields that map to the results for this schema. 
 
 To understand how the mapping works, you will need to go spelunking by searching out `RSDArchivable`. This is a protocol that is used to indicate which results should be archived and uploaded. For example, the `Tapping` schema would include the archived result from the motion sensors, the `MCTTappingResultObject`, and all `RSDAnswerResult` objects included in the top-level `RSDTaskResult`. The schema looks like this:
 

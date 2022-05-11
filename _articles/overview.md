@@ -19,9 +19,6 @@ layout: article
 	<dt><a href="/articles/java.html">Java REST Client</a></dt>
 	<dd>A Java-based client for integration with the Bridge server.</dd>
 
-	<dt><a href="https://research.sagebridge.org/">Bridge Study Manager</a></dt>
-	<dd>A web interface to Bridge Services allowing mobile app developers and research teams to manage and monitor their study.</dd>
-	
 	<dt><a href="https://synapse.org">Synapse</a></dt>
 	<dd>An open source software platform that data scientists can use to carry out, track, and communicate their research in real time. Synapse has seeded a growing number of large scale biomedical research projects centered around genomic, clinical, imaging, mobile health, and other biomedical data sets.</dd>
 </dl>

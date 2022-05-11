@@ -27,8 +27,16 @@ h1, h2, h3, h4, h5, .ui.message .ui.header {
 h6 {
   font-family: 'Dosis', 'Helvetica Neue', Arial, sans-serif !important;
   font-weight: 300;
-  margin-bottom: 0;
-  text-align: right;
+  margin: 2.5rem 0 -.5rem 1rem;
+}
+body {
+  counter-reset: h6;
+}
+h6::before {
+  counter-increment: h6;
+  content: 'TABLE ' counter(h6) ': ';
+  font-size: smaller;
+  color: #666;
 }
 /* A code block in a link is reserved for a link to either the model browser or the API browser, 
   so we can show visually that this is what these hyperlinks do. */
@@ -104,6 +112,11 @@ table td, table th {
         padding: .5rem;
         outline: 1px solid #e5e5e5;
     }
+.caption {
+  font-size: larger;
+  font-weight: bold; 
+  margin: 2.5rem 0 -.75rem .5rem;
+}
 
 /* Navigation */
 #acc {

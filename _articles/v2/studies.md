@@ -40,6 +40,7 @@ Even before a participant signs in to a Bridge app, it is possible to retrieve [
 
 The fields in the [`StudyInfo`](/model-browser.html#StudyInfo) object are a subset of the fields that exist in the larger `Study` model (which can be retrieved by participant apps after sign in, via the [get study API](/swagger-ui/index.html#/Studies/getStudy).
 
+###### StudyInfo (part of Study object)
 | Field | Required | Description |
 |-------|----------|-------------|
 | identifier | Y | A string identifier that is unique for this study in the context of the app where it is hosted (lower- or upper-case letters, numbers, dashes, and/or underscores only). |
@@ -61,6 +62,7 @@ After the second call to record that the upload is finished, the study object’
 
 Another set of fields on the `Study` model contain information for study designers and for oversight:
 
+###### Study
 | Field | Required | Description |
 |-------|----------|-------------|
 | scheduleGuid | (Y) | The GUID of the schedule that will be used to generate a timeline for participants in this study. The GUID can be used to retrieve the appropriate `Timeline` through the APIs. This field is required to move into the recruitment phase. *NOTE: Bridge will implement a `Protocol` design for v2 that includes study arms with different schedules assignable to each arm of the study. Currently Bridge implicitly assumes a study with one arm, e.g. no control vs. intervention groups.* |
@@ -79,6 +81,7 @@ Another set of fields on the `Study` model contain information for study designe
 
 A contact contains the following information:
 
+###### StudyContact
 | Field | Required | Description |
 |-------|----------|-------------|
 | name | Y | The name of the person or organization, e.g. “Dr. Tim Powers, Ph.D.” or “Sage Bionetworks”. |
@@ -92,6 +95,7 @@ A contact contains the following information:
 
 The `Address` is suitable for displaying an address to end users. 
     
+###### Address
 | Field | Required | Description |
 |-------|----------|-------------|
 | placeName | N | The name of a building, or sometimes the name of the organization at the address. |
