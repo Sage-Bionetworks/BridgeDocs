@@ -112,11 +112,6 @@ table td, table th {
         padding: .5rem;
         outline: 1px solid #e5e5e5;
     }
-.caption {
-  font-size: larger;
-  font-weight: bold; 
-  margin: 2.5rem 0 -.75rem .5rem;
-}
 
 /* Navigation */
 #acc {
