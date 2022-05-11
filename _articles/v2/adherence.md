@@ -7,18 +7,22 @@ layout: article
 
 <div id="toc"></div>
 
-The third and final part of the Bridge scheduling system, [the adherence APIs,](/swagger-ui/index.html#/Adherence%20Records) support both schedule state management for mobile clients and adherence reporting for study administrators. Once a participant’s client has a timeline, it is able to interpret the set of [AdherenceRecord](/model-browser.html#AdherenceRecord) objects available for a participant.
+## Adherence Records
 
-This collection of records is *sparse;* if the participant did not do a scheduled session or assessment, there will not be a record for that session or assessment in the set of records. Furthermore, these records are persisted by the client, so they will only exist if the client updates the server on the current state of timeline performance. 
+The third and final part of the Bridge scheduling system are [`AdherenceRecords`](/model-browser.html#AdherenceRecord). These records support schedule state management on mobile clients, and they are the basis for adherence reporting to study administrators. 
 
-Clients are expected to update the assessment adherence records. The server will create and/or update session adherence records accordingly. The server manages the `startedOn`, `finishedOn`, and `declined` fields:
+This collection of records is *sparse;* if the participant does not do a scheduled session or assessment, there will not be a record for that session or assessment in the set of records. Furthermore, these records are persisted by the client, so they will only exist if the client updates the server on the current state of timeline performance. 
+
+### Updating adherence records and persistent time windows
+
+Clients are expected to update the *assessment* adherence records. The server will create and/or update *session* adherence records based on the state of the assessments in each occurrence of a session. The server manages the `startedOn`, `finishedOn`, and `declined` fields:
 
 - The `startedOn` timestamp will be set to the earliest `startedOn` timestamp of any assessment in that session instance once any assessment is started; 
-- The `finishedOn` timestamp will be set to the latest `finishedOn` timestamp of any assessment in that session instance, when all the assessments are finished (declining assessments will not cause the session to be reported as finished); 
+- The `finishedOn` timestamp will be set to the latest `finishedOn` timestamp of any assessment in that session instance, when all the assessments are finished (unless any assessment in the session instance is declined, see below); 
 - The `declined` boolean will be set to true if all the assessments in the session instance have been declined;
 - Sessions with any number of `declined` or unstarted assessments will be left in the started but not finished state (and thus be out of compliance).
 
-Clients can also submit session adherence records in order to update fields like `clientData` and `clientTimeZone`.
+Clients can also submit *session* adherence records in order to update fields like `clientData` and `clientTimeZone`. For example, there may be state that is more accurately related to an entire session rather than individual sessions, that would most logically stored as `clientData` on a session instance adherence record.
 
 An assessment adherence record would look like the following:
 
@@ -31,6 +35,7 @@ An assessment adherence record would look like the following:
   "clientData": {
     "testResult": 100.23
   },
+  "assessmentGuid": "D2DKsx9NOuZ8vGrT-yidhA",
   "type":"AdherenceRecord"
 }
 ```
@@ -43,11 +48,12 @@ An assessment adherence record would look like the following:
 | finishedOn | N | The timestamp reported from the client when the assessment or session was ended by the user. _Do not set this value if the assessment or session eventually expires without being finished by the user._ |
 | clientData | N | An arbitrary JSON object that the client can use to store further information about the assessment or session, its state, display information, etc. |
 | clientTimeZone | N | The time zone in which the assessment was performed (behavior is not specified if the time zone changes between the start and end of an assessment, but the field can be updated after it is set). |
+| declined | N | If this is an assessment record, whether or not the user declined to perform the assessment when prompted, or during the assessment itself. If this is a session record, whether or not all assessments in the session were declined. |
+| assessmentGuid | N | The assessment GUID (*not* the assessment instance GUID...that will be in the `instanceGuid` field) if this record represents an assessment. This is filled out by the Bridge server so that clients can use it look up information about the session in the `Timeline` object. |
+| sessionGuid | N | The session GUID (*not* the session instance GUID...that will be in the `instanceGuid` field) if this record represents a session. This is filled out by the Bridge server so that clients can use it look up information about the session in the `Timeline` object. |
 <div style="display:none">
 | uploadedOn | N | The timestamp (from the server) when we record an associated upload has been finished for this assessment or session. |
 </div>
-
-## Updating adherence records
 
 Adherence records are specific to a participant in a given study. However, persistent time windows (where a user is allowed to perform a set of assessments as many times as they want within the time window) change the behavior of adherence records in some subtle ways.
 
@@ -65,9 +71,11 @@ If a session adherence record does not exist, one will be created to record this
 
 To prevent overwriting user-submitted values, **once these session fields are set, the server will not update them again.** For example, if an assessment updated with an earlier `startedOn` timestamp, the session will not reflect it, or if a `finishedOn` timestamp is updated after all assessments in a session have been finished, this will not be reflected in the session. To change the session record, update the session record directly. For example, you might always submit the session record with null `startedOn`, `finishedOn` and `declined` fields if you want the server to check and update these values with every state change.
 
-## Querying for adherence records
+### Querying for adherence records
 
-The adherence record API allows for a wide variety of filters to be applied to the adherence records for a participant (records are always scoped to a participant in a particular study). Here is an example of the search object:
+The [adherence record query API](/swagger-ui/index.html#/Study%20Adherence/searchForStudyParticipantAdherenceRecords) and [adherence record query for participants API](/swagger-ui/index.html#/Study%20Adherence/searchForAdherenceRecords) allows for a wide variety of filters to be applied when searching for the adherence records a participant (records are always scoped to a participant in a particular study). The [study-scoped adherence record query API](/swagger-ui/index.html#/Study%20Adherence/searchForAdherenceRecordsForStudy) allows study administrators to search across all the adherence records for all participants in a study.
+
+Here is an example of the search object:
 
 ```json
 {
@@ -90,6 +98,7 @@ The adherence record API allows for a wide variety of filters to be applied to t
 }
 ```
 
+###### AdherenceRecordSearch
 | Field | Req? | Description |
 |-------|------|-------------|
 | instanceGuids | N | Session or assessment instance GUIDs. Any records that exist with these GUIDs will be returned (scoped to a specific participant in a specific study). If the assessment is a persistent assessment, all adherence records for that assessment will be returned unless includeRepeats is false. This array cannot contain more than 500 items. |
@@ -102,6 +111,7 @@ The adherence record API allows for a wide variety of filters to be applied to t
 | eventTimestamps | N | A mapping of event IDs to timestamp values to use when retrieving adherence records that are from sessions triggered by that ID. Only records with that exact timestamp value in their `eventTimestamp` field will be returned. In general, mobile clients will only want to retrieve records for current timestamp values when calculating schedules, so the `currentTimestampsOnly` flag provides an easy way to request that all current timestamps be used to limit search results. This map cannot contain more than 50 entries. |
 | startTime | N | Limit search results to records with `startedOn` values that are equal to or later than this start time (no earlier than January 1st, 2020). |
 | endTime | N | Limit search results to records with `startedOn` values that are equal to or earlier than this end time (no later than January 1st, 2120). |
+| declined | N | Return only assessments and/or sessions that have been declined (`true`), return only assessments and/or sessions that have not been declined (`false`) or ignore the `declined` flag on records if no value is set.
 | offsetBy | N | The next page start offset for pagination.  |
 | pageSize | N | The maximum number of records in each returned page. Range can be from 1-500 records. |
 | sortOrder | N | Either `asc` (sort so that the earliest startedOn time is the first record in the returned list) orLimit search results to records with `startedOn` values that are equal to or earlier than this end time (no later than January 1st, 2120).  `desc` (sort so that the most recent startedOn time is the first record in the returned list). |
@@ -137,7 +147,7 @@ There are a few things of note in this data set:
 
 Given this data set, let’s look at the options for how to retrieve these records through the adherence APIs.
 
-### By instance GUIDs
+#### By instance GUIDs
 
 Querying by instance GUID is possible, but not as useful as it might appear since instance GUIDs can be repeated in some circumstances.
 
@@ -195,7 +205,7 @@ For assessment instances, the format is:
 Because an assessment could be included more than once in a session time window, the “assessmentPositionNumber” is the number of the occurrence of an assessment in the window, beginning at 1 (outside of the edge case of repeating a specific assessment, this is just “1”).
 </div>
 
-### By assessment IDs
+#### By assessment IDs
 
 A query can retrieve records for an assessment type, as indicated by its ID, regardless of where those assessments were prompted for in the timeline. The identifier will apply to both shared and local assessments in a schedule. If you wish to differentiate between these assessments, you will need to change the assessment ID of the local (app-specific) assessment.
 
@@ -213,7 +223,7 @@ Retrieves the following records:
 
 {% include image.html url="/images/adherence-examples/04-query-for-assessments-by-id.svg" %}
 
-### By session GUIDs
+#### By session GUIDs
 
 A query can retrieve all session instances of the same type by searching for the GUID of the session they were created from:
 
@@ -246,7 +256,7 @@ Retrieves the following records:
 
 {% include image.html url="/images/adherence-examples/05-query-for-session-guids.svg" %}
 
-### Get latest records only
+#### Get latest records only
 
 Sessions with mutable events present a challenge for mobile clients. Once the time series has been performed by a participant, the timestamp can be updated, but the client will still receive the adherence records for the older time series, making it appear that the participant has completed the session. To prevent this, the client can send the current event timestamps to the server, and only records that were tied to that event timestamp will be returned:
 
@@ -268,7 +278,7 @@ This returns only the most recent set of records. If there are no records return
 
 **To make this query simpler, the client can also set the `currentTimestampsOnly` flag to true,** which will use all the current event timestamp values that are known to the server to filter this query. The only issue with using this flag over the explicit timestamps would be a case where the client and the server are not in sync with one another.
 
-### By time window
+#### By time window
 
 To find the performance of one time window in a session, you can refere to the time window’s GUID (note: this is not currently in the `Timeline`, only the `Schedule`, but it will be added):
 
@@ -302,9 +312,9 @@ Retrieves the following records:
 
 {% include image.html url="/images/adherence-examples/09-query-for-assessments-by-timewindow-no-repeats.svg" %}
 
-### By time range
+#### By time range
 
-Finally, queries can ask for records within a given time range (the values returned are based on the `startedOn` value of the records):
+Queries can ask for records within a given time range (the values returned are based on the `startedOn` value of the records):
 
 ```json
 {
@@ -317,6 +327,135 @@ Finally, queries can ask for records within a given time range (the values retur
 
 {% include image.html url="/images/adherence-examples/10-query-for-assessments-by-time-may-10-17.svg" %}
 
-## Transformations of the adherence data
+## Adherence Reports
 
-Bridge provides some APIs to return adherence data in formats that may be more useful for dashboards. This data is not intended to be used to show summaries of compliance across participants—APIs or reports based on these views of the adherence data are forthcoming.
+Bridge provides APIs for a few reports summarizing the adherence of study participants. These reports only report on the state of session instances in the schedules of one or more participants. There are no reports of assessment-level adherence data.
+
+<div class="ui icon message">
+  <i class="circle info icon"></i>
+  <p style="margin:0">Adherence is defined as the number of sessions that are <code>completed</code>, divided by the number of sessions that are <code>unstarted</code>, <code>started</code>, <code>completed</code>, <code>abandoned</code>, <code>expired</code> or <code>declined</code>. The states <code>not_applicable</code> and <code>not_yet_available</code> are not counted against study participant adherence. Different reports measure adherence for different time periods of the study.</p>
+</div>
+
+Because adherence reports contain a lot of information copied from the study schedule, we refer you to the [object browser](/model-browser.html) for full documentation; here we only describe fields in the reports that are unique to these reports.
+
+### Participant adherence reports
+
+These reports are for a specific participant in the study.
+
+#### Event Stream Adherence Report
+
+The [EventStreamAdherenceReport](/model-browser.html#EventStreamAdherenceReport) is an intermediate data structure that is calculated for use in other reports. It is available through both [client-facing APIs](/swagger-ui/index.html#/Study%20Adherence/getUsersStudyParticipantEventStreamAdherenceReport) and [study coordinator APIs](/swagger-ui/index.html#/Study%20Adherence/getStudyParticipantEventStreamAdherenceReport) should it prove useful for creating other kinds of adherence reports.
+
+###### [EventStreamAdherenceReport](/model-browser.html#EventStreamAdherenceReport)
+| Field | Req? | Description |
+|-------|------|-------------|
+| adherencePercent | Y | The percentage of all actionable sessions for the entire study that have been successfully completed by the participant, not including sessions that are available but not yet finished. |
+| dayRangeOfAllStreams | Y | The earliest date and the latest date across all streams in the report. |
+| progression | Y | An enumeration indicating whether the schedule is `unstarted`, `in_progress` or `done` for this participant. |
+| streams | Y | An array of `EventStream` objects |
+
+The [`EventStream`](/model-browser.html#EventStream) objects map a set of activities to a particular “day since event N,” measuring the duration from the timestamp of the `startEventId` of the stream to the current day when the report is being generated (this date can be modified via the API call, though if it is not provided, the server uses the current time).
+
+###### [EventStream](/model-browser.html#EventStream)
+| Field | Req? | Description |
+|-------|------|-------------|
+| startEventId & eventTimestamp | Y | As with adherence records, each stream is defined by a `startEventId` *and* the timestamp of that event. The latest timestamp (the last sent to the server for the event, not necessary the latest timestamp chronologically) is always used for the event stream adherence report. |
+| daysSinceEvent | Y | The number of days from the event (the `eventTimestamp`) to “today” (in the local time zone of the participant, or the time zone of the study, or UTC, depending on what is known to Bridge). |
+| studyBurstId & studyBurstNum | N | If the start event ID is a study burst event (e.g. `study_burst:an-identifier:01`), this will be the ID of the study burst (“an-identifier”) and the number of the study burst in the full series of scheduled bursts (“01”). |
+| byDayEntries | Y | This is a map from a day since the `eventTimestamp` to a list of sessions that will start on that day. |
+
+The map of of `byDayEntries` maps a day since the event of the stream to an array of sessions that will start on that day. Each session is represented by a separate [`EventStreamDay`](/model-browser.html#EventStreamDay) object with these properties (the name of this object is unfortunate because there can be more than one of these objects in a day, but often enough there will only be one in the array). 
+
+###### [EventStreamDay](/model-browser.html#EventStreamDay)
+| Field | Req? | Description |
+|-------|------|-------------|
+| week | Y | *This field is always null in the event stream report.* |
+| startDay | Y | The start day of this session (it should always be identical to the value of the day key of the `byDayEntries` mapping). |
+| startDate | Y | The actual date for this participant on which this day falls. |
+| timeWindows | Y | An array of [`EventStreamWindow`](/model-browser.html#EventStreamWindow) objects |
+
+The event stream window objects describe *when the session ends* and *what the state of the session is for this participant.*  That is because different windows define discrete session instances with different scheduling:
+
+###### [EventStreamWindow](/model-browser.html#EventStreamWindow)
+| Field | Req? | Description |
+|-------|------|-------------|
+| state | Y | The [`SessionCompletionState`](/model-browser.html#SessionCompletionState) of this session. |
+| endDay | Y | The day in the event stream when this window ends. |
+| endDate | Y | The actual date for this participant on which this window will end. Because this is an adherence report, specific time-of-day information is not included. |
+
+#### Study Adherence Report
+
+This is the main adherence report for a participant, which shows overview of a participant’s adherence to the entire protocol of a study. (The event stream report is normalized into one stream of activities, based on the study’s `studyStartEventId`. Then those activities are broken down into weeks in the study.) It can be retrieved via the [study adherence report API](/swagger-ui/index.html#/Study%20Adherence/getStudyParticipantAdherenceReport). Study coordinators can view adherence in terms of what day in the study the participant is currently at. 
+
+If events occur before the study’s `studyStartEventId,` the study adherence report will not break, but the participant will have sessions that occur before “Week 1” (that is, in “Week 0” or in negative weeks like “Week -2”). This indicates the study design is flawed insofar as the `studyStartEventId` is not the true start of the study for the participant.
+
+###### StudyAdherenceReport
+| Field | Req? | Description |
+|-------|------|-------------|
+| participant | Y | The participant this record is about (as an [`AccountRef`](/model-browser.html#AccountRef) object). |
+| testAccount | Y | Is this participant a test account? |
+| clientTimeZone | Y | The time zone that was used to generate this report (typically the participant’s `clientTimeZone`, but if this is not available the `studyTimeZone` of the study, or UTC). |
+| dateRange | Y | The earliest date and the most recent date of the study adherence report, however, this range will always be extended (on either side) if needed so that the study start date for this participant is included in the range. |
+| adherencePercent | Y | The percentage adherence achieves during the entire course of the study so far, by this participant. |
+| progression | Y | The progression of the participant in the study (`unstarted`, `in_progress` or `done` with the study). |
+| unsetEventIds | Y | If there are event IDs referenced in the study schedule that this participant does not have, they will be listed here. |
+| unscheduledSessions | Y | If there are sessions that are scheduled by unset eventIds, they will be listed here by name. |
+| eventTimestamps | Y | All timestamps that are referenced by the schedule and used to produce the adherence report are given here in a map from eventId, to the timestamp that is being used. |
+| weeks | Y | The report is broken down into weeks from the start of the study for this participant. |
+
+###### [StudyReportWeek](/model-browser.html#StudyReportWeek)
+| Field | Req? | Description |
+|-------|------|-------------|
+| weekInStudy | Y | The week in the study. If this value is less than one, negative, some of the participant’s events started before the event marking the start of the study. This indicates a design flaw in the study, but it will not break adherence reporting. |
+| startDate | Y | The date of the first day of this week. |
+| adherencePercent | Y | The participant’s adherence to the protocol for this week (only). |
+| rows | Y | These are objects describing labeling information for the Nth item in the lists of `EventStreamDays` for this week. Described further below. |
+| byDayEntries | Y | This is a map from a day of the week (0-6) to a list of sessions that will start on that day. |
+
+The row entries are [`WeeklyAdherenceReportRow`](/model-browser.html#WeeklyAdherenceReportRow) objects with information to display the `EventStreamDay` arrays in the `byDayEntries` map. The row object at index 0 describes the `EventStreamDay` at index 0 of the array, on every day of the week (where needed, empty day objects pad the arrays to maintain the correct index).
+
+The `searchableLabel` field provides a string that can be used to filter the [weekly adherence reports API](/swagger-ui/index.html#/Study%20Adherence/getWeeklyAdherenceReports) to return only those participants who are in particular stages of the study. It is possibly to provide substrings of this `searchableLabel` to widen this search.
+
+For example, the `searchableLabel` “:Session #2:Week 1:” will find all participants in week 1 of their session #2 work. You could also submit “:Session #2:” to find participants in any week where they are being asked to perform session #2 assessments. The colons are important to ensure correct substring matches (e.g. so you don’t get “Session #22” in your results).
+
+### Weekly Adherence Report
+
+The [`WeeklyAdherenceReport`](/model-browser.html#WeeklyAdherenceReport) can be retrieved through the [weekly adherence report API](/swagger-ui/index.html#/Study%20Adherence/getWeeklyAdherenceReport) (only available to study administrators). It is similar to the [`StudyReportWeek`](/model-browser.html#StudyReportWeek) objects in the full study adherence report, but only the *current* week of that report is returned through this API. The `WeeklyAdherenceReport` also has some small differences. For example, it can be present for weeks that don't appear in the full adherence report at all, which can be sparse (it does not have weeks where the participant is not being asked to perform any assessments). In that case, the report may include information like the participant’s [`NextActivity`](/model-browser.html#NextActivity). As well, if the participant has sessions from prior weeks that are still available and unfinished, these will be present on Day 0 of the weekly adherence report.
+
+###### [WeeklyAdherenceReport](/model-browser.html#WeeklyAdherenceReport)
+| Field | Req? | Description |
+|-------|------|-------------|
+| participant | Y | The participant this record is about (as an [`AccountRef`](/model-browser.html#AccountRef) object). |
+| testAccount | Y | Is this participant a test account? |
+| clientTimeZone | Y | The time zone that was used to generate this report (typically the participant’s `clientTimeZone`, but if this is not available the `studyTimeZone` of the study, or UTC). |
+| progression | Y | The progression of the participant in the study (`unstarted`, `in_progress` or `done` with the study). |
+| weeklyAdherencePercent | Y | The percentage adherence achieves during this week of the study (in isolation). |
+| weekInStudy | Y | The week of the study. |
+| startDate | Y | The date of the first day in this week (day 0). |
+| nextActivity | N | If the current week for the participant is a “fallow” week with no activities, the participant’s next activity will be indicated with a [`NextActivity`](/model-browser.html#NextActivity) record.
+| rows | Y | These are objects describing labeling information for the Nth item in the lists of `EventStreamDays` for this week. Described further below. |
+| byDayEntries | Y | This is a map from a day of the week (0-6) to a list of sessions that will start on that day. |
+
+The row entries are [`WeeklyAdherenceReportRow`](/model-browser.html#WeeklyAdherenceReportRow) objects with information to display the `EventStreamDay` arrays in the `byDayEntries` map. The row object at index 0 describes the `EventStreamDay` at index 0 of the array, on every day of the week (where needed, empty day objects pad the arrays to maintain the correct index).
+
+### Study-level reports
+
+#### Weekly Adherence Reports
+
+The weekly adherence reports can be retrieved for all participants via the paginated [weekly adherence reports API](/swagger-ui/index.html#/Study%20Adherence/getWeeklyAdherenceReports). This API returns a weekly adherence report for all active users in a study, and it has a number of search parameters in the API to adjust the results that are returned (most importantly, to find participants that are out of compliance with the study protocol).
+
+The weekly adherence reports are generated one of three ways:
+
+1. When a user calls for a participant’s entire study adherence report, their weekly adherence report is also calculated and persisted;
+2. When a study administrator calls for a participant’s weekly adherence report, it is also calculated and persisted before being returned;
+2. Bridge updates this record for every participant in a study at 4am and 11am in the local time zone set for that study (if no time zone is set for a study, the time zone used is Central Time in the United States), **if** the following conditions apply:
+  - The study has a schedule and is in the `design`, `recruitment` or `in_flight` phase;
+  - The participant has signed in at least once to the Bridge server.
+
+The paged list of adherence for all users in their current week should be up-to-date as of the morning of the current day. It is important to not move your study to `completed` until you are certain all the participants are finished with the study, or you will lose adherence information.
+
+#### Stats
+
+Finally the [study adherence stats API](/swagger-ui/index.html#/Study%20Adherence/getAdherenceStatistics) provides summary information about study adherence for all participants in a study. Participants who have not started the study are not included in these reports. The `adherenceThresholdPercentage` will be set to the Study.`adherenceThresholdPercentage` value unless a different value is provided as a query parameter to the API. The number of participants at or above the threshold, and under it, will be returned in the `compliant` and `noncompliant` counts (these should equal the `totalActive` count).
+
+The [`AdherenceStatisticsEntry`](/model-browser.html#AdherenceStatisticsEntry) array includes a count of participants at every unique moment in the study (e.g., Week 3 of a particular session). Because participants can be in more than one part of the schedule on a given week, these counts will likely be greater than the sum of the `totalActive` value.

@@ -11,7 +11,7 @@ The Bridge server can provide your app with various kinds of configuration infor
 
 The Bridge app config system allows your app to retrieve arbitrary JSON configuration that you provide, as well as Bridge-specific information about the versions of the upload schemas and surveys your app should retrieve and use. This allows you to vary the behavior of your app to some degree (e.g. fixing a typo, adding a scheduled activity, or adding a survey question), without having to do a full app release cycle. It also allows you to manage the upgrade of apps to a newly released version.
 
-Bridge's system includes the top-level [AppConfig](/model-browser.html#AppConfig) object, and one or more [AppConfigElements](/model-browser.html#AppConfigElement) that can be included in an app config. These can all be created and managed by developers through the [Bridge Study Manager](https://research.sagebridge.org/).
+Bridge's system includes the top-level [AppConfig](/model-browser.html#AppConfig) object, and one or more [AppConfigElements](/model-browser.html#AppConfigElement) that can be included in an app config. These can all be created and managed by developers through the Bridge APIs.
 
 You can create one or more app config objects in Bridge. One of your app configs can be selected and returned to clients based on public selection criteria like the requesting app version, or the user's language (as expressed in the `User-Agent` and `Accept-Language` headers). If the user's request will match more than one app config, we return the oldest app config. App config objects are not versioned or published; once created, they are immediately available for selection by clients.
 

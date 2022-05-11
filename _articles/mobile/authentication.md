@@ -23,8 +23,6 @@ After verifying their email address, the user must manually sign in to the appli
 
 See [reauthentication](#reauthentication) below for how to refresh a session once it expires, without user intervention.
 
-**Note:** It is possible to reset the password on an account with no password, and set a password for that account. That account will then be able to sign in with an email and password, if there is any way to do so in your app or another user interface. This is most likely to come up for developers who use their email address both for a test account in the app, and to sign in to our administrative interface, the [Bridge Study Manager.](https://research.sagebridge.org/)
-
 ## Email-Only Authentication
 
 Users can authenticate using only their email address. The steps for this form of authentication are as follows:
@@ -32,7 +30,7 @@ Users can authenticate using only their email address. The steps for this form o
 ### Sign-Up
 On sign up for the study, the following steps must be executed:
 
-1. Disable "Verify email as part of sign up" through the [Bridge Study Manager.](https://research.sagebridge.org/) (`Study > Email Templates > Verify Email`). This step will not be needed;
+1. Set the `App.autoVerificationEmailSuppressed` field to `true` using the [Bridge App APIs](/swagger-ui/index.html#/Apps);
 2. The user signs up for an account, entering an email address (but no password) as part of the [SignUp](/#SignUp) payload using the [sign-up API](/swagger-ui/index.html#/Authentication/signUp).
 
 ### Sign-In
@@ -57,7 +55,7 @@ Users can authenticate using only their phone number. The steps for this form of
 ### Sign-Up
 On sign up for the study, the following steps must be executed:
 
-1. Disable "Verify a phone number as part of sign up" through the [Bridge Study Manager.](https://research.sagebridge.org/) (`Study > Text Message Templates > Verify Phone`). This step will not be needed;
+1. Set the `App.autoVerificationPhoneSuppressed` field to `true` using the [Bridge App APIs](/swagger-ui/index.html#/Apps);
 2. The user signs up for an account, entering a telephone number (but no password) as part of the [SignUp](/#SignUp) payload using the [sign-up API](/swagger-ui/index.html#/Authentication/signUp).
 
 ### Sign-In
@@ -79,7 +77,7 @@ See [reauthentication](#reauthentication) below for how to refresh a session onc
 
 For clinical studies that wish to maintain the total anonymity of the study participant in Bridge, a user can authenticate using only an external ID. Unless the partner organization tracks the assignment of this external ID, this account is truly anonymous.
 
-However, before users can access an account this way, a researcher must create an external ID and an associated account using the API or the [Bridge Study Manager](https://research.sagebridge.org). After this set up, the user will not need to sign up for an account. Instead, the app must be taken to the clinic.
+However, before users can access an account this way, a researcher must create an external ID and an associated account using the API. After this set up, the user will not need to sign up for an account. Instead, the app must be taken to the clinic.
 
 ### Password Generation
 
