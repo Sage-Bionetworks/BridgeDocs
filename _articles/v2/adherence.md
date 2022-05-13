@@ -418,7 +418,7 @@ The `searchableLabel` field provides a string that can be used to filter the [we
 
 For example, the `searchableLabel` “:Session #2:Week 1:” will find all participants in week 1 of their session #2 work. You could also submit “:Session #2:” to find participants in any week where they are being asked to perform session #2 assessments. The colons are important to ensure correct substring matches (e.g. so you don’t get “Session #22” in your results).
 
-### Weekly Adherence Report
+#### Weekly Adherence Report
 
 The [`WeeklyAdherenceReport`](/model-browser.html#WeeklyAdherenceReport) can be retrieved through the [weekly adherence report API](/swagger-ui/index.html#/Study%20Adherence/getWeeklyAdherenceReport) (only available to study administrators). It is similar to the [`StudyReportWeek`](/model-browser.html#StudyReportWeek) objects in the full study adherence report, but only the *current* week of that report is returned through this API. The `WeeklyAdherenceReport` also has some small differences. For example, it can be present for weeks that don't appear in the full adherence report at all, which can be sparse (it does not have weeks where the participant is not being asked to perform any assessments). In that case, the report may include information like the participant’s [`NextActivity`](/model-browser.html#NextActivity). As well, if the participant has sessions from prior weeks that are still available and unfinished, these will be present on Day 0 of the weekly adherence report.
 
