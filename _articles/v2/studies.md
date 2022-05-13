@@ -130,6 +130,22 @@ Philippines</dt>
 <code>country</code> = “Philippines”</dd>
 </dl>
 
-## Participant APIs
+## Participants
 
 A more complete view of the participants’ in a study can be retrieved through the [Study participant APIs.](/swagger-ui/index.html#/Study%20Participants) Many additional APIs exist to work with an enrolled account in a study, such as to resend an email verification request or to withdraw a participant from the study. 
+
+### Test users
+
+Participant accounts can be marked with the `test_user` data group. Any data collected via this account will be clearly marked as test data in the Synapse data repositories. A test account can be created in any study phase, but accounts created in the design phase will automatically be marked with the `test_user` data flag. The flag cannot be removed once it is added to an account. 
+
+### Preview users
+
+A special kind of test account called a *preview user* can be created, and this test account will be deleted when a study is moved from the `design` to the `recruitment` phase. Such accounts can only be enrolled in one study since they will be deleted when that study is moved to `recruitment`. It is useful for allowing study designers to preview a study as it will appear in an app.
+
+To use this feature in a Bridge app:
+
+1. Update the `App.dataGroups` collection by adding the `preview_user` data group tag (Bridge does not include this tag by default, unlike `test_user`);
+2. Any existing account or new account can be marked with the `preview_user` tag;
+3. When a study moves from `design` to `recruitment`, all accounts marked with the `preview_user` tag will be deleted.
+
+Although you can add this tag at any time to any account, it does not do anything other than the behavior described here, so it is only useful when working with a study in design. You should not add it to any administrative accounts during study design or they will be deleted as well.
