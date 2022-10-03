@@ -86,7 +86,7 @@ Demographics are part of the participant version record. Updates to demographics
 
 Demographics are exported to Synapse along with participant versions. However, they are stored in a separate table called "Participant Versions Demographics" alongside the original "Participant Versions" table.
 
-The "Participant Versions Demographics" table contains the app ID of the app associated with the demographics, the study ID of the study associated with the demographics (null if [app-level](#app-level-and-study-level)), the demographic category name, the demographic value, and units for that demographic (can be null). It also has a health code and participant version number which can be [used to join the demographics table with the main participant versions table](#materializedview).
+The "Participant Versions Demographics" table contains the study ID of the study associated with the demographics (null if [app-level](#app-level-and-study-level)), the demographic category name, the demographic value, and units for that demographic (can be null). It also has a health code and participant version number which can be [used to join the demographics table with the main participant versions table](#materializedview).
 
 If the demographic is multiple select, each value will be stored in a separate row. If the demographic is multiple select with no values, there will be a single row containing a value of null.
 
