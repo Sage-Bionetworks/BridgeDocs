@@ -84,7 +84,12 @@ Demographics are part of the participant version record. Updates to demographics
 
 ### Exporting to Synapse
 
-To enable exporting of demographics, the app/study will need to be re-initialized for exporting.
+<div class="ui icon message" style="margin-top: 2rem">
+  <i class="ui info circle icon"></i>
+  <div class="content">
+    To enable exporting of demographics, the app/study will need to be re-initialized for exporting.
+  </div>
+</div>
 
 Demographics are exported to Synapse along with participant versions. However, they are stored in a separate table called "Participant Versions Demographics" alongside the original "Participant Versions" table.
 
