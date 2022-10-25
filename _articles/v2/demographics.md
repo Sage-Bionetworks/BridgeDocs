@@ -108,3 +108,95 @@ A MaterializedView which joins the participant versions table and demographics t
 In the same way that each app has a separate participant versions table and each study has a separate participant versions table, each app has a separate demographics table and [joining view](#materializedview), and each study has a separate demographics table and joining view.
 
 App demographics tables contain all app-level demographics for that app and all study-level demographics for each of its substudies. Study demographics tables contain all app-level demographics for that study's parent app and all study-level demographics for that particular study.
+
+## Validation
+
+Demographics can be validated to ensure that their values conform to specified restrictions. This validation can ensure that values are in a specified set of allowed values ("enum" validation), or that values are numbers which fall within a certain range, inclusive ("number range" validation).
+
+<div class="ui icon message" style="margin-top: 2rem">
+  <i class="ui info circle icon"></i>
+  <div class="content">
+    Validation is currently only available for app-level demographics.
+  </div>
+</div>
+
+Validation restrictions are specified using a [`DemographicValuesValidationConfiguration`](/model-browser.html#DemographicValuesValidationConfiguration). It should be stored as JSON in an app config element under the key `"bridge-validation-demographics-values-{categoryName}"`, where `categoryName` is the name of the category which should be validated.
+
+The configuration consists of a `validationType` and `validationRules`. `validationType` specifies the type of validation, and `validationRules` specifies the rules for validation. See below for available types of validation.
+
+### Enum
+
+Enum validation ensures that every value submitted in the validated category is listed in a pre-defined set of allowed values. Enum validation is case sensitive.
+
+To use enum validation, `validationType` should be `"enum"` and `validationRules` should be a [`DemographicValuesEnumValidationRules`](/model-browser.html#DemographicValuesEnumValidationRules). `DemographicValuesEnumValidationRules` should be an object which maps language codes (e.g., "en" for English) to arrays containing strings of allowed values.
+
+<div class="ui icon message" style="margin-top: 2rem">
+  <i class="ui info circle icon"></i>
+  <div class="content">
+    While any language code may be submitted, currently only English ("en") is supported for validation.
+  </div>
+</div>
+
+Example of `DemographicValuesValidationConfiguration` for enum validation:
+
+```
+{
+  "validationType": "enum",
+  "validationRules": {
+    "en": [
+      "bar",
+      "baz"
+    ]
+  }
+}
+```
+
+If this `DemographicValuesValidationConfiguration` is submitted as an app config element with the key `bridge-validation-demographics-values-foo`, then all demographics in the category named `"foo"` will be validated to make sure they are exactly the strings "bar" or "baz".
+
+The following values WILL be allowed:
+
+* `"bar"` in category `"foo"`
+* `"baz"` in category `"foo"`
+* `"abc"` in category `"qux"`
+
+The following values WILL NOT be allowed:
+
+* `"BAR"` in category `"foo"`
+* `"BAZ"` in category `"foo"`
+* `"abc"` in category `"foo"`
+* `20` in category `"foo"`
+
+### Number range
+
+Number range validation ensures that every value submitted in the validated category is a number which falls between a specified min/max, inclusive. Both the min and max are optional; if the min or max is not specified, the range is assumed to be unbounded on that end.
+
+To use number range validation, `validationType` should be `"number_range"` and `validationRules` should be a [`DemographicValuesNumberRangeValidationRules`](/model-browser.html#DemographicValuesNumberRangeValidationRules). `DemographicValuesNumberRangeValidationRules` should be an object which contains up to 2 keys: `"min"` and `"max"`. Both `"min"` and `"max"` are optional, and both should be numbers if they are specified.
+
+Example of `DemographicValuesValidationConfiguration` for number range validation:
+
+```
+{
+  "validationType": "number_range",
+  "validationRules": {
+    "min": -50,
+    "max": 200.7
+  }
+}
+```
+
+If this `DemographicValuesValidationConfiguration` is submitted as an app config element with the key `bridge-validation-demographics-values-foo`, then all demographics in the category named `"foo"` will be validated to make sure they are numbers greater than or equal to -50, and less than or equal to 200.7.
+
+The following values WILL be allowed:
+
+* `-50` in category `"foo"`
+* `-50.0` in category `"foo"`
+* `200.7` in category `"foo"`
+* `0` in category `"foo"`
+* `10.5` in category `"foo"`
+* `"abc"` in category `"qux"`
+
+The following values WILL NOT be allowed:
+
+* `-60` in category `"foo"`
+* `210` in category `"foo"`
+* `"abc"` in category `"foo"`
