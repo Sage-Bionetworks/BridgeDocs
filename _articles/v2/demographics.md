@@ -87,13 +87,13 @@ Demographics are part of the participant version record. Updates to demographics
 <div class="ui icon message" style="margin-top: 2rem">
   <i class="ui info circle icon"></i>
   <div class="content">
-    To enable exporting of demographics, the app/study will need to be re-initialized for exporting.
+    To enable exporting of demographics, the app/study will need to be initialized for exporting. If the app/study was already initialized for exporting, it will still need to be re-initialized for exporting.
   </div>
 </div>
 
 Demographics are exported to Synapse along with participant versions. However, they are stored in a separate table called "Participant Versions Demographics" alongside the original "Participant Versions" table.
 
-The "Participant Versions Demographics" table contains the study ID of the study associated with the demographics (null if [app-level](#app-level-and-study-level)), the demographic category name, the demographic value, and units for that demographic (can be null). It also has a health code and participant version number which can be [used to join the demographics table with the main participant versions table](#materializedview).
+The "Participant Versions Demographics" table contains the study ID of the study associated with the demographics (null if [app-level](#app-level-and-study-level)), the demographic category name, the demographic value, units for that demographic (can be null), and invalidity (see [validation](#validation)). It also has a health code and participant version number which can be [used to join the demographics table with the main participant versions table](#materializedview).
 
 If the demographic is multiple select, each value will be stored in a separate row. If the demographic is multiple select with no values, there will be a single row containing a value of null.
 
@@ -113,6 +113,8 @@ App demographics tables contain all app-level demographics for that app and all 
 
 Demographics can be validated to ensure that their values conform to specified restrictions. This validation can ensure that values are in a specified set of allowed values ("enum" validation), or that values are numbers which fall within a certain range, inclusive ("number range" validation).
 
+When a demographic fails validation, any values which are invalid within the demographic will have an associated error message stored in the "invalidity" field. If exporting is enabled for an app/study such that demographics with an "invalidity" message are exported to Synapse, this "invalidity" message will be stored in the Synapse table as well.
+
 <div class="ui icon message" style="margin-top: 2rem">
   <i class="ui info circle icon"></i>
   <div class="content">
@@ -122,7 +124,14 @@ Demographics can be validated to ensure that their values conform to specified r
 
 Validation restrictions are specified using a [`DemographicValuesValidationConfiguration`](/model-browser.html#DemographicValuesValidationConfiguration). It should be stored as JSON in an app config element under the key `"bridge-validation-demographics-values-{categoryName}"`, where `categoryName` is the name of the category which should be validated.
 
-The configuration consists of a `validationType` and `validationRules`. `validationType` specifies the type of validation, and `validationRules` specifies the rules for validation. See below for available types of validation.
+<div class="ui icon message" style="margin-top: 2rem">
+  <i class="ui exclamation triangle icon"></i>
+  <div class="content">
+   A <code>DemographicValuesValidationConfiguration</code> is not validated until demographics are submitted which require it to be used. Additionally, if it is invalid, any demographics which would have used it for validation will simply be marked invalid.
+  </div>
+</div>
+
+The configuration consists of a `validationType` and `validationRules`. `validationType` specifies the type of validation and determines the schema of `validationRules`, and `validationRules` specifies the rules for validation. See below for available types of validation.
 
 ### Enum
 
@@ -133,7 +142,7 @@ To use enum validation, `validationType` should be `"enum"` and `validationRules
 <div class="ui icon message" style="margin-top: 2rem">
   <i class="ui info circle icon"></i>
   <div class="content">
-    While any language code may be submitted, currently only English ("en") is supported for validation.
+    While any valid language code may be submitted, currently only English ("en") is supported for validation.
   </div>
 </div>
 
