@@ -115,21 +115,7 @@ Demographics can be validated to ensure that their values conform to specified r
 
 When a demographic fails validation, any values which are invalid within the demographic will have an associated error message stored in the "invalidity" field. If exporting is enabled for an app/study such that demographics with an "invalidity" message are exported to Synapse, this "invalidity" message will be stored in the Synapse table as well.
 
-<div class="ui icon message" style="margin-top: 2rem">
-  <i class="ui info circle icon"></i>
-  <div class="content">
-    Validation is currently only available for app-level demographics.
-  </div>
-</div>
-
-Validation restrictions are specified using a [`DemographicValuesValidationConfiguration`](/model-browser.html#DemographicValuesValidationConfiguration). It should be stored as JSON in an app config element under the key `"bridge-validation-demographics-values-{categoryName}"`, where `categoryName` is the name of the category which should be validated.
-
-<div class="ui icon message" style="margin-top: 2rem">
-  <i class="ui exclamation triangle icon"></i>
-  <div class="content">
-   A <code>DemographicValuesValidationConfiguration</code> is not validated until demographics are submitted which require it to be used. Additionally, if it is invalid, any demographics which would have used it for validation will simply be marked invalid.
-  </div>
-</div>
+Validation restrictions are specified using a [`DemographicValuesValidationConfig`](/model-browser.html#DemographicValuesValidationConfig). It should be submitted to the POST endpoint for demographics validation (using the appropriate endpoint for either app-level or study-level demographics) under the categoryName whose demographics should be validated.
 
 The configuration consists of a `validationType` and `validationRules`. `validationType` specifies the type of validation and determines the schema of `validationRules`, and `validationRules` specifies the rules for validation. See below for available types of validation.
 
