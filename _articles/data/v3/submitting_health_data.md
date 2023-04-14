@@ -56,10 +56,11 @@ Files have annotations. In addition to the free-form metadata submitted by the a
 |---|---|
 |recordId|Unique ID for this health data record.|
 |clientInfo|Information about the app, device, and OS. This is derived from the User-Agent submitted by the app.|
+|exportedOn|When the health data was exported from Bridge to Synapse, in ISO8601 format. This will usually be very close to uploadedOn.|
 |healthCode|De-identified code, which uniquely represents an individual participant in this study.|
 |participantVersion|Version of the participant that submitted this health data. See the [Participant Versions](#participant-versions) section below.|
 |uploadedOn|When the health data was uploaded from the app to Bridge, in ISO8601 format.|
-|exportedOn|When the health data was exported from Bridge to Synapse, in ISO8601 format. This will usually be very close to uploadedOn.|
+|userAgent|Raw value of the participant's User-Agent header.|
 
 There will also be annotations corresponding to the participant's [scheduling information](/articles/v2/scheduling.html), if the schedule's instanceGuid and eventTimestamp are specified, [as described above](#linking-health-data-to-assessments).
 
