@@ -109,12 +109,17 @@ Here is an example of the search object:
 | includeRepeats | N | Where an assessment can be performed multiple times under an instance GUID, all records will be returned unless this flag is set to true. In this case, the first or last record only will be returned (depending on sort order). |
 | currentTimestampsOnly | N | Where a time series can be performed multiple times because a session’s trigger event is mutable, all records will be returned, unless this flag is set to true. When true, only records with recent event timestamp values will be returned. This is equivalent to sending back the user’s entire map of current event ID timestamp values via the `eventTimestamps` map in this search object. If values are also provided in the `eventTimestamps` map, each of those event IDs will override its associated event ID timestamp value, as it is provided by setting this flag to true. |
 | eventTimestamps | N | A mapping of event IDs to timestamp values to use when retrieving adherence records that are from sessions triggered by that ID. Only records with that exact timestamp value in their `eventTimestamp` field will be returned. In general, mobile clients will only want to retrieve records for current timestamp values when calculating schedules, so the `currentTimestampsOnly` flag provides an easy way to request that all current timestamps be used to limit search results. This map cannot contain more than 50 entries. |
+| eventTimestampStart | N | Return records where the `eventTimestamp` value of the record is on or after the timestamp provided. This is an ISO8601 formatted date time. If eventTimestampStart is specified, so must eventTimestampEnd. |
+| eventTimestampEnd | N | Return records where the `eventTimestamp` value of the record is before the timestamp provided, but not on. This is an ISO8601 formatted date time. If eventTimestampEnd is specified, so must eventTimestampStart. |
 | startTime | N | Limit search results to records with `startedOn` values that are equal to or later than this start time (no earlier than January 1st, 2020). |
 | endTime | N | Limit search results to records with `startedOn` values that are equal to or earlier than this end time (no later than January 1st, 2120). |
 | declined | N | Return only assessments and/or sessions that have been declined (`true`), return only assessments and/or sessions that have not been declined (`false`) or ignore the `declined` flag on records if no value is set.
 | offsetBy | N | The next page start offset for pagination.  |
 | pageSize | N | The maximum number of records in each returned page. Range can be from 1-500 records. |
 | sortOrder | N | Either `asc` (sort so that the earliest startedOn time is the first record in the returned list) orLimit search results to records with `startedOn` values that are equal to or earlier than this end time (no later than January 1st, 2120).  `desc` (sort so that the most recent startedOn time is the first record in the returned list). |
+| uploadId | N | Search for a specific upload ID. |
+| hasMultipleUploadIds | N | Boolean value. If true, then return only adherence records associated with multiple upload IDs. If set to true, both eventTimestampStart and eventTimestampEnd must be specified. Defaults to false. |
+| hasNoUploadIds | N | Boolean value. If true, then return only adherence records associated with no upload IDs. If set to true, both eventTimestampStart and eventTimestampEnd must be specified. Defaults to false. |
 
 If none of these search values are set, all records will be returned.
 
@@ -326,6 +331,35 @@ Queries can ask for records within a given time range (the values returned are b
 ```
 
 {% include image.html url="/images/adherence-examples/10-query-for-assessments-by-time-may-10-17.svg" %}
+
+#### By Upload IDs
+
+To get all adherence records associated with an upload, you can use the `uploadId` field:
+
+```json
+{
+  "uploadId": "FRV1VReEy_HzeF7RdFZImqTq",
+  "type": "AdherenceRecordsSearch"
+}
+```
+
+If you want to get all adherence records that are associated with multiple upload IDs, you can use the `hasMultipleUploadIds` flag. If you use this flag, you will need to specify both `eventTimestampStart` and `eventTimestampEnd`:
+
+{
+  "eventTimestampStart": "2020-05-10T01:14:38.451Z",
+  "eventTimestampEnd": "2020-05-17T16:57:01.196Z",
+  "hasMultipleUploadIds": true,
+  "type": "AdherenceRecordsSearch"
+}
+
+Similarly, if you want to get all adherence records that are associated with _no_ upload IDs, you can use the `hasNoUploadIds` flag. This flag also requires both `eventTimestampStart` and `eventTimestampEnd`:
+
+{
+  "eventTimestampStart": "2020-05-10T01:14:38.451Z",
+  "eventTimestampEnd": "2020-05-17T16:57:01.196Z",
+  "hasNoUploadIds": true,
+  "type": "AdherenceRecordsSearch"
+}
 
 ## Adherence Reports
 
