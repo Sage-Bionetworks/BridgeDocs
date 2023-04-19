@@ -345,21 +345,25 @@ To get all adherence records associated with an upload, you can use the `uploadI
 
 If you want to get all adherence records that are associated with multiple upload IDs, you can use the `hasMultipleUploadIds` flag. If you use this flag, you will need to specify both `eventTimestampStart` and `eventTimestampEnd`:
 
+```json
 {
   "eventTimestampStart": "2020-05-10T01:14:38.451Z",
   "eventTimestampEnd": "2020-05-17T16:57:01.196Z",
   "hasMultipleUploadIds": true,
   "type": "AdherenceRecordsSearch"
 }
+```
 
 Similarly, if you want to get all adherence records that are associated with _no_ upload IDs, you can use the `hasNoUploadIds` flag. This flag also requires both `eventTimestampStart` and `eventTimestampEnd`:
 
+```json
 {
   "eventTimestampStart": "2020-05-10T01:14:38.451Z",
   "eventTimestampEnd": "2020-05-17T16:57:01.196Z",
   "hasNoUploadIds": true,
   "type": "AdherenceRecordsSearch"
 }
+```
 
 ## Adherence Reports
 
