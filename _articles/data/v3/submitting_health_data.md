@@ -38,6 +38,55 @@ To do so, when you call the Upload Request API, in the metadata field, include t
 
 When Bridge exports this data to Synapse, the file entity will include additional attributes as annotations corresponding to the scheduling information. For more details on these attributes, see [Scheduling](/articles/v2/scheduling.html).
 
+## Viewing Your Data in the Bridge API
+
+You may need to view the data you have submitted as well as all associated scheduling information and adherence records. This could be used, for example, to diagnose issues in the data pipeline.
+
+To do so, send an HTTP GET request to `/v3/uploads/{uploadId}/exporter3` for app-scoped requests or `/v5/studies/{studyId}/uploads/{uploadId}/exporter3` for study-scoped requests. You may also pass in the query parameters `fetchTimeline=true` and `fetchAdherence=true` to fetch timeline metadata and adherence records respectively. (Note: Fetching adherence is only available in the study-scoped version of this API.)
+
+Examples:
+
+* `GET /v3/uploads/FRV1VReEy_HzeF7RdFZImqTq/exporter3?fetchTimeline=true&fetchAdherence=false`
+* `GET /v5/studies/my-mobile-toolbox-study/uploads/FRV1VReEy_HzeF7RdFZImqTq/exporter3?fetchTimeline=true&fetchAdherence=true`
+
+You should get a response that looks like:
+
+```json
+{
+  "id": "FRV1VReEy_HzeF7RdFZImqTq",
+  "healthCode": "TBUWcFMLqGIfSFInb-Exxwlc",
+  "userId": "6XoISwN3wPBGoMJ2GJ28-6AM",
+  "adherenceRecordsForSchedule": [
+    // removed for brevity
+  ],
+  "adherenceRecordsForUpload": [
+    // removed for brevity
+  ],
+  "record": {
+    // removed for brevity
+  },
+  "timelineMetadata": {
+    // removed for brevity
+  },
+  "upload": {
+    // removed for brevity
+  },
+  "type": "UploadViewEx3"
+}
+```
+
+|Field|Description|
+|---|---|
+|id|Upload ID. This is the same as Record ID. Provided here for convenience, since the upload or record might not always exist.|
+|healthCode|Health code of the user that submitted the upload or record.|
+|userId|ID of the user that submitted the upload or record.|
+|adherenceRecordsForSchedule|Adherence records associated with this upload via the associated instanceGuid.|
+|adherenceRecordsForUpload|Adherence records associated with this upload via the upload ID.|
+|record|Health data record corresponding to this upload, if it exists.|
+|timelineMetadata|Timeline metadata associated with this upload.|
+|upload|Upload corresponding to the health data record, if it exists.|
+|type|Always "UploadViewEx3". Identifies the response type.|
+
 ## Viewing Your Data in Synapse
 
 Unlike Exporter 2.0, Exporter 3.0 automatically exports health data as it is submitted to Bridge. Your data should be available in Synapse within minutes.
