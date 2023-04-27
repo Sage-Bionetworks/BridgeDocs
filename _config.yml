@@ -2,6 +2,8 @@ title: Bridge Developer Portal
 email: bridgeit@sagebionetworks.org
 description: Developer portal the Bridge mobile health research platform
 markdown: redcarpet
+include: 
+  - swagger-ui/
 redcarpet:
   extensions: ["fenced_code_blocks", "tables", "with_toc_data"]
 collections:
