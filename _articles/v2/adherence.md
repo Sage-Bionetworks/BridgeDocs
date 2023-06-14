@@ -365,6 +365,43 @@ Similarly, if you want to get all adherence records that are associated with _no
 }
 ```
 
+### Post-Processing Attributes
+
+If your study has a post-processing pipeline, you may want to record post-processing status and other information on adherence records. To do so, you will need
+
+* Bridge account with the developer, researcher, study coordinator, or study designer role with access to the study
+* study ID
+* participant's health code
+* instance Guid
+* event timestamp
+* assessment startedOn
+
+The last 4 items on that list can be found as annotations in exported Synapse files, or object metadata in exported S3 files, under the names healthCode, instanceGuid, eventTimestamp, and startedOn respectively.
+
+Bridge provides a special API to write only these post-processing attributes to the adherence record and nothers. This way, your post-processing pipeline doesn't have to worry about any attributes outside of post-processing.
+
+To call this API, send an HTTP POST to `/v5/studies/{studyId}/participants/healthcode:{healthCode}/adherence/{instanceGuid}/{eventTimestamp}/postprocessing` (or use your platform's SDK). Example request body:
+
+```json
+{
+  "postProcessingAttributes":{
+    "arbitrary-key":"arbitrary value"
+  },
+  "postProcessingCompletedOn":"2023-06-08T12:34:56.789Z",
+  "postProcessingStatus":"in_progress",
+  "startedOn":"2023-06-06T22:59:27.308Z"
+}
+```
+
+|Attribute Name|Description|
+|---|---|
+|postProcessingAttributes|Any arbitrary key-value pairs, specific to your post-processing pipeline. Maximum size 65k.|
+|postProcessingCompletedOn|ISO 8601 for when the post-processing step was completed. Exact semantics depend on your post-processing pipeline.|
+|postProcessingStatus|Short string that represents the current status of the upload in the post-processing pipeline. This may be specific to your pipeline. Examples include: "Pending", "SchemaVerified", "SchemaVerificationFailed", "DataInParquet", "DataScored". Must be 255 characters or less.|
+|startedOn|When the adherence was started by the participant, used to disambiguate for persistent tasks. This is optional, and if not specified, one will be generated.|
+
+Attributes written this way will appear on Adherence records through any other Adherence API.
+
 ## Adherence Reports
 
 Bridge provides APIs for a few reports summarizing the adherence of study participants. These reports only report on the state of session instances in the schedules of one or more participants. There are no reports of assessment-level adherence data.
