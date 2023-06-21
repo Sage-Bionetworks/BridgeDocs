@@ -395,9 +395,9 @@ To call this API, send an HTTP POST to `/v5/studies/{studyId}/participants/healt
 
 |Attribute Name|Description|
 |---|---|
-|postProcessingAttributes|Any arbitrary key-value pairs, specific to your post-processing pipeline. Maximum size 65k.|
-|postProcessingCompletedOn|ISO 8601 for when the post-processing step was completed. Exact semantics depend on your post-processing pipeline.|
-|postProcessingStatus|Short string that represents the current status of the upload in the post-processing pipeline. This may be specific to your pipeline. Examples include: "Pending", "SchemaVerified", "SchemaVerificationFailed", "DataInParquet", "DataScored". Must be 255 characters or less.|
+|postProcessingAttributes|Any arbitrary key-value pairs, specific to your post-processing pipeline. If a key is not specified, the old key and value from the existing record will be used. Maximum size 65k.|
+|postProcessingCompletedOn|ISO 8601 for when the post-processing step was completed. Exact semantics depend on your post-processing pipeline. If not specified, the old value will be used.|
+|postProcessingStatus|Short string that represents the current status of the upload in the post-processing pipeline. This may be specific to your pipeline. Examples include: "Pending", "SchemaVerified", "SchemaVerificationFailed", "DataInParquet", "DataScored". If not specified, the old value will be used. Must be 255 characters or less.|
 |startedOn|When the adherence was started by the participant, used to disambiguate for persistent tasks. This is optional, and if not specified, one will be generated.|
 
 Attributes written this way will appear on Adherence records through any other Adherence API.
