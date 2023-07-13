@@ -378,7 +378,7 @@ If your study has a post-processing pipeline, you may want to record post-proces
 
 The last 4 items on that list can be found as annotations in exported Synapse files, or object metadata in exported S3 files, under the names healthCode, instanceGuid, eventTimestamp, and startedOn respectively.
 
-Bridge provides a special API to write only these post-processing attributes to the adherence record and nothers. This way, your post-processing pipeline doesn't have to worry about any attributes outside of post-processing.
+Bridge provides a special API to write only these post-processing attributes to the adherence record and not others. This way, your post-processing pipeline doesn't have to worry about any attributes outside of post-processing.
 
 To call this API, send an HTTP POST to `/v5/studies/{studyId}/participants/healthcode:{healthCode}/adherence/{instanceGuid}/{eventTimestamp}/postprocessing` (or use your platform's SDK). Example request body:
 
